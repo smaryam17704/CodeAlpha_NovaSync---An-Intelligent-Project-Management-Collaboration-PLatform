@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useNavigate } from "react-router";
-import { Zap, ArrowRight } from "lucide-react";
+import NovaSyncLogo from "../components/NovaSyncLogo";
+import { ArrowRight } from "lucide-react";
 
 export default function Onboarding() {
   const [step, setStep] = useState<"workspace" | "done">("workspace");
@@ -30,9 +31,7 @@ export default function Onboarding() {
     <div className="min-h-screen bg-[hsl(222,47%,8%)] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="flex items-center gap-2 mb-8 justify-center">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[hsl(192,100%,50%)] to-[hsl(262,83%,58%)] flex items-center justify-center">
-            <Zap className="w-5 h-5 text-white" />
-          </div>
+          <NovaSyncLogo size={36} />
           <span className="text-xl font-bold">NovaSync</span>
         </div>
 
@@ -76,7 +75,7 @@ export default function Onboarding() {
         ) : (
           <div className="text-center animate-fade-in">
             <div className="w-16 h-16 rounded-2xl bg-[hsl(142,71%,45%)]/10 flex items-center justify-center mx-auto mb-4">
-              <Zap className="w-8 h-8 text-[hsl(142,71%,45%)]" />
+              <NovaSyncLogo size={48} />
             </div>
             <h2 className="text-xl font-bold mb-2">Workspace created!</h2>
             <p className="text-sm text-gray-400">Redirecting to your dashboard...</p>

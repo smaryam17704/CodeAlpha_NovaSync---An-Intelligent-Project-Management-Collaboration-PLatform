@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
+import { useAuth } from "../hooks/use-auth";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { LayoutList, Calendar, AlertCircle, CheckCircle2, Clock, Filter } from "lucide-react";
@@ -10,12 +11,23 @@ type FilterType = "all" | "active" | "completed" | "overdue" | "upcoming";
 export default function MyWork() {
   const [filter, setFilter] = useState<FilterType>("active");
   const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
 
-  const assignedTasks = useQuery(api.tasks.getByAssignee, { userId: "" as any });
-  const createdTasks = useQuery(api.tasks.getByCreator, { userId: "" as any });
+  const assignedTasks = useQuery(
+    api.tasks.getByAssignee,
+    currentUser?._id ? { userId: currentUser._id } : "skip"
+  );
+  const createdTasks = useQuery(
+    api.tasks.getByCreator,
+    currentUser?._id ? { userId: currentUser._id } : "skip"
+  );
 
-  // Use the current user's tasks
-  const allTasks = assignedTasks || [];
+  // Combine assigned and created tasks, deduplicating
+  const allTasksRaw = assignedTasks || [];
+  const createdTasksRaw = createdTasks || [];
+  const taskIds = new Set(allTasksRaw.map((t) => t._id));
+  const allTasks = [...allTasksRaw, ...createdTasksRaw.filter((t) => !taskIds.has(t._id))];
+
   const now = Date.now();
 
   const filteredTasks = allTasks.filter((t) => {

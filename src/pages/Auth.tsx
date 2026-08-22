@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { useMutation } from "convex/react";
-import { api } from "../convex/_generated/api";
 import { Link, useNavigate } from "react-router";
-import { Zap, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import NovaSyncLogo from "../components/NovaSyncLogo";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 interface AuthPageProps {
   redirectAfterAuth?: string;
@@ -54,9 +53,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[hsl(192,100%,50%)] opacity-5 rounded-full blur-3xl" />
         <div className="relative z-10 flex flex-col justify-center px-16">
           <Link to="/" className="flex items-center gap-2 mb-12">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[hsl(192,100%,50%)] to-[hsl(262,83%,58%)] flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
+            <NovaSyncLogo size={36} />
             <span className="text-xl font-bold">NovaSync</span>
           </Link>
           <h1 className="text-4xl font-bold leading-tight mb-4">
@@ -81,9 +78,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
           </Link>
 
           <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(192,100%,50%)] to-[hsl(262,83%,58%)] flex items-center justify-center">
-              <Zap className="w-4 h-4 text-white" />
-            </div>
+            <NovaSyncLogo size={28} />
             <span className="text-lg font-bold">NovaSync</span>
           </div>
 

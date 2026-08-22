@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { motion } from "framer-motion";
@@ -16,6 +16,7 @@ export default function NovaAI({ activeWorkspace }: Props) {
   const [question, setQuestion] = useState("");
   const [taskPrompt, setTaskPrompt] = useState("");
   const [chatHistory, setChatHistory] = useState<{ role: string; content: string }[]>([]);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const projects = useQuery(
     api.projects.list,
@@ -49,6 +50,22 @@ export default function NovaAI({ activeWorkspace }: Props) {
 
   const createTask = useMutation(api.tasks.create);
 
+  // Auto-add AI response to chat using useEffect instead of during render
+  useEffect(() => {
+    if (copilot && chatHistory.length > 0 && chatHistory[chatHistory.length - 1].role !== "assistant") {
+      setChatHistory((prev) => {
+        // Guard against double-adding
+        if (prev.length > 0 && prev[prev.length - 1].role === "assistant") return prev;
+        return [...prev, { role: "assistant", content: copilot.answer }];
+      });
+    }
+  }, [copilot, chatHistory]);
+
+  // Auto-scroll chat to bottom
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatHistory]);
+
   const handleAsk = () => {
     if (!question.trim() || !selectedProjectId) return;
     setChatHistory((prev) => [...prev, { role: "user", content: question }]);
@@ -65,11 +82,6 @@ export default function NovaAI({ activeWorkspace }: Props) {
       });
     }
   };
-
-  // Auto-add AI response to chat
-  if (copilot && chatHistory.length > 0 && chatHistory[chatHistory.length - 1].role !== "assistant") {
-    setChatHistory((prev) => [...prev, { role: "assistant", content: copilot.answer }]);
-  }
 
   const tabs = [
     { id: "copilot" as const, label: "Project Copilot", icon: Brain },
@@ -96,7 +108,11 @@ export default function NovaAI({ activeWorkspace }: Props) {
         <label className="text-xs font-medium text-gray-400">Project:</label>
         <select
           value={selectedProjectId}
-          onChange={(e) => setSelectedProjectId(e.target.value)}
+          onChange={(e) => {
+            setSelectedProjectId(e.target.value);
+            setChatHistory([]);
+            setQuestion("");
+          }}
           className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs text-white focus:outline-none"
         >
           <option value="">Select a project</option>
@@ -142,7 +158,10 @@ export default function NovaAI({ activeWorkspace }: Props) {
                       {["What is blocking this project?", "Give me a summary", "Recommend improvements"].map((q) => (
                         <button
                           key={q}
-                          onClick={() => { setQuestion(q); handleAsk(); }}
+                          onClick={() => {
+                            setChatHistory((prev) => [...prev, { role: "user", content: q }]);
+                            setQuestion(q);
+                          }}
                           className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400 hover:bg-white/8 hover:text-gray-300 transition-colors"
                         >
                           {q}
@@ -169,6 +188,7 @@ export default function NovaAI({ activeWorkspace }: Props) {
                     </div>
                   </div>
                 )}
+                <div ref={chatEndRef} />
               </div>
               <div className="flex gap-2">
                 <input
@@ -198,16 +218,14 @@ export default function NovaAI({ activeWorkspace }: Props) {
             <input
               value={taskPrompt}
               onChange={(e) => setTaskPrompt(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && taskPrompt.trim()) {
+                  // Trigger generation by just leaving taskPrompt set - the query auto-runs
+                }
+              }}
               className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[hsl(262,83%,58%)]/50"
               placeholder="Describe what to build, e.g. 'Build an e-commerce checkout system'"
             />
-            <button
-              onClick={() => {}}
-              disabled={!taskPrompt.trim()}
-              className="px-4 py-2 bg-[hsl(262,83%,58%)]/20 text-[hsl(262,83%,58%)] rounded-lg hover:bg-[hsl(262,83%,58%)]/30 transition-colors disabled:opacity-50"
-            >
-              <Zap className="w-4 h-4" />
-            </button>
           </div>
           {taskSuggestions && (
             <div className="space-y-3">

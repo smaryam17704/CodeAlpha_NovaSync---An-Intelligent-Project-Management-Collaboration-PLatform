@@ -1,8 +1,9 @@
 import { Link } from "react-router";
 import { motion } from "framer-motion";
+import NovaSyncLogo from "../components/NovaSyncLogo";
 import {
-  Zap, Users, Layout, BarChart3, Bell, Search, Brain,
-  CheckCircle2, ArrowRight, Sparkles, Globe, Shield, Clock
+  Users, Layout, BarChart3, Bell, Search, Brain,
+  ArrowRight, Sparkles, Shield
 } from "lucide-react";
 
 const features = [
@@ -52,9 +53,7 @@ export default function Landing() {
       <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-[hsl(222,47%,8%)]/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(192,100%,50%)] to-[hsl(262,83%,58%)] flex items-center justify-center">
-              <Zap className="w-4 h-4 text-white" />
-            </div>
+            <NovaSyncLogo size={28} />
             <span className="text-lg font-bold tracking-tight">NovaSync</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-400">
@@ -238,9 +237,7 @@ export default function Landing() {
       <footer className="border-t border-white/5 py-8 px-4">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-gradient-to-br from-[hsl(192,100%,50%)] to-[hsl(262,83%,58%)] flex items-center justify-center">
-              <Zap className="w-3 h-3 text-white" />
-            </div>
+            <NovaSyncLogo size={22} />
             <span className="text-sm font-semibold">NovaSync</span>
           </div>
           <p className="text-xs text-gray-500">Plan together. Build faster. Stay in sync.</p>

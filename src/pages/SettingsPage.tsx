@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { User, Bell, Shield, Palette, LogOut } from "lucide-react";
+import { User, Bell, Shield, LogOut } from "lucide-react";
 
 export default function SettingsPage() {
   const currentUser = useQuery(api.users.current);
@@ -12,12 +12,16 @@ export default function SettingsPage() {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [saved, setSaved] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
-  // Initialize fields when data loads
-  if (currentUser && name === "" && currentUser.name) {
-    setName(currentUser.name);
-    setBio(currentUser.bio || "");
-  }
+  // Initialize fields when data loads (using useEffect, not during render)
+  useEffect(() => {
+    if (currentUser && !initialized) {
+      setName(currentUser.name || "");
+      setBio(currentUser.bio || "");
+      setInitialized(true);
+    }
+  }, [currentUser, initialized]);
 
   const handleSave = async () => {
     await updateUser({ name, bio: bio || undefined });

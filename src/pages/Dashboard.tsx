@@ -41,6 +41,7 @@ export default function Dashboard({ activeWorkspace }: Props) {
 
   const totalTasks = projects?.reduce((acc: number, p: any) => acc + (p?.taskCount || 0), 0) || 0;
   const completedTasks = projects?.reduce((acc: number, p: any) => acc + (p?.doneTasks || 0), 0) || 0;
+  const incompleteTasks = totalTasks - completedTasks;
   const activeProjects = projects?.filter((p: any) => p?.status === "active").length || 0;
 
   return (
@@ -56,7 +57,7 @@ export default function Dashboard({ activeWorkspace }: Props) {
           { label: "Active Projects", value: activeProjects, icon: FolderKanban, color: "from-[hsl(192,100%,50%)]/20 to-[hsl(192,100%,50%)]/5" },
           { label: "Total Tasks", value: totalTasks, icon: CheckCircle2, color: "from-[hsl(262,83%,58%)]/20 to-[hsl(262,83%,58%)]/5" },
           { label: "Completed", value: completedTasks, icon: TrendingUp, color: "from-[hsl(142,71%,45%)]/20 to-[hsl(142,71%,45%)]/5" },
-          { label: "Overdue", value: totalTasks - completedTasks, icon: AlertCircle, color: "from-[hsl(0,84%,60%)]/20 to-[hsl(0,84%,60%)]/5" },
+          { label: "Incomplete", value: incompleteTasks, icon: AlertCircle, color: "from-[hsl(25,95%,53%)]/20 to-[hsl(25,95%,53%)]/5" },
         ].map((stat) => (
           <motion.div
             key={stat.label}

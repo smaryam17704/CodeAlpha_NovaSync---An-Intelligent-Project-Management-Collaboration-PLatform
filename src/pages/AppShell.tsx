@@ -3,9 +3,10 @@ import { Routes, Route, Link, useLocation, useNavigate } from "react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useAuthActions } from "@convex-dev/auth/react";
+import NovaSyncLogo from "../components/NovaSyncLogo";
 import {
-  Home, Briefcase, FolderKanban, Bell, Search, Brain, Settings,
-  ChevronDown, Plus, LogOut, User, Zap, Menu, X, Command, LayoutList
+  Home, FolderKanban, Bell, Search, Brain, Settings,
+  ChevronDown, Plus, LogOut, User, Menu, X, Command, LayoutList
 } from "lucide-react";
 
 import Dashboard from "./Dashboard";
@@ -97,9 +98,7 @@ export default function AppShell() {
         {/* Logo */}
         <div className="h-14 flex items-center justify-between px-4 border-b border-white/5">
           <Link to="/app" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[hsl(192,100%,50%)] to-[hsl(262,83%,58%)] flex items-center justify-center">
-              <Zap className="w-3.5 h-3.5 text-white" />
-            </div>
+            <NovaSyncLogo size={24} />
             <span className="text-sm font-bold">NovaSync</span>
           </Link>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-gray-400 hover:text-white">
