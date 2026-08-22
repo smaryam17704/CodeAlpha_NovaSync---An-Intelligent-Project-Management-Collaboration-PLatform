@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../convex/_generated/api";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { FolderKanban, CheckCircle2, AlertCircle, Clock, Plus, ArrowRight, TrendingUp, Users } from "lucide-react";
@@ -39,9 +39,9 @@ export default function Dashboard({ activeWorkspace }: Props) {
     );
   }
 
-  const totalTasks = projects?.reduce((acc, p) => acc + (p.taskCount || 0), 0) || 0;
-  const completedTasks = projects?.reduce((acc, p) => acc + (p.doneTasks || 0), 0) || 0;
-  const activeProjects = projects?.filter((p) => p.status === "active").length || 0;
+  const totalTasks = projects?.reduce((acc: number, p: any) => acc + (p?.taskCount || 0), 0) || 0;
+  const completedTasks = projects?.reduce((acc: number, p: any) => acc + (p?.doneTasks || 0), 0) || 0;
+  const activeProjects = projects?.filter((p: any) => p?.status === "active").length || 0;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -82,7 +82,7 @@ export default function Dashboard({ activeWorkspace }: Props) {
           </div>
           <div className="space-y-2">
             {projects && projects.length > 0 ? (
-              projects.slice(0, 5).map((project) => (
+              projects.slice(0, 5).map((project: any) => (
                 <Link
                   key={project._id}
                   to={`/app/projects/${project._id}`}
@@ -124,7 +124,7 @@ export default function Dashboard({ activeWorkspace }: Props) {
           </div>
           <div className="space-y-3">
             {recentActivity && recentActivity.length > 0 ? (
-              recentActivity.slice(0, 8).map((event) => (
+              recentActivity.slice(0, 8).map((event: any) => (
                 <div key={event._id} className="flex items-start gap-3">
                   <div className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
                     {event.user?.name?.charAt(0) || "?"}

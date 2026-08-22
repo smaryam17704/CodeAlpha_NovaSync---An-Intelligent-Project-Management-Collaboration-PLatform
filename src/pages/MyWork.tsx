@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../convex/_generated/api";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { LayoutList, Calendar, AlertCircle, CheckCircle2, Clock, Filter } from "lucide-react";

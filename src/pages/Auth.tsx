@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../convex/_generated/api";
 import { Link, useNavigate } from "react-router";
 import { Zap, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
@@ -17,7 +17,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuthActions();
+  const { signIn } = useAuthActions();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,7 +27,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
 
     try {
       if (isSignUp) {
-        await signUp("password", { name, email, password, flow: "signUp" });
+        await signIn("password", { email, password, flow: "signUp", name });
       } else {
         await signIn("password", { email, password });
       }

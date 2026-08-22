@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../convex/_generated/api";
 import { Plus, X, Mail, Shield, UserMinus } from "lucide-react";
 
 interface Props {
@@ -13,7 +13,7 @@ export default function ProjectTeam({ projectId, project }: Props) {
   const invitations = useQuery(api.invitations.listByProject, { projectId: projectId as any });
   const addMember = useMutation(api.projects.addMember);
   const removeMember = useMutation(api.projects.removeMember);
-  const createInvitation = useMutation(api.invitations.create);
+  const createInvitation = useMutation(api.invitations.createInvitation);
 
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");

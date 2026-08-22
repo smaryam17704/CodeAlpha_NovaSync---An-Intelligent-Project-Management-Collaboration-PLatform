@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, Link, useParams, useLocation } from "react-router";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../convex/_generated/api";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, Kanban, List, Clock, Users, Activity, Settings,

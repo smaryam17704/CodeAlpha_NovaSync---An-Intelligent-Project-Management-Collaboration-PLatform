@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { Routes, Route, Link, useLocation, useNavigate } from "react-router";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react";
+import { api } from "../convex/_generated/api";
+import { useAuthActions } from "@convex-dev/auth/react";
 import {
   Home, Briefcase, FolderKanban, Bell, Search, Brain, Settings,
   ChevronDown, Plus, LogOut, User, Zap, Menu, X, Command, LayoutList
@@ -22,11 +22,11 @@ export default function AppShell() {
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut } = useAuthActions();
-  const { isLoading: authLoading } = useConvexAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
 
   const currentUser = useQuery(api.users.current);
+  const authLoading = currentUser === undefined;
   const workspaces = useQuery(api.workspaces.list);
   const [activeWorkspace, setActiveWorkspace] = useState<string | null>(null);
   const unreadCount = useQuery(api.notifications.getUnreadCount);
@@ -111,24 +111,24 @@ export default function AppShell() {
         <div className="px-3 py-3 border-b border-white/5">
           <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-white/5 cursor-pointer hover:bg-white/8 transition-colors">
             <div className="w-6 h-6 rounded bg-gradient-to-br from-[hsl(192,100%,50%)]/20 to-[hsl(262,83%,58%)]/20 flex items-center justify-center text-xs font-bold text-[hsl(192,100%,50%)]">
-              {activeWorkspace && workspaces?.find((w) => w._id === activeWorkspace)?.name?.charAt(0) || "W"}
+              {activeWorkspace && (workspaces as any[])?.find((w: any) => w?._id === activeWorkspace)?.name?.charAt(0) || "W"}
             </div>
             <span className="text-xs font-medium truncate flex-1">
-              {activeWorkspace && workspaces?.find((w) => w._id === activeWorkspace)?.name || "Workspace"}
+              {activeWorkspace && (workspaces as any[])?.find((w: any) => w?._id === activeWorkspace)?.name || "Workspace"}
             </span>
             <ChevronDown className="w-3 h-3 text-gray-500" />
           </div>
           {workspaces && workspaces.length > 1 && (
             <div className="mt-1 space-y-0.5">
-              {workspaces.map((ws) => (
+              {workspaces.map((ws: any) => (
                 <button
                   key={ws._id}
                   onClick={() => setActiveWorkspace(ws._id)}
                   className={`w-full text-left px-2 py-1.5 rounded-lg text-xs transition-colors ${
-                    ws._id === activeWorkspace ? "bg-white/10 text-white" : "text-gray-400 hover:bg-white/5"
+                    ws?._id === activeWorkspace ? "bg-white/10 text-white" : "text-gray-400 hover:bg-white/5"
                   }`}
                 >
-                  {ws.name}
+                  {ws?.name}
                 </button>
               ))}
             </div>

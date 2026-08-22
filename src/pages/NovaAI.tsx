@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../convex/_generated/api";
 import { motion } from "framer-motion";
 import { Brain, Send, Plus, AlertTriangle, CheckCircle2, BarChart3, Users, Zap } from "lucide-react";
 
@@ -79,7 +79,7 @@ export default function NovaAI({ activeWorkspace }: Props) {
     { id: "deadline" as const, label: "Deadline Risk", icon: AlertTriangle },
   ];
 
-  const selectedProject = projects?.find((p) => p._id === selectedProjectId);
+  const selectedProject = projects?.find((p: any) => p?._id === selectedProjectId);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -100,8 +100,8 @@ export default function NovaAI({ activeWorkspace }: Props) {
           className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs text-white focus:outline-none"
         >
           <option value="">Select a project</option>
-          {projects?.map((p) => (
-            <option key={p._id} value={p._id}>{p.title}</option>
+          {projects?.filter(Boolean).map((p: any) => (
+            <option key={p!._id} value={p!._id}>{p!.title}</option>
           ))}
         </select>
       </div>

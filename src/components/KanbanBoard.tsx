@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../convex/_generated/api";
 import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, MessageSquare, Calendar, GripVertical } from "lucide-react";

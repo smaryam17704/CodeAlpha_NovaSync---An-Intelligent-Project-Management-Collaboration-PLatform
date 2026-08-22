@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../convex/_generated/api";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { Bell, CheckCheck, Check } from "lucide-react";

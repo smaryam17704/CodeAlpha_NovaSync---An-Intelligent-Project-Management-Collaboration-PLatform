@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../convex/_generated/api";
 import { Link, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
 import { Plus, FolderKanban, Users, User, ArrowRight, X } from "lucide-react";
@@ -74,7 +74,7 @@ export default function ProjectsPage({ activeWorkspace }: Props) {
       {/* Projects Grid */}
       {projects && projects.length > 0 ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.map((project, i) => (
+          {projects.map((project: any, i: number) => (
             <motion.div
               key={project._id}
               initial={{ opacity: 0, y: 10 }}
