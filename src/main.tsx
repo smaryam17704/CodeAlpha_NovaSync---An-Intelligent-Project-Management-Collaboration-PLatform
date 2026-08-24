@@ -11,6 +11,8 @@ import "./index.css";
 const Landing = lazy(() => import("./pages/Landing"));
 const AuthPage = lazy(() => import("./pages/Auth"));
 const AppShell = lazy(() => import("./pages/AppShell"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/Terms"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function RouteLoading() {
@@ -58,6 +60,8 @@ createRoot(document.getElementById("root")!).render(
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/auth" element={<AuthPage redirectAfterAuth="/app" />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
               <Route path="/app/*" element={<RequireAuth><AppShell /></RequireAuth>} />
               <Route path="*" element={<NotFound />} />
             </Routes>

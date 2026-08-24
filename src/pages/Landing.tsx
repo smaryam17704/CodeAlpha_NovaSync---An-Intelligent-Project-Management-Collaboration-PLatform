@@ -66,7 +66,6 @@ export default function Landing() {
           <div className="hidden md:flex items-center gap-8 text-sm" style={{ color: '#5e6278' }}>
             <a href="#features" className="hover:text-[#1a1d2e] transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-[#1a1d2e] transition-colors">How It Works</a>
-            <a href="#pricing" className="hover:text-[#1a1d2e] transition-colors">Pricing</a>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/auth" className="text-sm px-4 py-2 rounded-lg transition-colors font-medium" style={{ color: '#5e6278' }}>
@@ -309,7 +308,7 @@ export default function Landing() {
                 transition={{ delay: i * 0.12 }}
                 className="text-center relative"
               >
-                <div className="text-6xl font-extrabold mb-4" style={{ color: 'rgba(13,148,136,0.08)' }}>{item.step}</div>
+                <div className="text-6xl font-extrabold mb-4" style={{ color: 'rgba(26,29,46,0.10)' }}>{item.step}</div>
                 <h3 className="text-lg font-semibold mb-2" style={{ color: '#1a1d2e' }}>{item.title}</h3>
                 <p className="text-sm" style={{ color: '#5e6278' }}>{item.desc}</p>
                 {i < 2 && (
@@ -362,8 +361,8 @@ export default function Landing() {
           </div>
           <p className="text-xs" style={{ color: '#9da2b3' }}>Plan together. Build faster. Stay in sync.</p>
           <div className="flex items-center gap-4 text-xs" style={{ color: '#9da2b3' }}>
-            <a href="#" className="hover:text-[#1a1d2e] transition-colors">Privacy</a>
-            <a href="#" className="hover:text-[#1a1d2e] transition-colors">Terms</a>
+            <Link to="/privacy" className="hover:text-[#1a1d2e] transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-[#1a1d2e] transition-colors">Terms</Link>
           </div>
         </div>
       </footer>

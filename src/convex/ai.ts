@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, action } from "./_generated/server";
+import { query } from "./_generated/server";
 import { requireAuth, getProjectMember } from "./helpers";
 
 export const projectHealth = query({
@@ -151,8 +151,11 @@ export const deadlineRisk = query({
   },
 });
 
-// AI Copilot and Task Generator — implemented as client-side logic
-// using the query data above. No cross-function action calls needed.
+/**
+ * Nova AI Copilot — rich, context-aware responses.
+ * Uses actual project data (tasks, members, activity, comments)
+ * to answer questions intelligently. No generic canned responses.
+ */
 export const copilotAnalysis = query({
   args: { projectId: v.id("projects"), question: v.string() },
   handler: async (ctx, args) => {
@@ -160,71 +163,265 @@ export const copilotAnalysis = query({
     const member = await getProjectMember(ctx, args.projectId, userId);
     if (!member) return null;
 
-    const tasks = await ctx.db
-      .query("tasks")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
+    const [tasks, project, members] = await Promise.all([
+      ctx.db.query("tasks").withIndex("by_project", (q) => q.eq("projectId", args.projectId)).collect(),
+      ctx.db.get(args.projectId),
+      ctx.db.query("projectMembers").withIndex("by_project", (q) => q.eq("projectId", args.projectId)).collect(),
+    ]);
 
-    const project = await ctx.db.get(args.projectId);
+    // Load assignee info for all tasks
+    const userIds = [...new Set(tasks.map((t) => t.assigneeId).filter(Boolean) as string[])];
+    const userMap = new Map<string, { _id: any; name?: string; email?: string; image?: string }>();
+    for (const uid of userIds) {
+      const doc = await ctx.db.get(uid as any);
+      if (doc && "name" in doc) {
+        userMap.set(uid, doc as any);
+      }
+    }
+
+    // Load comments for the project
+    const comments = await ctx.db.query("comments").withIndex("by_project", (q) => q.eq("projectId", args.projectId)).collect();
+
     const now = Date.now();
     const total = tasks.length;
     const done = tasks.filter((t) => t.status === "done").length;
     const inProgress = tasks.filter((t) => t.status === "in_progress").length;
     const todo = tasks.filter((t) => t.status === "todo").length;
     const review = tasks.filter((t) => t.status === "review").length;
-    const overdue = tasks.filter((t) => t.status !== "done" && t.dueDate && t.dueDate < now).length;
-    const unassigned = tasks.filter((t) => !t.assigneeId && t.status !== "done").length;
-    const urgent = tasks.filter((t) => t.priority === "urgent" && t.status !== "done").length;
-    const completionPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+    const overdue = tasks.filter((t) => t.status !== "done" && t.dueDate && t.dueDate < now);
+    const unassigned = tasks.filter((t) => !t.assigneeId && t.status !== "done");
+    const urgent = tasks.filter((t) => t.priority === "urgent" && t.status !== "done");
+    const high = tasks.filter((t) => t.priority === "high" && t.status !== "done");
+    const completedPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+    const projectName = project?.title || "this project";
+
+    // Helper: get task name by id
+    const taskById = new Map(tasks.map((t) => [t._id, t]));
+    const memberNames: { name: string; role: string; userId: string }[] = [];
+    for (const m of members) {
+      const doc = await ctx.db.get(m.userId);
+      const name = doc && "name" in doc ? (doc as any).name || "Unknown" : "Unknown";
+      memberNames.push({ name, role: m.role, userId: m.userId });
+    }
 
     const q = args.question.toLowerCase();
 
-    if (q.includes("block") || q.includes("stuck") || q.includes("problem")) {
+    // ── OVERDUE TASKS ──
+    if (q.includes("overdue") || q.includes("late") || q.includes("past due") || q.includes("miss")) {
+      if (overdue.length === 0) {
+        return { answer: `No overdue tasks in "${projectName}". All ${total} tasks are on track. Nice work! 🎯`, confidence: "high" };
+      }
+      const overdueList = overdue.map((t) => {
+        const assignee = t.assigneeId ? userMap.get(t.assigneeId)?.name || "Unassigned" : "Unassigned";
+        const daysOver = Math.ceil((now - t.dueDate!) / (1000 * 60 * 60 * 24));
+        return `• "${t.title}" — ${daysOver} day(s) overdue, assigned to ${assignee} (${t.priority} priority)`;
+      }).join("\n");
+      return {
+        answer: `⚠️ ${overdue.length} overdue task(s) in "${projectName}":\n\n${overdueList}\n\nRecommendation: Address these immediately to avoid further delays.`,
+        confidence: "high",
+      };
+    }
+
+    // ── COMPLETED / DONE TASKS ──
+    if (q.includes("completed") || q.includes("done") || q.includes("finish") || q.includes("how many")) {
+      const doneList = tasks.filter((t) => t.status === "done").map((t) => {
+        const assignee = t.assigneeId ? userMap.get(t.assigneeId)?.name || "Unknown" : "Unknown";
+        return `• "${t.title}" — completed by ${assignee}`;
+      }).join("\n");
+      if (done === 0) {
+        return { answer: `No tasks completed yet in "${projectName}". ${total} tasks remain — time to start making progress!`, confidence: "high" };
+      }
+      return {
+        answer: `📊 "${projectName}" progress: ${done}/${total} tasks completed (${completedPercent}%)\n\nCompleted tasks:\n${doneList}`,
+        confidence: "high",
+      };
+    }
+
+    // ── PENDING / TODO TASKS ──
+    if (q.includes("pending") || q.includes("todo") || q.includes("remaining") || q.includes("left")) {
+      const pendingTasks = tasks.filter((t) => t.status !== "done");
+      if (pendingTasks.length === 0) {
+        return { answer: `All tasks in "${projectName}" are completed! The project is done. 🎉`, confidence: "high" };
+      }
+      const pendingList = pendingTasks.map((t) => {
+        const status = t.status === "in_progress" ? "🔄 In Progress" : t.status === "review" ? "👀 Review" : "📋 To Do";
+        const assignee = t.assigneeId ? userMap.get(t.assigneeId)?.name || "Unassigned" : "Unassigned";
+        const dueStr = t.dueDate ? ` (due ${new Date(t.dueDate).toLocaleDateString()})` : "";
+        return `• "${t.title}" — ${status}, assigned to ${assignee}${dueStr}`;
+      }).join("\n");
+      return {
+        answer: `📋 ${pendingTasks.length} pending task(s) in "${projectName}":\n\n${pendingList}`,
+        confidence: "high",
+      };
+    }
+
+    // ── WHO HAS THE MOST WORK ──
+    if (q.includes("who") && (q.includes("most") || q.includes("work") || q.includes("assign") || q.includes("busy") || q.includes("overloaded"))) {
+      const taskCounts = new Map<string, number>();
+      for (const t of tasks.filter((t) => t.status !== "done" && t.assigneeId)) {
+        taskCounts.set(t.assigneeId!, (taskCounts.get(t.assigneeId!) || 0) + 1);
+      }
+      if (taskCounts.size === 0) {
+        return { answer: `No tasks are currently assigned to anyone in "${projectName}". Consider distributing the workload.`, confidence: "high" };
+      }
+      const sorted = [...taskCounts.entries()].sort((a, b) => b[1] - a[1]);
+      const workloadList = sorted.map(([uid, count]) => {
+        const name = userMap.get(uid)?.name || "Unknown";
+        const overdueCount = tasks.filter((t) => t.assigneeId === uid && t.status !== "done" && t.dueDate && t.dueDate < now).length;
+        return `• ${name} — ${count} active task(s)${overdueCount > 0 ? ` (${overdueCount} overdue!)` : ""}`;
+      }).join("\n");
+      const topPerson = userMap.get(sorted[0][0])?.name || "Unknown";
+      return {
+        answer: `👥 Workload distribution in "${projectName}":\n\n${workloadList}\n\n💡 ${topPerson} has the most active work (${sorted[0][1]} tasks). Consider rebalancing if needed.`,
+        confidence: "high",
+      };
+    }
+
+    // ── WHAT IS BLOCKING ──
+    if (q.includes("block") || q.includes("stuck") || q.includes("problem") || q.includes("issue") || q.includes("risk")) {
       const blockers: string[] = [];
-      if (overdue > 0) blockers.push(`${overdue} overdue task(s) need attention.`);
-      if (urgent > 0) blockers.push(`${urgent} urgent task(s) are not yet complete.`);
-      if (unassigned > 0) blockers.push(`${unassigned} task(s) are unassigned.`);
-      if (todo > inProgress * 2 && total > 3) blockers.push("More tasks in To Do than In Progress — work may be stalled.");
-      if (review > 3) blockers.push(`${review} tasks awaiting review — bottleneck detected.`);
+      if (overdue.length > 0) blockers.push(`${overdue.length} overdue task(s) need urgent attention.`);
+      if (urgent.length > 0) blockers.push(`${urgent.length} urgent task(s) are still open.`);
+      if (unassigned.length > 0) blockers.push(`${unassigned.length} task(s) are unassigned — work can't start without an owner.`);
+      if (todo > inProgress * 2 && total > 3) blockers.push(`Work is stalled: ${todo} tasks in To Do vs only ${inProgress} in progress.`);
+      if (review > 3) blockers.push(`${review} tasks stuck in review — this may indicate a bottleneck.`);
+      if (high.length > 2) blockers.push(`${high.length} high-priority tasks still open.`);
 
+      if (blockers.length > 0) {
+        return {
+          answer: `🚧 Blockers in "${projectName}":\n\n${blockers.map((b, i) => `${i + 1}. ${b}`).join("\n")}\n\n📊 Progress: ${completedPercent}% complete (${done}/${total})\n\n⚡ Priority: Address overdue tasks and unassigned work first.`,
+          confidence: "high",
+        };
+      }
       return {
-        answer: blockers.length > 0
-          ? `Key blockers for "${project?.title}":\n\n${blockers.map((b, i) => `${i + 1}. ${b}`).join("\n")}\n\nHealth: ${completionPercent}% complete`
-          : `No major blockers detected for "${project?.title}". ${done}/${total} tasks completed. Keep up the momentum!`,
+        answer: `✅ No major blockers detected in "${projectName}". ${done}/${total} tasks completed (${completedPercent}%). The project is moving forward smoothly.`,
         confidence: "high",
       };
     }
 
-    if (q.includes("health") || q.includes("status") || q.includes("how")) {
+    // ── PROJECT STATUS / HEALTH ──
+    if (q.includes("status") || q.includes("health") || q.includes("how") || q.includes("doing") || q.includes("going")) {
+      let healthEmoji = "🟢";
+      if (completedPercent < 25) healthEmoji = "🔴";
+      else if (completedPercent < 50) healthEmoji = "🟡";
+
+      const statusBreakdown = `📋 To Do: ${todo}  |  🔄 In Progress: ${inProgress}  |  👀 Review: ${review}  |  ✅ Done: ${done}`;
       return {
-        answer: `Project "${project?.title}"\n\n• Completion: ${done}/${total} (${completionPercent}%)\n• In Progress: ${inProgress}\n• Review: ${review}\n• To Do: ${todo}\n• Overdue: ${overdue}\n• Unassigned: ${unassigned}`,
+        answer: `📊 Status of "${projectName}":\n\n${healthEmoji} ${completedPercent}% complete (${done}/${total} tasks)\n\n${statusBreakdown}\n\n⚠️ Overdue: ${overdue.length}  |  🚫 Unassigned: ${unassigned.length}  |  🔴 Urgent: ${urgent.length}\n\nTeam: ${memberNames.length} member(s)`,
         confidence: "high",
       };
     }
 
-    if (q.includes("summary") || q.includes("overview") || q.includes("report")) {
+    // ── SUMMARY / OVERVIEW / REPORT ──
+    if (q.includes("summary") || q.includes("overview") || q.includes("report") || q.includes("summarize")) {
+      const recentComments = comments.length;
+      const overdueCount = overdue.length;
       return {
-        answer: `Summary — "${project?.title}":\n\n📊 Tasks: ${total} total\n✅ Done: ${done}\n🔄 In Progress: ${inProgress}\n👀 Review: ${review}\n📋 To Do: ${todo}\n⚠️ Overdue: ${overdue}\n\nCompletion: ${completionPercent}%`,
+        answer: `📋 Project Summary — "${projectName}"\n\n📊 Tasks: ${total} total | ${done} done | ${inProgress} in progress | ${review} review | ${todo} to do\n✅ Completion: ${completedPercent}%\n⚠️ Overdue: ${overdueCount} | 🚫 Unassigned: ${unassigned.length}\n👥 Team: ${memberNames.length} member(s)\n💬 Comments: ${recentComments}\n\n${overdueCount > 0 ? `⚠️ Key concern: ${overdueCount} overdue task(s) need attention.` : "✅ No overdue tasks."}${unassigned.length > 0 ? `\n📌 ${unassigned.length} task(s) need to be assigned.` : ""}`,
         confidence: "high",
       };
     }
 
-    if (q.includes("suggest") || q.includes("recommend") || q.includes("improve")) {
+    // ── TEAM / WHO IS WORKING ──
+    if (q.includes("team") || q.includes("member") || q.includes("who") || q.includes("people") || q.includes("working")) {
+      const teamList = memberNames.map((m) => {
+        const myTasks = tasks.filter((t) => t.assigneeId === m.userId);
+        const myActive = myTasks.filter((t) => t.status !== "done");
+        const myDone = myTasks.filter((t) => t.status === "done");
+        return `• ${m.name} (${m.role}) — ${myActive.length} active, ${myDone.length} completed`;
+      }).join("\n");
+      return {
+        answer: `👥 Team on "${projectName}" (${memberNames.length} members):\n\n${teamList}`,
+        confidence: "high",
+      };
+    }
+
+    // ── DEADLINES / DUE DATES ──
+    if (q.includes("deadline") || q.includes("due") || q.includes("schedule") || q.includes("timeline") || q.includes("upcoming")) {
+      const withDueDates = tasks.filter((t) => t.status !== "done" && t.dueDate).sort((a, b) => a.dueDate! - b.dueDate!);
+      if (withDueDates.length === 0) {
+        return { answer: `No tasks with due dates set in "${projectName}". Consider adding deadlines to keep work on track.`, confidence: "high" };
+      }
+      const deadlineList = withDueDates.slice(0, 10).map((t) => {
+        const daysUntil = Math.ceil((t.dueDate! - now) / (1000 * 60 * 60 * 24));
+        const urgency = daysUntil <= 0 ? "🔴 OVERDUE" : daysUntil <= 2 ? "🟡 Due soon" : daysUntil <= 7 ? "🟢 This week" : "";
+        return `• "${t.title}" — due ${new Date(t.dueDate!).toLocaleDateString()} (${daysUntil}d) ${urgency}`;
+      }).join("\n");
+      return {
+        answer: `📅 Upcoming deadlines in "${projectName}":\n\n${deadlineList}${withDueDates.length > 10 ? `\n\n...and ${withDueDates.length - 10} more.` : ""}`,
+        confidence: "high",
+      };
+    }
+
+    // ── SUGGESTIONS / RECOMMENDATIONS / FOCUS ──
+    if (q.includes("suggest") || q.includes("recommend") || q.includes("improve") || q.includes("focus") || q.includes("next") || q.includes("should")) {
       const suggestions: string[] = [];
-      if (unassigned > 0) suggestions.push(`Assign the ${unassigned} unassigned task(s).`);
-      if (overdue > 0) suggestions.push(`Address ${overdue} overdue task(s).`);
-      if (review > 2) suggestions.push(`Review ${review} tasks awaiting review.`);
-      if (urgent > 0) suggestions.push(`Focus on ${urgent} urgent task(s).`);
-      if (todo > 0 && inProgress === 0) suggestions.push("Move tasks from To Do to In Progress.");
+      if (unassigned.length > 0) suggestions.push(`Assign the ${unassigned.length} unassigned task(s) so team members can start working.`);
+      if (overdue.length > 0) suggestions.push(`Address ${overdue.length} overdue task(s) — these are the biggest risk to the project.`);
+      if (urgent.length > 0) suggestions.push(`Focus on ${urgent.length} urgent task(s) first.`);
+      if (review > 2) suggestions.push(`Review ${review} tasks — they're waiting to be completed.`);
+      if (todo > 0 && inProgress === 0) suggestions.push("No tasks are in progress. Move tasks from To Do to get the team moving.");
+      if (done > 0 && completedPercent < 50) suggestions.push(`You're at ${completedPercent}% — maintain momentum by pushing through the remaining ${total - done} tasks.`);
+      if (suggestions.length === 0) suggestions.push("Project looks great! Keep up the excellent pace.");
 
       return {
-        answer: `Recommendations for "${project?.title}":\n\n${suggestions.length > 0 ? suggestions.map((s, i) => `${i + 1}. ${s}`).join("\n") : "Project is healthy! Continue the current pace."}`,
+        answer: `💡 Recommendations for "${projectName}":\n\n${suggestions.map((s, i) => `${i + 1}. ${s}`).join("\n")}\n\n📊 Current progress: ${completedPercent}% (${done}/${total} tasks done)`,
         confidence: "high",
       };
     }
+
+    // ── PRIORITY / URGENT TASKS ──
+    if (q.includes("priority") || q.includes("urgent") || q.includes("important")) {
+      const urgentTasks = tasks.filter((t) => (t.priority === "urgent" || t.priority === "high") && t.status !== "done");
+      if (urgentTasks.length === 0) {
+        return { answer: `No urgent or high-priority tasks remaining in "${projectName}". Great prioritization!`, confidence: "high" };
+      }
+      const urgentList = urgentTasks.map((t) => {
+        const assignee = t.assigneeId ? userMap.get(t.assigneeId)?.name || "Unassigned" : "Unassigned";
+        const statusLabel = t.status === "in_progress" ? "🔄" : t.status === "review" ? "👀" : "📋";
+        return `• ${statusLabel} "${t.title}" [${t.priority}] → ${assignee}`;
+      }).join("\n");
+      return {
+        answer: `🔴 Priority tasks in "${projectName}":\n\n${urgentList}\n\nTotal: ${urgentTasks.length} task(s) requiring attention.`,
+        confidence: "high",
+      };
+    }
+
+    // ── SPECIFIC TASK LOOKUP ──
+    // Check if question mentions a specific task by looking for quoted terms
+    const quotedMatch = q.match(/["""]([^"""]+)["""]/);
+    if (quotedMatch) {
+      const search = quotedMatch[1];
+      const found = tasks.find((t) => t.title.toLowerCase().includes(search));
+      if (found) {
+        const assignee = found.assigneeId ? userMap.get(found.assigneeId)?.name || "Unassigned" : "Unassigned";
+        const dueStr = found.dueDate ? new Date(found.dueDate).toLocaleDateString() : "No due date";
+        return {
+          answer: `📋 Task: "${found.title}"\n\nStatus: ${found.status.replace("_", " ")}\nPriority: ${found.priority}\nAssignee: ${assignee}\nDue: ${dueStr}\nCreated: ${new Date(found.createdAt).toLocaleDateString()}`,
+          confidence: "high",
+        };
+      }
+      return { answer: `I couldn't find a task matching "${search}" in "${projectName}". Check the task name and try again.`, confidence: "medium" };
+    }
+
+    // ── COMMENTS / COMMUNICATION ──
+    if (q.includes("comment") || q.includes("discussion") || q.includes("communication") || q.includes("chat")) {
+      if (comments.length === 0) {
+        return { answer: `No comments yet in "${projectName}". Start a discussion by adding comments to tasks.`, confidence: "high" };
+      }
+      return {
+        answer: `💬 ${comments.length} comment(s) across tasks in "${projectName}". Check individual tasks to see their discussion threads.`,
+        confidence: "high",
+      };
+    }
+
+    // ── GENERIC / FALLBACK — still context-aware ──
+    const taskStatusSummary = total === 0
+      ? "The project has no tasks yet."
+      : `${completedPercent}% complete with ${total} tasks: ${done} done, ${inProgress} in progress, ${review} in review, ${todo} to do.`;
 
     return {
-      answer: `Analyzed "${project?.title}": ${total} tasks, ${done} completed (${completionPercent}%). Ask about blockers, health, or recommendations.`,
+      answer: `Here's what I can tell you about "${projectName}":\n\n${taskStatusSummary}\n${overdue.length > 0 ? `\n⚠️ ${overdue.length} task(s) are overdue.` : ""}\n${unassigned.length > 0 ? `\n📌 ${unassigned.length} task(s) are unassigned.` : ""}\n👥 ${memberNames.length} team member(s) | 💬 ${comments.length} comment(s)\n\n💡 Try asking about:\n• Project status or health\n• Overdue tasks\n• Team workload\n• Deadlines\n• What's blocking the project\n• Recommendations\n• A specific task name`,
       confidence: "medium",
     };
   },
@@ -262,6 +459,16 @@ export const taskSuggestions = query({
         { title: "Implement charts and graphs", priority: "medium", description: "Add data visualization components" },
         { title: "Real-time data updates", priority: "medium", description: "Implement live data updates" },
         { title: "Export functionality", priority: "low", description: "Add CSV/PDF export for reports" }
+      );
+    } else if (prompt.includes("api") || prompt.includes("backend")) {
+      generatedTasks.push(
+        { title: "Define API specification", priority: "high", description: "Document all API endpoints and data models" },
+        { title: "Implement core API endpoints", priority: "high", description: "Build the main CRUD operations" },
+        { title: "Add authentication middleware", priority: "high", description: "Implement auth checks for protected routes" },
+        { title: "Input validation", priority: "medium", description: "Add request validation and sanitization" },
+        { title: "Error handling", priority: "medium", description: "Implement consistent error responses" },
+        { title: "API documentation", priority: "low", description: "Generate OpenAPI/Swagger docs" },
+        { title: "Write API tests", priority: "medium", description: "Test all endpoints" }
       );
     } else {
       generatedTasks.push(

@@ -6,7 +6,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import NovaSyncLogo from "../components/NovaSyncLogo";
 import {
   Home, FolderKanban, Bell, Search, Brain, Settings,
-  ChevronDown, Plus, LogOut, User, Menu, X, Command, LayoutList
+  ChevronDown, Plus, LogOut, User, Menu, X, Command, LayoutList, ExternalLink
 } from "lucide-react";
 
 import Dashboard from "./Dashboard";
@@ -173,8 +173,20 @@ export default function AppShell() {
           })}
         </nav>
 
+        {/* Back to Home */}
+        <div className="px-3 py-2" style={{ borderTop: '1px solid #f0f1f5' }}>
+          <Link
+            to="/"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors"
+            style={{ color: '#9da2b3' }}
+          >
+            <ExternalLink className="w-4 h-4" />
+            <span>Back to Home</span>
+          </Link>
+        </div>
+
         {/* User */}
-        <div className="px-3 py-3" style={{ borderTop: '1px solid #f0f1f5' }}>
+        <div className="px-3 py-3">
           <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg">
             <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: 'rgba(13,148,136,0.1)', color: '#0d9488' }}>
               {currentUser?.name?.charAt(0) || <User className="w-3.5 h-3.5" />}
