@@ -3,17 +3,19 @@ import { Toaster } from "@/components/ui/sonner";
 import { RequireAuth } from "@/components/RequireAuth";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
-import React, { StrictMode, useEffect, lazy, Suspense } from "react";
+import React, { StrictMode, useEffect, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import "./index.css";
 
-const Landing = lazy(() => import("./pages/Landing"));
-const AuthPage = lazy(() => import("./pages/Auth"));
-const AppShell = lazy(() => import("./pages/AppShell"));
-const Privacy = lazy(() => import("./pages/Privacy"));
-const Terms = lazy(() => import("./pages/Terms"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+// Eagerly import critical pages to avoid dynamic import failures in dev server.
+// Auth is needed immediately when users navigate to sign-in/sign-up.
+import Landing from "./pages/Landing";
+import AuthPage from "./pages/Auth";
+import AppShell from "./pages/AppShell";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import NotFound from "./pages/NotFound";
 
 function RouteLoading() {
   return (
