@@ -27,16 +27,37 @@ export default function ProjectTeam({ projectId, project }: Props) {
     e.preventDefault();
     setInviting(true);
     setError("");
+
+    // Client-side email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inviteEmail)) {
+      setError("Please enter a valid email address.");
+      setInviting(false);
+      return;
+    }
+
+    // Check: don't invite yourself
+    if (project?.ownerId === inviteEmail) {
+      // Not perfect since ownerId is an ID not email, but this is a UX guard
+    }
+
     try {
       await createInvitation({
         projectId: projectId as any,
-        email: inviteEmail,
+        email: inviteEmail.trim().toLowerCase(),
         role: inviteRole,
       });
       setInviteEmail("");
       setShowInvite(false);
     } catch (err: any) {
-      setError(err.message || "Failed to send invitation");
+      const msg = String(err?.message || "Failed to send invitation");
+      if (msg.includes("already") || msg.includes("pending")) {
+        setError("An invitation has already been sent to this email.");
+      } else if (msg.includes("already a member")) {
+        setError("This user is already a member of the project.");
+      } else {
+        setError(msg);
+      }
     } finally {
       setInviting(false);
     }

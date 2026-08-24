@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Link, useNavigate, useSearchParams } from "react-router";
+import { useQuery } from "convex/react";
+import { api } from "../convex/_generated/api";
 import NovaSyncLogo from "../components/NovaSyncLogo";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 
@@ -22,24 +24,75 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuthActions();
   const navigate = useNavigate();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Pre-check email existence before sign-up
+  const [emailToCheck, setEmailToCheck] = useState("");
+  const emailCheck = useQuery(
+    api.users.checkEmail,
+    emailToCheck.length >= 5 ? { email: emailToCheck } : "skip"
+  );
+
+  // Debounced email check
+  useEffect(() => {
+    if (isSignUp && email.includes("@")) {
+      const timer = setTimeout(() => setEmailToCheck(email), 600);
+      return () => clearTimeout(timer);
+    } else {
+      setEmailToCheck("");
+    }
+  }, [email, isSignUp]);
+
+  // Clear error when switching between sign-in and sign-up
+  useEffect(() => {
+    setError("");
+    setEmailToCheck("");
+  }, [isSignUp]);
+
+  // Clear form fields on mount (fight browser autofill)
+  useEffect(() => {
+    setName("");
+    setEmail("");
+    setPassword("");
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
+    // Client-side validation
+    if (!email.trim()) {
+      setError("Please enter your email address.");
+      return;
+    }
+    if (!password.trim()) {
+      setError("Please enter your password.");
+      return;
+    }
+
+    setLoading(true);
     try {
       if (isSignUp) {
+        // Pre-check: is this email already registered?
+        if (emailCheck?.exists) {
+          setError("An account with this email already exists. Please sign in instead.");
+          setLoading(false);
+          return;
+        }
+
         // Sign up: creates account + establishes session
         await signIn("password", {
-          email,
+          email: email.trim(),
           password,
           flow: "signUp",
-          name,
+          name: name.trim(),
         });
       } else {
         // Sign in: validates credentials + establishes session
-        await signIn("password", { email, password });
+        await signIn("password", {
+          email: email.trim(),
+          password,
+        });
       }
       // Navigation happens after successful auth
       navigate(destination);
@@ -63,6 +116,8 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
           setError("Invalid email or password. Please check your credentials and try again.");
         } else if (msg.includes("not found") || msg.includes("no account") || msg.includes("user not")) {
           setError("No account found with this email. Please create an account first.");
+        } else if (msg.includes("locked") || msg.includes("too many")) {
+          setError("Too many attempts. Please try again later.");
         } else {
           setError("Sign in failed. Please try again.");
         }
@@ -161,7 +216,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
               : "Sign in to continue to NovaSync."}
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form ref={formRef} onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
             {isSignUp && (
               <div>
                 <label
@@ -172,6 +227,8 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
                 </label>
                 <input
                   type="text"
+                  autoComplete="off"
+                  name="signup-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#0d9488]/30"
@@ -195,6 +252,8 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
               </label>
               <input
                 type="email"
+                autoComplete="off"
+                name="signup-email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#0d9488]/30"
@@ -206,6 +265,19 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
                 placeholder="you@example.com"
                 required
               />
+              {/* Email already exists warning during sign-up */}
+              {isSignUp && emailCheck?.exists && email.includes("@") && (
+                <p className="text-xs mt-1.5" style={{ color: "#d97706" }}>
+                  An account with this email already exists.{" "}
+                  <button
+                    type="button"
+                    onClick={() => setIsSignUp(false)}
+                    className="font-semibold underline"
+                  >
+                    Sign in instead
+                  </button>
+                </p>
+              )}
             </div>
 
             <div>
@@ -218,6 +290,8 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
+                  autoComplete="off"
+                  name="signup-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors pr-10 focus:outline-none focus:ring-2 focus:ring-[#0d9488]/30"
@@ -260,7 +334,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || (isSignUp && !!emailCheck?.exists)}
               className="w-full py-2.5 text-white font-semibold rounded-lg transition-all hover:shadow-md disabled:opacity-50 text-sm"
               style={{ background: "#0d9488" }}
             >
@@ -281,6 +355,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
               onClick={() => {
                 setIsSignUp(!isSignUp);
                 setError("");
+                setEmailToCheck("");
               }}
               className="font-semibold transition-colors"
               style={{ color: "#0d9488" }}

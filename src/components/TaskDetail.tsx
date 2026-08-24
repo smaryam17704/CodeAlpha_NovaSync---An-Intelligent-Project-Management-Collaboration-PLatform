@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
-import { motion } from "framer-motion";
-import { X, Calendar, User, MessageSquare, Clock, Send, Edit3, Trash2 } from "lucide-react";
+import { X, Calendar, User, MessageSquare, Clock, Send, Edit3, Trash2, Check } from "lucide-react";
 
 const statusOptions = [
   { value: "todo", label: "To Do" },
@@ -38,6 +37,34 @@ export default function TaskDetail() {
   const [editText, setEditText] = useState("");
   const [activeTab, setActiveTab] = useState<"details" | "discussion" | "activity">("details");
 
+  // Local editing state for details
+  const [editTitle, setEditTitle] = useState<string | null>(null);
+  const [editDescription, setEditDescription] = useState<string | null>(null);
+  const [editStatus, setEditStatus] = useState<string | null>(null);
+  const [editPriority, setEditPriority] = useState<string | null>(null);
+  const [editAssignee, setEditAssignee] = useState<string | null | undefined>(undefined);
+  const [editDueDate, setEditDueDate] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  // Initialize edit state when task loads
+  const initEditState = useCallback(() => {
+    if (task && editTitle === null) {
+      setEditTitle(task.title);
+      setEditDescription(task.description || "");
+      setEditStatus(task.status);
+      setEditPriority(task.priority);
+      setEditAssignee(task.assigneeId || undefined);
+      setEditDueDate(task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "");
+    }
+  }, [task, editTitle]);
+
+  // Initialize on first render
+  if (task && editTitle === null) {
+    initEditState();
+  }
+
   if (!task) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -45,6 +72,48 @@ export default function TaskDetail() {
       </div>
     );
   }
+
+  const markChanged = () => {
+    setHasChanges(true);
+    setSaved(false);
+  };
+
+  const handleSave = async () => {
+    if (!task) return;
+    setSaving(true);
+    try {
+      // Save title and description and priority and due date
+      const dueDateMs = editDueDate ? new Date(editDueDate).getTime() : undefined;
+      await updateTask({
+        taskId: task._id,
+        title: editTitle !== null ? editTitle : task.title,
+        description: editDescription !== null ? editDescription : undefined,
+        priority: editPriority !== null ? editPriority as any : undefined,
+        dueDate: dueDateMs,
+      });
+
+      // Save status separately if changed
+      if (editStatus !== null && editStatus !== task.status) {
+        await updateStatus({ taskId: task._id, status: editStatus as any });
+      }
+
+      // Save assignee separately if changed
+      if (editAssignee !== undefined && editAssignee !== (task.assigneeId || "")) {
+        await assignTask({
+          taskId: task._id,
+          assigneeId: editAssignee ? (editAssignee as any) : undefined,
+        });
+      }
+
+      setHasChanges(false);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      console.error("Failed to save task:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleAddComment = async () => {
     if (!commentText.trim() || !taskId) return;
@@ -63,22 +132,42 @@ export default function TaskDetail() {
 
   return (
     <div className="animate-fade-in" onClick={(e) => e.stopPropagation()}>
-      {/* Back button */}
-      <button
-        onClick={() => navigate(`/app/projects/${projectId}`)}
-        className="text-xs mb-4 transition-colors hover:opacity-70"
-        style={{ color: '#5e6278' }}
-      >
-        ← Back to project
-      </button>
+      {/* Back button + Save */}
+      <div className="flex items-center justify-between mb-4">
+        <button
+          onClick={() => navigate(`/app/projects/${projectId}`)}
+          className="text-xs transition-colors hover:opacity-70"
+          style={{ color: '#5e6278' }}
+        >
+          ← Back to project
+        </button>
+        <div className="flex items-center gap-2">
+          {saved && (
+            <span className="text-xs font-medium flex items-center gap-1" style={{ color: '#16a34a' }}>
+              <Check className="w-3 h-3" />
+              Saved
+            </span>
+          )}
+          {hasChanges && (
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="px-4 py-1.5 text-white text-xs font-semibold rounded-lg transition-all hover:shadow-md disabled:opacity-50"
+              style={{ background: '#0d9488' }}
+            >
+              {saving ? "Saving..." : "Save Changes"}
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Task Header */}
       <div className="mb-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <input
-              value={task.title}
-              onChange={(e) => updateTask({ taskId: task._id, title: e.target.value })}
+              value={editTitle !== null ? editTitle : task.title}
+              onChange={(e) => { setEditTitle(e.target.value); markChanged(); }}
               className="w-full text-xl font-extrabold bg-transparent border-none focus:outline-none focus:ring-0 p-0"
               style={{ color: '#1a1d2e' }}
               disabled={task.userRole === "viewer"}
@@ -121,8 +210,8 @@ export default function TaskDetail() {
             <div>
               <label className="text-xs font-medium block mb-2" style={{ color: '#5e6278' }}>Description</label>
               <textarea
-                value={task.description || ""}
-                onChange={(e) => updateTask({ taskId: task._id, description: e.target.value })}
+                value={editDescription !== null ? editDescription : (task.description || "")}
+                onChange={(e) => { setEditDescription(e.target.value); markChanged(); }}
                 className="w-full px-3 py-2.5 rounded-lg text-sm transition-colors resize-none min-h-[80px] leading-relaxed"
                 style={{ background: '#f8f6f3', border: '1px solid #e8eaef', color: '#1a1d2e' }}
                 placeholder="Add a description..."
@@ -138,8 +227,8 @@ export default function TaskDetail() {
             <div>
               <label className="text-[10px] font-medium uppercase tracking-wider block mb-1.5" style={{ color: '#9da2b3' }}>Status</label>
               <select
-                value={task.status}
-                onChange={(e) => updateStatus({ taskId: task._id, status: e.target.value as any })}
+                value={editStatus !== null ? editStatus : task.status}
+                onChange={(e) => { setEditStatus(e.target.value); markChanged(); }}
                 className="w-full px-2.5 py-1.5 rounded-lg text-xs focus:outline-none"
                 style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
                 disabled={task.userRole === "viewer"}
@@ -154,8 +243,8 @@ export default function TaskDetail() {
             <div>
               <label className="text-[10px] font-medium uppercase tracking-wider block mb-1.5" style={{ color: '#9da2b3' }}>Priority</label>
               <select
-                value={task.priority}
-                onChange={(e) => updateTask({ taskId: task._id, priority: e.target.value as any })}
+                value={editPriority !== null ? editPriority : task.priority}
+                onChange={(e) => { setEditPriority(e.target.value); markChanged(); }}
                 className="w-full px-2.5 py-1.5 rounded-lg text-xs focus:outline-none"
                 style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
                 disabled={task.userRole === "viewer"}
@@ -170,8 +259,8 @@ export default function TaskDetail() {
             <div>
               <label className="text-[10px] font-medium uppercase tracking-wider block mb-1.5" style={{ color: '#9da2b3' }}>Assignee</label>
               <select
-                value={task.assigneeId || ""}
-                onChange={(e) => assignTask({ taskId: task._id, assigneeId: e.target.value ? (e.target.value as any) : undefined })}
+                value={editAssignee !== undefined ? (editAssignee || "") : (task.assigneeId || "")}
+                onChange={(e) => { setEditAssignee(e.target.value || undefined); markChanged(); }}
                 className="w-full px-2.5 py-1.5 rounded-lg text-xs focus:outline-none"
                 style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
                 disabled={task.userRole === "viewer"}
@@ -188,8 +277,8 @@ export default function TaskDetail() {
               <label className="text-[10px] font-medium uppercase tracking-wider block mb-1.5" style={{ color: '#9da2b3' }}>Due Date</label>
               <input
                 type="date"
-                value={task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : ""}
-                onChange={(e) => updateTask({ taskId: task._id, dueDate: e.target.value ? new Date(e.target.value).getTime() : undefined })}
+                value={editDueDate !== null ? editDueDate : (task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "")}
+                onChange={(e) => { setEditDueDate(e.target.value); markChanged(); }}
                 className="w-full px-2.5 py-1.5 rounded-lg text-xs focus:outline-none"
                 style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
                 disabled={task.userRole === "viewer"}
@@ -211,6 +300,18 @@ export default function TaskDetail() {
                   Created by: {task.creator.name}
                 </div>
               )}
+            </div>
+
+            {/* Mobile Save button */}
+            <div className="sm:hidden pt-2">
+              <button
+                onClick={handleSave}
+                disabled={saving || !hasChanges}
+                className="w-full px-4 py-2 text-white text-xs font-semibold rounded-lg transition-all disabled:opacity-50"
+                style={{ background: '#0d9488' }}
+              >
+                {saving ? "Saving..." : saved ? "✓ Saved" : "Save Changes"}
+              </button>
             </div>
           </div>
         </div>

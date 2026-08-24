@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { Brain, Send, Plus, AlertTriangle, CheckCircle2, BarChart3, Users } from "lucide-react";
@@ -12,12 +12,14 @@ type AITab = "copilot" | "generator" | "health" | "workload" | "deadline";
 export default function NovaAI({ activeWorkspace }: Props) {
   const [activeTab, setActiveTab] = useState<AITab>("copilot");
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
-  const [question, setQuestion] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [taskPrompt, setTaskPrompt] = useState("");
   const [chatHistory, setChatHistory] = useState<{ role: string; content: string }[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
-  const chatHistoryRef = useRef(chatHistory);
-  chatHistoryRef.current = chatHistory;
+
+  // The actual question sent to the AI (only set on submit)
+  const [activeQuestion, setActiveQuestion] = useState("");
 
   const projects = useQuery(
     api.projects.list,
@@ -41,7 +43,7 @@ export default function NovaAI({ activeWorkspace }: Props) {
 
   const copilot = useQuery(
     api.ai.copilotAnalysis,
-    selectedProjectId && question ? { projectId: selectedProjectId as any, question } : "skip"
+    selectedProjectId && activeQuestion ? { projectId: selectedProjectId as any, question: activeQuestion } : "skip"
   );
 
   const taskSuggestions = useQuery(
@@ -53,25 +55,32 @@ export default function NovaAI({ activeWorkspace }: Props) {
 
   // Append AI response when copilot data arrives
   useEffect(() => {
-    if (copilot && chatHistoryRef.current.length > 0) {
-      const last = chatHistoryRef.current[chatHistoryRef.current.length - 1];
-      if (last.role !== "assistant") {
-        setChatHistory((prev) => {
-          if (prev.length > 0 && prev[prev.length - 1].role === "assistant") return prev;
-          return [...prev, { role: "assistant", content: copilot.answer }];
-        });
-      }
+    if (copilot && isProcessing) {
+      // Add assistant response
+      setChatHistory((prev) => {
+        // Prevent duplicate: check if last message is already this exact response
+        const lastMsg = prev[prev.length - 1];
+        if (lastMsg && lastMsg.role === "assistant" && lastMsg.content === copilot.answer) {
+          return prev;
+        }
+        return [...prev, { role: "assistant", content: copilot.answer }];
+      });
+      setIsProcessing(false);
     }
-  }, [copilot]);
+  }, [copilot, isProcessing]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory]);
 
-  const handleAsk = () => {
-    if (!question.trim() || !selectedProjectId) return;
-    setChatHistory((prev) => [...prev, { role: "user", content: question }]);
-  };
+  const handleAsk = useCallback(() => {
+    const q = inputValue.trim();
+    if (!q || !selectedProjectId || isProcessing) return;
+    setChatHistory((prev) => [...prev, { role: "user", content: q }]);
+    setInputValue("");
+    setActiveQuestion(q);
+    setIsProcessing(true);
+  }, [inputValue, selectedProjectId, isProcessing]);
 
   const handleAddTasks = async (tasks: any[]) => {
     if (!selectedProjectId) return;
@@ -85,9 +94,12 @@ export default function NovaAI({ activeWorkspace }: Props) {
     }
   };
 
-  const askQuestion = (q: string) => {
+  const askSuggestedQuestion = (q: string) => {
+    if (isProcessing) return;
     setChatHistory((prev) => [...prev, { role: "user", content: q }]);
-    setQuestion(q);
+    setInputValue(q);
+    setActiveQuestion(q);
+    setIsProcessing(true);
   };
 
   const suggestedQuestions = [
@@ -129,7 +141,9 @@ export default function NovaAI({ activeWorkspace }: Props) {
           onChange={(e) => {
             setSelectedProjectId(e.target.value);
             setChatHistory([]);
-            setQuestion("");
+            setActiveQuestion("");
+            setInputValue("");
+            setIsProcessing(false);
           }}
           className="px-3 py-1.5 rounded-lg text-xs focus:outline-none transition-colors"
           style={{ background: "#ffffff", border: "1px solid #e8eaef", color: "#1a1d2e" }}
@@ -181,8 +195,9 @@ export default function NovaAI({ activeWorkspace }: Props) {
                       {suggestedQuestions.map((q) => (
                         <button
                           key={q}
-                          onClick={() => askQuestion(q)}
-                          className="px-3 py-1.5 rounded-lg text-xs transition-colors hover:shadow-sm"
+                          onClick={() => askSuggestedQuestion(q)}
+                          disabled={isProcessing}
+                          className="px-3 py-1.5 rounded-lg text-xs transition-colors hover:shadow-sm disabled:opacity-50"
                           style={{ background: "#ffffff", border: "1px solid #e8eaef", color: "#5e6278" }}
                         >
                           {q}
@@ -203,7 +218,7 @@ export default function NovaAI({ activeWorkspace }: Props) {
                   </div>
                 ))}
                 {/* Loading indicator while waiting for copilot */}
-                {chatHistory.length > 0 && chatHistory[chatHistory.length - 1].role === "user" && !copilot && (
+                {isProcessing && (
                   <div className="flex justify-start">
                     <div className="max-w-[85%] p-3 rounded-xl text-sm" style={{ background: "#ffffff", border: "1px solid #e8eaef", color: "#9da2b3" }}>
                       <div className="flex items-center gap-2">
@@ -217,16 +232,17 @@ export default function NovaAI({ activeWorkspace }: Props) {
               </div>
               <div className="flex gap-2">
                 <input
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") handleAsk(); }}
-                  className="flex-1 px-3 py-2 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#6366f1]/30"
+                  disabled={isProcessing}
+                  className="flex-1 px-3 py-2 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#6366f1]/30 disabled:opacity-50"
                   style={{ background: "#ffffff", border: "1px solid #e8eaef", color: "#1a1d2e" }}
                   placeholder={`Ask Nova about "${selectedProject?.title || "your project"}"...`}
                 />
                 <button
                   onClick={handleAsk}
-                  disabled={!question.trim()}
+                  disabled={!inputValue.trim() || isProcessing}
                   className="px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
                   style={{ background: "rgba(99,102,241,0.08)", color: "#6366f1" }}
                 >

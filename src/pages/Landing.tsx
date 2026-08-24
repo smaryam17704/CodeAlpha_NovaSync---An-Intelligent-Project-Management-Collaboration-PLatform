@@ -308,7 +308,7 @@ export default function Landing() {
                 transition={{ delay: i * 0.12 }}
                 className="text-center relative"
               >
-                <div className="text-6xl font-extrabold mb-4" style={{ color: 'rgba(26,29,46,0.10)' }}>{item.step}</div>
+                <div className="text-6xl font-extrabold mb-4" style={{ color: 'rgba(26,29,46,0.18)' }}>{item.step}</div>
                 <h3 className="text-lg font-semibold mb-2" style={{ color: '#1a1d2e' }}>{item.title}</h3>
                 <p className="text-sm" style={{ color: '#5e6278' }}>{item.desc}</p>
                 {i < 2 && (

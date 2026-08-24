@@ -66,7 +66,7 @@ export const createInvitation = mutation({
     const activeInvitation = existing.find(
       (inv) => inv.projectId === args.projectId && inv.status === "pending"
     );
-    if (activeInvitation) throw new Error("Invitation already pending");
+    if (activeInvitation) throw new Error("An invitation has already been sent to this email for this project.");
 
     // Check if user exists
     const invitee = await ctx.db
@@ -77,7 +77,7 @@ export const createInvitation = mutation({
     // Check if already a member
     if (invitee) {
       const existingMember = await getProjectMember(ctx, args.projectId, invitee._id);
-      if (existingMember) throw new Error("User is already a member");
+      if (existingMember) throw new Error("This user is already a member of the project.");
     }
 
     const project = await ctx.db.get(args.projectId);

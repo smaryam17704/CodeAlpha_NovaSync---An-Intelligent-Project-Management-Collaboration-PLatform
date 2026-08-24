@@ -130,7 +130,7 @@ export default function KanbanBoard({ projectId, tasks }: Props) {
                         <span className="text-[10px] font-medium px-1.5 py-0.5 rounded capitalize" style={{ background: pc.bg, color: pc.color }}>
                           {task.priority}
                         </span>
-                        <GripVertical className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: '#d1d5db' }} />
+                        <GripVertical className="w-3 h-3 transition-opacity" style={{ color: '#9da2b3' }} />
                       </div>
                       <h4 className="text-sm font-medium mb-2 leading-snug" style={{ color: '#1a1d2e' }}>{task.title}</h4>
                       <div className="flex items-center justify-between">
