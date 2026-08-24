@@ -40,15 +40,16 @@ export default function NotificationsPage() {
     <div className="space-y-6 animate-fade-in max-w-2xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Notifications</h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <h1 className="text-2xl font-extrabold" style={{ color: '#1a1d2e' }}>Notifications</h1>
+          <p className="text-sm mt-1" style={{ color: '#5e6278' }}>
             {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
           </p>
         </div>
         {unreadCount > 0 && (
           <button
             onClick={() => markAllRead()}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 text-gray-300 rounded-lg text-xs font-medium hover:bg-white/8 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+            style={{ background: '#ffffff', border: '1px solid #e8eaef', color: '#5e6278' }}
           >
             <CheckCheck className="w-3.5 h-3.5" />
             Mark all read
@@ -61,48 +62,49 @@ export default function NotificationsPage() {
           {notifications.map((notification, i) => (
             <motion.div
               key={notification._id}
-              initial={{ opacity: 0, x: -5 }}
+              initial={{ opacity: 0, x: -4 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.02 }}
               onClick={() => handleNotificationClick(notification)}
-              className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-colors ${
-                notification.read
-                  ? "bg-transparent hover:bg-white/[0.02]"
-                  : "bg-white/[0.03] hover:bg-white/[0.05] border border-white/5"
-              }`}
+              className="flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-colors"
+              style={{
+                background: notification.read ? 'transparent' : 'rgba(13,148,136,0.02)',
+                border: notification.read ? '1px solid transparent' : '1px solid #e8eaef',
+              }}
             >
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                notification.read ? "bg-white/5" : "bg-[hsl(192,100%,50%)]/10"
-              }`}>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{
+                background: notification.read ? '#f4f6f9' : 'rgba(13,148,136,0.08)',
+              }}>
                 {notification.fromUser?.image ? (
                   <img src={notification.fromUser.image} alt="" className="w-8 h-8 rounded-full" />
                 ) : (
-                  <div className="text-xs font-bold text-[hsl(192,100%,50%)]">
+                  <div className="text-xs font-bold" style={{ color: '#0d9488' }}>
                     {notification.fromUser?.name?.charAt(0) || "?"}
                   </div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-[10px] font-medium text-[hsl(192,100%,50%)]">
+                  <span className="text-[10px] font-medium" style={{ color: '#0d9488' }}>
                     {typeLabels[notification.type] || notification.type}
                   </span>
                   {!notification.read && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-[hsl(192,100%,50%)]" />
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#0d9488' }} />
                   )}
                 </div>
-                <p className="text-sm text-gray-300">{notification.message}</p>
+                <p className="text-sm" style={{ color: '#5e6278' }}>{notification.message}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px] text-gray-600">{formatDate(notification.createdAt)}</span>
+                  <span className="text-[10px]" style={{ color: '#9da2b3' }}>{formatDate(notification.createdAt)}</span>
                   {notification.project && (
-                    <span className="text-[10px] text-gray-600">· {notification.project.title}</span>
+                    <span className="text-[10px]" style={{ color: '#9da2b3' }}>· {notification.project.title}</span>
                   )}
                 </div>
               </div>
               {!notification.read && (
                 <button
                   onClick={(e) => { e.stopPropagation(); markRead({ notificationId: notification._id }); }}
-                  className="text-gray-600 hover:text-gray-300 transition-colors shrink-0"
+                  className="transition-colors shrink-0 hover:opacity-70"
+                  style={{ color: '#9da2b3' }}
                   title="Mark as read"
                 >
                   <Check className="w-4 h-4" />
@@ -113,11 +115,11 @@ export default function NotificationsPage() {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
-            <Bell className="w-8 h-8 text-gray-500" />
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(13,148,136,0.06)' }}>
+            <Bell className="w-8 h-8" style={{ color: '#9da2b3' }} />
           </div>
-          <h3 className="text-lg font-semibold mb-2">No notifications</h3>
-          <p className="text-sm text-gray-400">You're all caught up! Notifications will appear here.</p>
+          <h3 className="text-lg font-semibold mb-2" style={{ color: '#1a1d2e' }}>No notifications</h3>
+          <p className="text-sm" style={{ color: '#5e6278' }}>You're all caught up! Notifications will appear here.</p>
         </div>
       )}
     </div>

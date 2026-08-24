@@ -1,15 +1,13 @@
-<svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00d4ff" />
-      <stop offset="50%" stop-color="#4d8eff" />
-      <stop offset="100%" stop-color="#8b5cf6" />
+    <linearGradient id="g" x1="8" y1="56" x2="56" y2="8" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1565C0"/>
+      <stop offset="35%" stop-color="#1E88E5"/>
+      <stop offset="65%" stop-color="#42A5F5"/>
+      <stop offset="100%" stop-color="#66BB6A"/>
     </linearGradient>
   </defs>
-  <circle cx="50" cy="50" r="48" fill="url(#g)" opacity="0.1" />
-  <path d="M25 75 L25 25 L40 25 L60 55 L60 25 L75 25 L75 75 L60 75 L40 45 L40 75 Z" fill="url(#g)" />
-  <circle cx="18" cy="50" r="2.5" fill="#00d4ff" opacity="0.5" />
-  <circle cx="82" cy="50" r="2.5" fill="#8b5cf6" opacity="0.5" />
-  <circle cx="50" cy="18" r="2.5" fill="#00d4ff" opacity="0.5" />
-  <circle cx="50" cy="82" r="2.5" fill="#8b5cf6" opacity="0.5" />
+  <path d="M14 50V18L27 18L34 28V18H41L50 18V50H34L27 40V50Z" fill="url(#g)"/>
+  <circle cx="8" cy="32" r="1" fill="#42A5F5" opacity="0.5"/>
+  <circle cx="56" cy="32" r="1" fill="#66BB6A" opacity="0.5"/>
 </svg>

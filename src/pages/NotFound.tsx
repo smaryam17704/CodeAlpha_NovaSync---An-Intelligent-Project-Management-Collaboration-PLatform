@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { motion } from "framer-motion";
+import NovaSyncLogo from "../components/NovaSyncLogo";
 
 export default function NotFound() {
   return (
@@ -7,24 +8,20 @@ export default function NotFound() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen flex flex-col bg-[hsl(222,47%,8%)]"
+      className="min-h-screen flex flex-col items-center justify-center px-4"
+      style={{ background: '#faf9f7' }}
     >
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center">
-        <div className="max-w-5xl mx-auto relative px-4">
-          <div className="flex items-center justify-center min-h-[200px]">
-            <div className="text-center">
-              <h1 className="text-6xl font-bold bg-gradient-to-r from-[hsl(192,100%,50%)] to-[hsl(262,83%,58%)] bg-clip-text text-transparent mb-4">404</h1>
-              <p className="text-lg text-gray-400 mb-6">Page Not Found</p>
-              <Link
-                to="/"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[hsl(192,100%,50%)]/10 text-[hsl(192,100%,50%)] rounded-lg text-sm font-medium hover:bg-[hsl(192,100%,50%)]/20 transition-colors"
-              >
-                Go Home
-              </Link>
-            </div>
-          </div>
-        </div>
+      <div className="text-center">
+        <NovaSyncLogo size={48} className="mx-auto mb-6" />
+        <h1 className="text-7xl font-extrabold mb-4" style={{ color: '#e8eaef' }}>404</h1>
+        <p className="text-lg font-medium mb-6" style={{ color: '#5e6278' }}>Page Not Found</p>
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-all hover:shadow-md"
+          style={{ background: '#0d9488' }}
+        >
+          Go Home
+        </Link>
       </div>
     </motion.div>
   );

@@ -3,49 +3,59 @@
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  /* NovaSync Design System */
-  --nova-navy: #0a0f1e;
-  --nova-navy-light: #111832;
-  --nova-navy-mid: #1a2342;
-  --nova-surface: #1e2744;
-  --nova-surface-light: #243052;
-  --nova-border: #2a3660;
-  --nova-border-light: #354270;
-  --nova-text: #e8ecf4;
-  --nova-text-secondary: #8b95b0;
-  --nova-text-muted: #5e6b87;
-  --nova-cyan: #00d4ff;
-  --nova-cyan-dim: #00a8cc;
-  --nova-cyan-glow: rgba(0, 212, 255, 0.15);
-  --nova-violet: #8b5cf6;
-  --nova-violet-dim: #7c3aed;
-  --nova-violet-glow: rgba(139, 92, 246, 0.15);
-  --nova-success: #22c55e;
-  --nova-warning: #f59e0b;
-  --nova-danger: #ef4444;
-  --nova-info: #3b82f6;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-  /* shadcn/ui CSS variables */
-  --background: 222 47% 8%;
-  --foreground: 220 40% 94%;
-  --card: 222 40% 12%;
-  --card-foreground: 220 40% 94%;
-  --popover: 222 40% 12%;
-  --popover-foreground: 220 40% 94%;
-  --primary: 192 100% 50%;
-  --primary-foreground: 222 47% 8%;
-  --secondary: 222 35% 18%;
-  --secondary-foreground: 220 40% 80%;
-  --muted: 222 30% 15%;
-  --muted-foreground: 220 20% 55%;
-  --accent: 262 83% 58%;
+:root {
+  /* NovaSync Premium Light Design System */
+  --nova-navy: #1a1d2e;
+  --nova-navy-light: #2d3048;
+  --nova-surface: #ffffff;
+  --nova-surface-warm: #faf9f7;
+  --nova-surface-cool: #f4f6f9;
+  --nova-ivory: #f8f6f3;
+  --nova-border: #e8eaef;
+  --nova-border-light: #f0f1f5;
+  --nova-text: #1a1d2e;
+  --nova-text-secondary: #5e6278;
+  --nova-text-muted: #9da2b3;
+  --nova-teal: #0d9488;
+  --nova-teal-light: #14b8a6;
+  --nova-teal-bg: rgba(13, 148, 136, 0.06);
+  --nova-indigo: #6366f1;
+  --nova-indigo-light: #818cf8;
+  --nova-indigo-bg: rgba(99, 102, 241, 0.06);
+  --nova-gold: #c5a55a;
+  --nova-gold-light: #d4b96e;
+  --nova-gold-bg: rgba(197, 165, 90, 0.08);
+  --nova-success: #16a34a;
+  --nova-success-bg: rgba(22, 163, 74, 0.06);
+  --nova-warning: #d97706;
+  --nova-warning-bg: rgba(217, 119, 6, 0.06);
+  --nova-danger: #dc2626;
+  --nova-danger-bg: rgba(220, 38, 38, 0.06);
+  --nova-info: #2563eb;
+  --nova-info-bg: rgba(37, 99, 235, 0.06);
+
+  /* shadcn/ui CSS variables — premium light */
+  --background: 220 16% 97%;
+  --foreground: 226 28% 14%;
+  --card: 0 0% 100%;
+  --card-foreground: 226 28% 14%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 226 28% 14%;
+  --primary: 174 68% 33%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 14% 96%;
+  --secondary-foreground: 226 28% 20%;
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 10% 46%;
+  --accent: 245 65% 60%;
   --accent-foreground: 0 0% 100%;
-  --destructive: 0 84% 60%;
+  --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
-  --border: 222 30% 20%;
-  --input: 222 30% 18%;
-  --ring: 192 100% 50%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 174 68% 33%;
   --radius: 0.625rem;
   --sidebar-width: 240px;
 }
@@ -65,22 +75,22 @@ body {
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateX(-12px); }
+  from { opacity: 0; transform: translateX(-8px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
+  from { opacity: 0; transform: scale(0.97); }
   to { opacity: 1; transform: scale(1); }
 }
 
@@ -89,9 +99,9 @@ body {
   100% { background-position: 200% 0; }
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); }
-  50% { box-shadow: 0 0 20px 2px rgba(0, 212, 255, 0.15); }
+@keyframes gentlePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
 
 .animate-fade-in { animation: fadeIn 0.3s ease-out; }
@@ -99,32 +109,38 @@ body {
 .animate-scale-in { animation: scaleIn 0.2s ease-out; }
 
 .skeleton {
-  background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--border)) 50%, hsl(var(--muted)) 75%);
+  background: linear-gradient(90deg, #f0f2f5 25%, #e8eaef 50%, #f0f2f5 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 0.375rem;
 }
 
 /* Kanban drag styles */
-.dragging { opacity: 0.5; transform: rotate(2deg); }
-.drag-over { border-color: hsl(var(--primary)) !important; background: var(--nova-cyan-glow); }
-
-/* Landing page gradient */
-.nova-gradient {
-  background: linear-gradient(135deg, var(--nova-navy) 0%, var(--nova-navy-light) 40%, var(--nova-mid) 100%);
-}
-
-.nova-glow {
-  background: radial-gradient(ellipse at center, var(--nova-cyan-glow) 0%, transparent 70%);
-}
+.dragging { opacity: 0.5; transform: rotate(1.5deg); }
+.drag-over { border-color: var(--nova-teal) !important; background: var(--nova-teal-bg) !important; }
 
 /* Focus styles */
 *:focus-visible {
-  outline: 2px solid hsl(var(--ring));
+  outline: 2px solid var(--nova-teal);
   outline-offset: 2px;
 }
 
 /* Transitions */
 .transition-smooth {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Select styling */
+select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239da2b3' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25rem;
+  appearance: none;
+  padding-right: 2rem;
+}
+
+select option {
+  background: #ffffff;
+  color: #1a1d2e;
 }

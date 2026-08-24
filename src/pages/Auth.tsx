@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Link, useNavigate } from "react-router";
 import NovaSyncLogo from "../components/NovaSyncLogo";
-import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Sparkles } from "lucide-react";
 
 interface AuthPageProps {
   redirectAfterAuth?: string;
@@ -46,56 +46,68 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
   };
 
   return (
-    <div className="min-h-screen bg-[hsl(222,47%,8%)] flex">
+    <div className="min-h-screen flex" style={{ background: '#faf9f7' }}>
       {/* Left panel - branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(192,100%,50%)]/5 to-[hsl(262,83%,58%)]/5" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[hsl(192,100%,50%)] opacity-5 rounded-full blur-3xl" />
-        <div className="relative z-10 flex flex-col justify-center px-16">
-          <Link to="/" className="flex items-center gap-2 mb-12">
+      <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden" style={{ background: '#1a1d2e' }}>
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 30% 40%, rgba(13,148,136,0.15) 0%, transparent 60%)' }} />
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 70% 80%, rgba(99,102,241,0.1) 0%, transparent 50%)' }} />
+        <div className="relative z-10 flex flex-col justify-center px-16 max-w-lg">
+          <Link to="/" className="flex items-center gap-2.5 mb-14">
             <NovaSyncLogo size={36} />
-            <span className="text-xl font-bold">NovaSync</span>
+            <span className="text-xl font-bold text-white">NovaSync</span>
           </Link>
-          <h1 className="text-4xl font-bold leading-tight mb-4">
+          <h1 className="text-4xl font-extrabold leading-tight text-white mb-5">
             Plan together.
             <br />
-            <span className="bg-gradient-to-r from-[hsl(192,100%,50%)] to-[hsl(262,83%,58%)] bg-clip-text text-transparent">
-              Build faster.
-            </span>
+            <span style={{ color: '#14b8a6' }}>Build smarter.</span>
+            <br />
+            Stay in sync.
           </h1>
-          <p className="text-gray-400 text-lg max-w-md">
-            Collaborative project management with real-time updates and AI-powered intelligence.
+          <p className="text-base leading-relaxed" style={{ color: '#9da2b3' }}>
+            Collaborative project management with real-time updates and AI-powered intelligence for modern teams.
           </p>
+          <div className="mt-10 flex items-center gap-4">
+            {[
+              { label: "Real-time collaboration", icon: "⚡" },
+              { label: "AI-powered insights", icon: "🧠" },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center gap-2 text-sm" style={{ color: '#9da2b3' }}>
+                <span>{item.icon}</span>
+                {item.label}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Right panel - form */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
+      <div className="flex-1 flex items-center justify-center px-6 py-12" style={{ background: '#ffffff' }}>
         <div className="w-full max-w-sm">
-          <Link to="/" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white mb-8 transition-colors">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm mb-8 transition-colors hover:opacity-80" style={{ color: '#9da2b3' }}>
             <ArrowLeft className="w-4 h-4" />
             Back to home
           </Link>
 
-          <div className="lg:hidden flex items-center gap-2 mb-8">
+          <div className="lg:hidden flex items-center gap-2.5 mb-8">
             <NovaSyncLogo size={28} />
-            <span className="text-lg font-bold">NovaSync</span>
+            <span className="text-lg font-bold" style={{ color: '#1a1d2e' }}>NovaSync</span>
           </div>
 
-          <h2 className="text-2xl font-bold mb-2">{isSignUp ? "Create account" : "Welcome back"}</h2>
-          <p className="text-sm text-gray-400 mb-8">
-            {isSignUp ? "Start managing projects with your team." : "Sign in to continue."}
+          <h2 className="text-2xl font-extrabold mb-2" style={{ color: '#1a1d2e' }}>{isSignUp ? "Create your account" : "Welcome back"}</h2>
+          <p className="text-sm mb-8" style={{ color: '#5e6278' }}>
+            {isSignUp ? "Start managing projects with your team." : "Sign in to continue to NovaSync."}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1.5">Full name</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Full name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[hsl(192,100%,50%)]/50 focus:ring-1 focus:ring-[hsl(192,100%,50%)]/30 transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors"
+                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
                   placeholder="Your name"
                   required
                 />
@@ -103,25 +115,27 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Email</label>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[hsl(192,100%,50%)]/50 focus:ring-1 focus:ring-[hsl(192,100%,50%)]/30 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors"
+                style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
                 placeholder="you@example.com"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Password</label>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[hsl(192,100%,50%)]/50 focus:ring-1 focus:ring-[hsl(192,100%,50%)]/30 transition-colors pr-10"
+                  className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors pr-10"
+                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
                   placeholder="••••••••"
                   required
                   minLength={8}
@@ -129,7 +143,8 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                  style={{ color: '#9da2b3' }}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -137,7 +152,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
             </div>
 
             {error && (
-              <div className="p-3 bg-[hsl(0,84%,60%)]/10 border border-[hsl(0,84%,60%)]/20 rounded-lg text-sm text-[hsl(0,84%,60%)]">
+              <div className="p-3 rounded-lg text-sm" style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626' }}>
                 {error}
               </div>
             )}
@@ -145,17 +160,19 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-gradient-to-r from-[hsl(192,100%,50%)] to-[hsl(192,100%,40%)] text-white font-medium rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 text-sm"
+              className="w-full py-2.5 text-white font-semibold rounded-lg transition-all hover:shadow-md disabled:opacity-50 text-sm"
+              style={{ background: '#0d9488' }}
             >
               {loading ? "Loading..." : isSignUp ? "Create Account" : "Sign In"}
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-gray-400">
+          <div className="mt-6 text-center text-sm" style={{ color: '#5e6278' }}>
             {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
               onClick={() => { setIsSignUp(!isSignUp); setError(""); }}
-              className="text-[hsl(192,100%,50%)] hover:underline"
+              className="font-semibold transition-colors"
+              style={{ color: '#0d9488' }}
             >
               {isSignUp ? "Sign In" : "Sign Up"}
             </button>

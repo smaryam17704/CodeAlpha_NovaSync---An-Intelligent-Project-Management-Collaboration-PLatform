@@ -15,10 +15,10 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 function RouteLoading() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[hsl(222,47%,8%)]">
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#f4f6f9' }}>
       <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-2 border-[hsl(192,100%,50%)] border-t-transparent rounded-full animate-spin" />
-        <span className="text-sm text-[hsl(220,20%,55%)]">Loading...</span>
+        <div className="w-8 h-8 border-2 border-[#0d9488] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm" style={{ color: '#9da2b3' }}>Loading...</span>
       </div>
     </div>
   );
@@ -35,10 +35,10 @@ class RootErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-[hsl(222,47%,8%)] text-white p-6">
+        <div className="min-h-screen flex items-center justify-center p-6" style={{ background: '#f4f6f9' }}>
           <div className="max-w-lg text-center">
-            <p className="text-sm font-semibold">Something went wrong</p>
-            <p className="mt-2 text-xs text-gray-400 break-words">{this.state.message}</p>
+            <p className="text-sm font-semibold" style={{ color: '#1a1d2e' }}>Something went wrong</p>
+            <p className="mt-2 text-xs break-words" style={{ color: '#9da2b3' }}>{this.state.message}</p>
           </div>
         </div>
       );

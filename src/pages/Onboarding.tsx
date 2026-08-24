@@ -28,44 +28,47 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-[hsl(222,47%,8%)] flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: '#faf9f7' }}>
       <div className="w-full max-w-md">
-        <div className="flex items-center gap-2 mb-8 justify-center">
+        <div className="flex items-center gap-2.5 mb-8 justify-center">
           <NovaSyncLogo size={36} />
-          <span className="text-xl font-bold">NovaSync</span>
+          <span className="text-xl font-bold" style={{ color: '#1a1d2e' }}>NovaSync</span>
         </div>
 
         {step === "workspace" ? (
-          <div className="animate-fade-in">
-            <h1 className="text-2xl font-bold text-center mb-2">Welcome to NovaSync!</h1>
-            <p className="text-sm text-gray-400 text-center mb-8">
+          <div className="animate-fade-in rounded-xl p-8" style={{ background: '#ffffff', border: '1px solid #e8eaef', boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}>
+            <h1 className="text-2xl font-extrabold text-center mb-2" style={{ color: '#1a1d2e' }}>Welcome to NovaSync!</h1>
+            <p className="text-sm text-center mb-8" style={{ color: '#5e6278' }}>
               Create your workspace to get started.
             </p>
             <form onSubmit={handleCreateWorkspace} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1.5">Workspace name</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Workspace name</label>
                 <input
                   autoFocus
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[hsl(192,100%,50%)]/50"
+                  className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors"
+                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
                   placeholder="My Team"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1.5">Description (optional)</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Description (optional)</label>
                 <input
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[hsl(192,100%,50%)]/50"
+                  className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors"
+                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
                   placeholder="What's your team working on?"
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading || !name.trim()}
-                className="w-full py-2.5 bg-gradient-to-r from-[hsl(192,100%,50%)] to-[hsl(262,83%,58%)] text-white font-medium rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 text-sm flex items-center justify-center gap-2"
+                className="w-full py-2.5 text-white font-semibold rounded-lg transition-all hover:shadow-md disabled:opacity-50 text-sm flex items-center justify-center gap-2"
+                style={{ background: '#0d9488' }}
               >
                 {loading ? "Creating..." : "Create Workspace"}
                 {!loading && <ArrowRight className="w-4 h-4" />}
@@ -74,11 +77,11 @@ export default function Onboarding() {
           </div>
         ) : (
           <div className="text-center animate-fade-in">
-            <div className="w-16 h-16 rounded-2xl bg-[hsl(142,71%,45%)]/10 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(22,163,74,0.06)' }}>
               <NovaSyncLogo size={48} />
             </div>
-            <h2 className="text-xl font-bold mb-2">Workspace created!</h2>
-            <p className="text-sm text-gray-400">Redirecting to your dashboard...</p>
+            <h2 className="text-xl font-bold mb-2" style={{ color: '#1a1d2e' }}>Workspace created!</h2>
+            <p className="text-sm" style={{ color: '#5e6278' }}>Redirecting to your dashboard...</p>
           </div>
         )}
       </div>

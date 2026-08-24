@@ -6,16 +6,16 @@ interface Props {
 }
 
 const typeColors: Record<string, string> = {
-  project_created: "bg-[hsl(142,71%,45%)]",
-  task_created: "bg-[hsl(192,100%,50%)]",
-  task_completed: "bg-[hsl(142,71%,45%)]",
-  task_assigned: "bg-[hsl(262,83%,58%)]",
-  task_status_changed: "bg-[hsl(45,93%,47%)]",
-  task_unassigned: "bg-[hsl(0,84%,60%)]",
-  comment_added: "bg-[hsl(210,100%,56%)]",
-  member_joined: "bg-[hsl(142,71%,45%)]",
-  member_invited: "bg-[hsl(45,93%,47%)]",
-  member_removed: "bg-[hsl(0,84%,60%)]",
+  project_created: "#16a34a",
+  task_created: "#0d9488",
+  task_completed: "#16a34a",
+  task_assigned: "#6366f1",
+  task_status_changed: "#d97706",
+  task_unassigned: "#dc2626",
+  comment_added: "#2563eb",
+  member_joined: "#16a34a",
+  member_invited: "#d97706",
+  member_removed: "#dc2626",
 };
 
 export default function ProjectActivity({ projectId }: Props) {
@@ -24,14 +24,14 @@ export default function ProjectActivity({ projectId }: Props) {
   if (!events) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="w-6 h-6 border-2 border-[hsl(192,100%,50%)] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#0d9488] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (events.length === 0) {
     return (
-      <div className="py-12 text-center text-sm text-gray-500">
+      <div className="py-12 text-center text-sm" style={{ color: '#9da2b3' }}>
         No activity yet. Start working on tasks to see activity here.
       </div>
     );
@@ -40,14 +40,14 @@ export default function ProjectActivity({ projectId }: Props) {
   return (
     <div className="space-y-3">
       {events.map((event) => (
-        <div key={event._id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.02] transition-colors">
-          <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${typeColors[event.type] || "bg-gray-500"}`} />
+        <div key={event._id} className="flex items-start gap-3 p-3 rounded-lg transition-colors" style={{ background: '#ffffff', border: '1px solid #f0f1f5' }}>
+          <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: typeColors[event.type] || '#9da2b3' }} />
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-gray-300">
-              <span className="font-medium text-white">{event.user?.name || "Someone"}</span>{" "}
+            <p className="text-sm" style={{ color: '#5e6278' }}>
+              <span className="font-medium" style={{ color: '#1a1d2e' }}>{event.user?.name || "Someone"}</span>{" "}
               {event.description}
             </p>
-            <p className="text-[10px] text-gray-600 mt-0.5">{formatDate(event.createdAt)}</p>
+            <p className="text-[10px] mt-0.5" style={{ color: '#9da2b3' }}>{formatDate(event.createdAt)}</p>
           </div>
         </div>
       ))}
