@@ -152,6 +152,11 @@ export const acceptInvitation = mutation({
 
     const project = await ctx.db.get(invitation.projectId);
     if (project) {
+      // Auto-convert personal project to team project when a new member joins
+      if (project.type === "personal") {
+        await ctx.db.patch(invitation.projectId, { type: "team", updatedAt: Date.now() });
+      }
+
       await createActivity(ctx, {
         workspaceId: invitation.workspaceId,
         projectId: invitation.projectId,
@@ -159,6 +164,18 @@ export const acceptInvitation = mutation({
         type: "member_joined",
         description: `Joined project "${project.title}"`,
       });
+
+      // Notify the project owner that invitation was accepted
+      if (project.ownerId !== userId) {
+        await createNotification(ctx, {
+          userId: project.ownerId,
+          type: "activity",
+          title: "Invitation accepted",
+          message: `${user?.name || user?.email || "Someone"} accepted the invitation to "${project.title}"`,
+          projectId: invitation.projectId,
+          fromUserId: userId,
+        });
+      }
     }
   },
 });
@@ -174,5 +191,19 @@ export const declineInvitation = mutation({
       throw new Error("Not your invitation");
     }
     await ctx.db.patch(args.invitationId, { status: "declined" });
+
+    // Notify the project owner that invitation was declined
+    const project = await ctx.db.get(invitation.projectId);
+    if (project && project.ownerId !== userId) {
+      const user = await ctx.db.get(userId);
+      await createNotification(ctx, {
+        userId: project.ownerId,
+        type: "activity",
+        title: "Invitation declined",
+        message: `${user?.name || user?.email || "Someone"} declined the invitation to "${project.title}"`,
+        projectId: invitation.projectId,
+        fromUserId: userId,
+      });
+    }
   },
 });

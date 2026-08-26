@@ -6,7 +6,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import NovaSyncLogo from "../components/NovaSyncLogo";
 import {
   Home, FolderKanban, Bell, Search, Brain, Settings,
-  ChevronDown, Plus, LogOut, User, Menu, X, Command, LayoutList, ExternalLink
+  ChevronDown, Plus, LogOut, User, Menu, X, Command, LayoutList, ExternalLink, Pencil, Check
 } from "lucide-react";
 
 import Dashboard from "./Dashboard";
@@ -19,6 +19,8 @@ import NovaAI from "./NovaAI";
 import SettingsPage from "./SettingsPage";
 import Onboarding from "./Onboarding";
 
+const WORKSPACE_STORAGE_KEY = "novasync_active_workspace";
+
 export default function AppShell() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -29,14 +31,40 @@ export default function AppShell() {
   const currentUser = useQuery(api.users.current);
   const authLoading = currentUser === undefined;
   const workspaces = useQuery(api.workspaces.list);
-  const [activeWorkspace, setActiveWorkspace] = useState<string | null>(null);
+  const [activeWorkspace, setActiveWorkspace] = useState<string | null>(() => {
+    // Restore from localStorage on mount
+    try { return localStorage.getItem(WORKSPACE_STORAGE_KEY); } catch { return null; }
+  });
   const unreadCount = useQuery(api.notifications.getUnreadCount);
 
+  const updateWorkspace = useMutation(api.workspaces.update);
+
+  // Workspace editing state
+  const [editingWorkspace, setEditingWorkspace] = useState(false);
+  const [editWsName, setEditWsName] = useState("");
+  const [editWsDesc, setEditWsDesc] = useState("");
+  const [savingWs, setSavingWs] = useState(false);
+
+  // Sync activeWorkspace with loaded workspaces
   useEffect(() => {
-    if (workspaces && workspaces.length > 0 && !activeWorkspace) {
-      setActiveWorkspace(workspaces[0]?._id ?? null);
+    if (workspaces && workspaces.length > 0) {
+      // If no active workspace or active workspace no longer exists, set to first
+      const validWs = workspaces.find((w: any) => w?._id === activeWorkspace);
+      if (!validWs) {
+        const firstId = workspaces[0]?._id ?? null;
+        setActiveWorkspace(firstId);
+        if (firstId) {
+          try { localStorage.setItem(WORKSPACE_STORAGE_KEY, firstId); } catch {}
+        }
+      }
     }
   }, [workspaces, activeWorkspace]);
+
+  // Persist workspace selection to localStorage
+  const handleWorkspaceChange = useCallback((wsId: string) => {
+    setActiveWorkspace(wsId);
+    try { localStorage.setItem(WORKSPACE_STORAGE_KEY, wsId); } catch {}
+  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -72,6 +100,33 @@ export default function AppShell() {
   if (showOnboarding) {
     return <Onboarding />;
   }
+
+  const activeWsData = workspaces?.find((w: any) => w?._id === activeWorkspace) as any;
+  const wsName = activeWsData?.name || "Workspace";
+  const wsInitial = wsName.charAt(0).toUpperCase();
+
+  const openWorkspaceEditor = () => {
+    setEditWsName(activeWsData?.name || "");
+    setEditWsDesc(activeWsData?.description || "");
+    setEditingWorkspace(true);
+  };
+
+  const handleSaveWorkspace = async () => {
+    if (!activeWorkspace || !editWsName.trim()) return;
+    setSavingWs(true);
+    try {
+      await updateWorkspace({
+        workspaceId: activeWorkspace as any,
+        name: editWsName.trim(),
+        description: editWsDesc.trim() || undefined,
+      });
+      setEditingWorkspace(false);
+    } catch (err) {
+      console.error("Failed to update workspace:", err);
+    } finally {
+      setSavingWs(false);
+    }
+  };
 
   const navItems = [
     { path: "/app", icon: Home, label: "Dashboard", exact: true },
@@ -111,13 +166,21 @@ export default function AppShell() {
 
         {/* Workspace selector */}
         <div className="px-3 py-3" style={{ borderBottom: '1px solid #f0f1f5' }}>
-          <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-colors" style={{ background: '#f4f6f9' }}>
+          <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-colors group" style={{ background: '#f4f6f9' }}>
             <div className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" style={{ background: 'rgba(13,148,136,0.1)', color: '#0d9488' }}>
-              {activeWorkspace && (workspaces as any[])?.find((w: any) => w?._id === activeWorkspace)?.name?.charAt(0) || "W"}
+              {wsInitial}
             </div>
             <span className="text-xs font-medium truncate flex-1" style={{ color: '#1a1d2e' }}>
-              {activeWorkspace && (workspaces as any[])?.find((w: any) => w?._id === activeWorkspace)?.name || "Workspace"}
+              {wsName}
             </span>
+            <button
+              onClick={(e) => { e.stopPropagation(); openWorkspaceEditor(); }}
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ color: '#9da2b3' }}
+              title="Edit workspace"
+            >
+              <Pencil className="w-3 h-3" />
+            </button>
             <ChevronDown className="w-3 h-3" style={{ color: '#9da2b3' }} />
           </div>
           {workspaces && workspaces.length > 1 && (
@@ -125,10 +188,8 @@ export default function AppShell() {
               {workspaces.map((ws: any) => (
                 <button
                   key={ws._id}
-                  onClick={() => setActiveWorkspace(ws._id)}
-                  className={`w-full text-left px-2 py-1.5 rounded-lg text-xs transition-colors ${
-                    ws?._id === activeWorkspace ? "" : ""
-                  }`}
+                  onClick={() => handleWorkspaceChange(ws._id)}
+                  className="w-full text-left px-2 py-1.5 rounded-lg text-xs transition-colors"
                   style={{
                     background: ws?._id === activeWorkspace ? 'rgba(13,148,136,0.06)' : 'transparent',
                     color: ws?._id === activeWorkspace ? '#0d9488' : '#5e6278',
@@ -262,6 +323,53 @@ export default function AppShell() {
           </Routes>
         </div>
       </main>
+
+      {/* Workspace Edit Modal */}
+      {editingWorkspace && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setEditingWorkspace(false)}>
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.3)' }} />
+          <div className="relative w-full max-w-sm rounded-xl shadow-2xl animate-scale-in" style={{ background: '#ffffff', border: '1px solid #e8eaef' }} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-5" style={{ borderBottom: '1px solid #f0f1f5' }}>
+              <h2 className="text-lg font-semibold" style={{ color: '#1a1d2e' }}>Edit Workspace</h2>
+              <button onClick={() => setEditingWorkspace(false)} style={{ color: '#9da2b3' }}>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Workspace name</label>
+                <input
+                  autoFocus
+                  value={editWsName}
+                  onChange={(e) => setEditWsName(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg text-sm transition-colors"
+                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                  placeholder="Workspace name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Description</label>
+                <textarea
+                  value={editWsDesc}
+                  onChange={(e) => setEditWsDesc(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg text-sm transition-colors resize-none"
+                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                  placeholder="Workspace description (optional)"
+                  rows={2}
+                />
+              </div>
+              <button
+                onClick={handleSaveWorkspace}
+                disabled={savingWs || !editWsName.trim()}
+                className="w-full py-2.5 text-white font-semibold rounded-lg transition-all hover:shadow-md disabled:opacity-50 text-sm flex items-center justify-center gap-2"
+                style={{ background: '#0d9488' }}
+              >
+                {savingWs ? "Saving..." : <><Check className="w-4 h-4" /> Save Changes</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Command Palette */}
       {commandOpen && (

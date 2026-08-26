@@ -272,6 +272,37 @@ export const removeMember = mutation({
   },
 });
 
+export const convertToTeamProject = mutation({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+    const member = await getProjectMember(ctx, args.projectId, userId);
+    if (!member) throw new Error("Not a project member");
+    if (member.role !== "owner") throw new Error("Only the project owner can convert to a team project");
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) throw new Error("Project not found");
+    if (project.type === "team") return { success: true, alreadyTeam: true };
+
+    await ctx.db.patch(args.projectId, {
+      type: "team",
+      updatedAt: Date.now(),
+    });
+
+    await createActivity(ctx, {
+      workspaceId: project.workspaceId,
+      projectId: args.projectId,
+      userId,
+      type: "project_updated",
+      description: `Converted "${project.title}" to a team project`,
+    });
+
+    return { success: true };
+  },
+});
+
 export const getStats = query({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {

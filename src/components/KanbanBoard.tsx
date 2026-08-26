@@ -3,11 +3,12 @@ import { useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, MessageSquare, Calendar, GripVertical } from "lucide-react";
+import { Plus, MessageSquare, Calendar, GripVertical, Trash2 } from "lucide-react";
 
 interface Props {
   projectId: string;
   tasks: any[];
+  userRole?: string;
 }
 
 const columns = [
@@ -24,14 +25,16 @@ const priorityColors: Record<string, { bg: string; color: string }> = {
   low: { bg: '#f4f6f9', color: '#9da2b3' },
 };
 
-export default function KanbanBoard({ projectId, tasks }: Props) {
+export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
   const navigate = useNavigate();
   const moveTask = useMutation(api.tasks.move);
+  const deleteTask = useMutation(api.tasks.deleteTask);
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
   const [showCreateInColumn, setShowCreateInColumn] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const createTask = useMutation(api.tasks.create);
+  const canDelete = userRole === "owner" || userRole === "admin";
 
   const handleDragStart = (taskId: string) => {
     setDraggedTask(taskId);
@@ -147,12 +150,29 @@ export default function KanbanBoard({ projectId, tasks }: Props) {
                             </div>
                           )}
                         </div>
-                        {task.dueDate && (
-                          <div className="flex items-center gap-0.5 text-[10px]" style={{ color: '#9da2b3' }}>
-                            <Calendar className="w-3 h-3" />
-                            {new Date(task.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                          </div>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {task.dueDate && (
+                            <div className="flex items-center gap-0.5 text-[10px]" style={{ color: '#9da2b3' }}>
+                              <Calendar className="w-3 h-3" />
+                              {new Date(task.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                            </div>
+                          )}
+                          {canDelete && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (confirm("Delete this task?")) {
+                                  deleteTask({ taskId: task._id });
+                                }
+                              }}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded"
+                              style={{ color: '#dc2626' }}
+                              title="Delete task"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                       {/* Mobile status changer */}
                       <div className="mt-2 sm:hidden">

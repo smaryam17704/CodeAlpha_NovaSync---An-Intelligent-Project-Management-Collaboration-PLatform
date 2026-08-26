@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { Bell, CheckCheck, Check } from "lucide-react";
+import { Bell, CheckCheck, Check, Mail, X } from "lucide-react";
 
 const typeLabels: Record<string, string> = {
   task_assigned: "Task Assigned",
@@ -21,7 +22,20 @@ export default function NotificationsPage() {
   const notifications = useQuery(api.notifications.list);
   const markRead = useMutation(api.notifications.markRead);
   const markAllRead = useMutation(api.notifications.markAllRead);
+  const acceptInvitation = useMutation(api.invitations.acceptInvitation);
+  const declineInvitation = useMutation(api.invitations.declineInvitation);
+  const pendingInvitations = useQuery(api.invitations.listPendingForUser);
   const navigate = useNavigate();
+
+  const [processingInvitation, setProcessingInvitation] = useState<string | null>(null);
+
+  // Build a map of projectId -> invitationId for pending invitations
+  const pendingInvMap = new Map<string, string>();
+  if (pendingInvitations) {
+    for (const inv of pendingInvitations) {
+      pendingInvMap.set(inv.projectId, inv._id);
+    }
+  }
 
   const handleNotificationClick = async (notification: any) => {
     if (!notification.read) {
@@ -31,6 +45,35 @@ export default function NotificationsPage() {
       navigate(`/app/projects/${notification.projectId}/task/${notification.taskId}`);
     } else if (notification.projectId) {
       navigate(`/app/projects/${notification.projectId}`);
+    }
+  };
+
+  const handleAcceptInvitation = async (notification: any) => {
+    const invitationId = pendingInvMap.get(notification.projectId);
+    if (!invitationId) return;
+    setProcessingInvitation(invitationId);
+    try {
+      await acceptInvitation({ invitationId: invitationId as any });
+      await markRead({ notificationId: notification._id });
+      navigate("/app/projects");
+    } catch (err) {
+      console.error("Failed to accept invitation:", err);
+    } finally {
+      setProcessingInvitation(null);
+    }
+  };
+
+  const handleDeclineInvitation = async (notification: any) => {
+    const invitationId = pendingInvMap.get(notification.projectId);
+    if (!invitationId) return;
+    setProcessingInvitation(invitationId);
+    try {
+      await declineInvitation({ invitationId: invitationId as any });
+      await markRead({ notificationId: notification._id });
+    } catch (err) {
+      console.error("Failed to decline invitation:", err);
+    } finally {
+      setProcessingInvitation(null);
     }
   };
 
@@ -59,59 +102,113 @@ export default function NotificationsPage() {
 
       {notifications && notifications.length > 0 ? (
         <div className="space-y-1">
-          {notifications.map((notification, i) => (
-            <motion.div
-              key={notification._id}
-              initial={{ opacity: 0, x: -4 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.02 }}
-              onClick={() => handleNotificationClick(notification)}
-              className="flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-colors"
-              style={{
-                background: notification.read ? 'transparent' : 'rgba(13,148,136,0.02)',
-                border: notification.read ? '1px solid transparent' : '1px solid #e8eaef',
-              }}
-            >
-              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{
-                background: notification.read ? '#f4f6f9' : 'rgba(13,148,136,0.08)',
-              }}>
-                {notification.fromUser?.image ? (
-                  <img src={notification.fromUser.image} alt="" className="w-8 h-8 rounded-full" />
-                ) : (
-                  <div className="text-xs font-bold" style={{ color: '#0d9488' }}>
-                    {notification.fromUser?.name?.charAt(0) || "?"}
+          {notifications.map((notification, i) => {
+            const isInvitation = notification.type === "project_invitation";
+            const invitationId = isInvitation ? pendingInvMap.get(notification.projectId || "") : null;
+            const hasPendingInvitation = !!invitationId;
+
+            return (
+              <motion.div
+                key={notification._id}
+                initial={{ opacity: 0, x: -4 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.02 }}
+                className="p-4 rounded-xl transition-colors"
+                style={{
+                  background: notification.read ? 'transparent' : 'rgba(13,148,136,0.02)',
+                  border: notification.read ? '1px solid transparent' : '1px solid #e8eaef',
+                }}
+              >
+                <div className="flex items-start gap-3">
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
+                    style={{
+                      background: notification.read ? '#f4f6f9' : 'rgba(13,148,136,0.08)',
+                    }}
+                    onClick={() => !isInvitation && handleNotificationClick(notification)}
+                  >
+                    {notification.fromUser?.image ? (
+                      <img src={notification.fromUser.image} alt="" className="w-8 h-8 rounded-full" />
+                    ) : isInvitation ? (
+                      <Mail className="w-4 h-4" style={{ color: '#0d9488' }} />
+                    ) : (
+                      <div className="text-xs font-bold" style={{ color: '#0d9488' }}>
+                        {notification.fromUser?.name?.charAt(0) || "?"}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-[10px] font-medium" style={{ color: '#0d9488' }}>
-                    {typeLabels[notification.type] || notification.type}
-                  </span>
-                  {!notification.read && (
-                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#0d9488' }} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-[10px] font-medium" style={{ color: '#0d9488' }}>
+                        {typeLabels[notification.type] || notification.type}
+                      </span>
+                      {!notification.read && (
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#0d9488' }} />
+                      )}
+                    </div>
+                    <p
+                      className="text-sm cursor-pointer"
+                      style={{ color: '#5e6278' }}
+                      onClick={() => !isInvitation && handleNotificationClick(notification)}
+                    >
+                      {notification.message}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[10px]" style={{ color: '#9da2b3' }}>{formatDate(notification.createdAt)}</span>
+                      {notification.project && (
+                        <span
+                          className="text-[10px] cursor-pointer hover:underline"
+                          style={{ color: '#9da2b3' }}
+                          onClick={() => handleNotificationClick(notification)}
+                        >
+                          · {notification.project.title}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Invitation action buttons */}
+                    {isInvitation && hasPendingInvitation && invitationId && (
+                      <div className="flex items-center gap-2 mt-3">
+                        <button
+                          onClick={() => handleAcceptInvitation(notification)}
+                          disabled={processingInvitation === invitationId}
+                          className="px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-all disabled:opacity-50"
+                          style={{ background: '#0d9488' }}
+                        >
+                          {processingInvitation === invitationId ? "Processing..." : "Accept"}
+                        </button>
+                        <button
+                          onClick={() => handleDeclineInvitation(notification)}
+                          disabled={processingInvitation === invitationId}
+                          className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+                          style={{ background: '#f4f6f9', color: '#5e6278', border: '1px solid #e8eaef' }}
+                        >
+                          Decline
+                        </button>
+                      </div>
+                    )}
+                    {isInvitation && !hasPendingInvitation && !notification.read && (
+                      <div className="mt-2">
+                        <span className="text-[10px] font-medium" style={{ color: '#9da2b3' }}>
+                          Invitation already processed
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  {!notification.read && !isInvitation && (
+                    <button
+                      onClick={() => markRead({ notificationId: notification._id })}
+                      className="transition-colors shrink-0 hover:opacity-70"
+                      style={{ color: '#9da2b3' }}
+                      title="Mark as read"
+                    >
+                      <Check className="w-4 h-4" />
+                    </button>
                   )}
                 </div>
-                <p className="text-sm" style={{ color: '#5e6278' }}>{notification.message}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px]" style={{ color: '#9da2b3' }}>{formatDate(notification.createdAt)}</span>
-                  {notification.project && (
-                    <span className="text-[10px]" style={{ color: '#9da2b3' }}>· {notification.project.title}</span>
-                  )}
-                </div>
-              </div>
-              {!notification.read && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); markRead({ notificationId: notification._id }); }}
-                  className="transition-colors shrink-0 hover:opacity-70"
-                  style={{ color: '#9da2b3' }}
-                  title="Mark as read"
-                >
-                  <Check className="w-4 h-4" />
-                </button>
-              )}
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-20 text-center">
