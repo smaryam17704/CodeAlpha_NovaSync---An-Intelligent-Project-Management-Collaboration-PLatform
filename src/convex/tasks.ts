@@ -435,6 +435,48 @@ export const move = mutation({
   },
 });
 
+export const deleteTask = mutation({
+  args: {
+    taskId: v.id("tasks"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+    const task = await ctx.db.get(args.taskId);
+    if (!task) throw new Error("Task not found");
+
+    const member = await getProjectMember(ctx, task.projectId, userId);
+    if (!member) throw new Error("Not a project member");
+    // Only owner and admin can delete tasks
+    if (member.role !== "owner" && member.role !== "admin") {
+      throw new Error("Only the project owner or admin can delete tasks");
+    }
+
+    // Delete associated comments
+    const comments = await ctx.db
+      .query("comments")
+      .withIndex("by_task", (q) => q.eq("taskId", args.taskId))
+      .collect();
+    for (const comment of comments) {
+      await ctx.db.delete(comment._id);
+    }
+
+    // Delete the task
+    await ctx.db.delete(args.taskId);
+
+    // Create activity
+    const project = await ctx.db.get(task.projectId);
+    if (project) {
+      await createActivity(ctx, {
+        workspaceId: task.workspaceId,
+        projectId: task.projectId,
+        userId,
+        type: "task_status_changed",
+        description: `Deleted task "${task.title}"`,
+      });
+    }
+  },
+});
+
 export const reorder = mutation({
   args: {
     taskId: v.id("tasks"),

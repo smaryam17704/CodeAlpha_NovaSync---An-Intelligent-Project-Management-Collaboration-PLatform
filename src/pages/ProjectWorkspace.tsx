@@ -115,7 +115,7 @@ export default function ProjectWorkspace({ activeWorkspace }: Props) {
       {/* Tab Content */}
       <Routes>
         <Route index element={<ProjectOverview project={project} tasks={tasks} health={health} />} />
-        <Route path="board" element={<KanbanBoard projectId={projectId!} tasks={tasks || []} />} />
+        <Route path="board" element={<KanbanBoard projectId={projectId!} tasks={tasks || []} userRole={project.role} />} />
         <Route path="list" element={<ListView projectId={projectId!} tasks={tasks || []} />} />
         <Route path="timeline" element={<ProjectTimeline projectId={projectId!} />} />
         <Route path="team" element={<ProjectTeam projectId={projectId!} project={project} />} />

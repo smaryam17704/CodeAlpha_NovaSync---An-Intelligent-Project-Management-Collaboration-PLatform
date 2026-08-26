@@ -28,6 +28,7 @@ export default function TaskDetail() {
   const updateTask = useMutation(api.tasks.update);
   const updateStatus = useMutation(api.tasks.updateStatus);
   const assignTask = useMutation(api.tasks.assign);
+  const deleteTask = useMutation(api.tasks.deleteTask);
   const createComment = useMutation(api.comments.create);
   const updateComment = useMutation(api.comments.update);
   const deleteComment = useMutation(api.comments.remove);
@@ -47,6 +48,9 @@ export default function TaskDetail() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const canDelete = task && (task.userRole === "owner" || task.userRole === "admin");
 
   // Initialize edit state when task loads
   const initEditState = useCallback(() => {
@@ -147,6 +151,27 @@ export default function TaskDetail() {
               <Check className="w-3 h-3" />
               Saved
             </span>
+          )}
+          {canDelete && (
+            <button
+              onClick={async () => {
+                if (!confirm("Are you sure you want to delete this task? This cannot be undone.")) return;
+                setDeleting(true);
+                try {
+                  await deleteTask({ taskId: task._id });
+                  navigate(`/app/projects/${projectId}`);
+                } catch (err) {
+                  console.error("Failed to delete task:", err);
+                } finally {
+                  setDeleting(false);
+                }
+              }}
+              disabled={deleting}
+              className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+              style={{ background: 'rgba(220,38,38,0.06)', color: '#dc2626' }}
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </button>
           )}
           {hasChanges && (
             <button
