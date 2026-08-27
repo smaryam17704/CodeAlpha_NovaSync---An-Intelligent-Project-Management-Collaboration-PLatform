@@ -27,6 +27,7 @@ export default function AppShell() {
   const { signOut } = useAuthActions();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
+  const [wsExpanded, setWsExpanded] = useState(false);
 
   const currentUser = useQuery(api.users.current);
   const authLoading = currentUser === undefined;
@@ -181,8 +182,20 @@ export default function AppShell() {
             >
               <Pencil className="w-3 h-3" />
             </button>
-            <ChevronDown className="w-3 h-3" style={{ color: '#9da2b3' }} />
+            <button
+              onClick={(e) => { e.stopPropagation(); setWsExpanded(!wsExpanded); }}
+              className="transition-transform"
+              style={{ color: '#9da2b3', transform: wsExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
+              title={wsExpanded ? 'Collapse description' : 'Expand description'}
+            >
+              <ChevronDown className="w-3 h-3" />
+            </button>
           </div>
+          {wsExpanded && activeWsData?.description && (
+            <div className="mt-2 px-2 text-[11px] leading-relaxed animate-fade-in" style={{ color: '#5e6278' }}>
+              {activeWsData.description}
+            </div>
+          )}
           {workspaces && workspaces.length > 1 && (
             <div className="mt-1 space-y-0.5">
               {workspaces.map((ws: any) => (

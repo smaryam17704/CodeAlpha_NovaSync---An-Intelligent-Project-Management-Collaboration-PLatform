@@ -48,7 +48,7 @@ export default function NovaAI({ activeWorkspace }: Props) {
 
   const taskSuggestions = useQuery(
     api.ai.taskSuggestions,
-    taskPrompt ? { prompt: taskPrompt } : "skip"
+    taskPrompt ? { prompt: taskPrompt, projectId: selectedProjectId ? (selectedProjectId as any) : undefined } : "skip"
   );
 
   const createTask = useMutation(api.tasks.create);
@@ -82,15 +82,28 @@ export default function NovaAI({ activeWorkspace }: Props) {
     setIsProcessing(true);
   }, [inputValue, selectedProjectId, isProcessing]);
 
+  const [tasksAdded, setTasksAdded] = useState(false);
+  const [addingTasks, setAddingTasks] = useState(false);
+
   const handleAddTasks = async (tasks: any[]) => {
     if (!selectedProjectId) return;
-    for (const task of tasks) {
-      await createTask({
-        title: task.title,
-        description: task.description,
-        projectId: selectedProjectId as any,
-        priority: task.priority,
-      });
+    setAddingTasks(true);
+    try {
+      for (const task of tasks) {
+        await createTask({
+          title: task.title,
+          description: task.description,
+          projectId: selectedProjectId as any,
+          priority: task.priority,
+        });
+      }
+      setTasksAdded(true);
+      setTaskPrompt("");
+      setTimeout(() => setTasksAdded(false), 3000);
+    } catch (err) {
+      console.error("Failed to add tasks:", err);
+    } finally {
+      setAddingTasks(false);
     }
   };
 
@@ -274,11 +287,14 @@ export default function NovaAI({ activeWorkspace }: Props) {
                 {selectedProjectId && (
                   <button
                     onClick={() => handleAddTasks(taskSuggestions.tasks)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-                    style={{ background: "rgba(22,163,74,0.06)", color: "#16a34a" }}
+                    disabled={addingTasks}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+                    style={{ background: tasksAdded ? "rgba(22,163,74,0.12)" : "rgba(22,163,74,0.06)", color: "#16a34a" }}
                   >
-                    <Plus className="w-3 h-3 inline mr-1" />
-                    Add to Project
+                    {tasksAdded ? "✓ Added!" : addingTasks ? "Adding..." : (
+                      <><Plus className="w-3 h-3 inline mr-1" />
+                      Add to Project</>
+                    )}
                   </button>
                 )}
               </div>

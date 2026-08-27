@@ -119,6 +119,46 @@ body {
 .dragging { opacity: 0.5; transform: rotate(1.5deg); }
 .drag-over { border-color: var(--nova-teal) !important; background: var(--nova-teal-bg) !important; }
 
+/* Dark theme */
+.dark, html.dark {
+  --background: 226 28% 10%;
+  --foreground: 210 20% 92%;
+  --card: 226 24% 13%;
+  --card-foreground: 210 20% 92%;
+  --popover: 226 24% 13%;
+  --popover-foreground: 210 20% 92%;
+  --primary: 174 68% 38%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 226 20% 16%;
+  --secondary-foreground: 210 20% 85%;
+  --muted: 226 20% 16%;
+  --muted-foreground: 220 10% 55%;
+  --accent: 245 65% 60%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 226 16% 20%;
+  --input: 226 16% 20%;
+  --ring: 174 68% 38%;
+  --nova-navy: #e2e4ed;
+  --nova-navy-light: #c8cad6;
+  --nova-surface: #1a1c28;
+  --nova-surface-warm: #1e2030;
+  --nova-surface-cool: #222436;
+  --nova-ivory: #1e2030;
+  --nova-border: #2a2d40;
+  --nova-border-light: #252738;
+  --nova-text: #e2e4ed;
+  --nova-text-secondary: #a0a4b8;
+  --nova-text-muted: #6b6f82;
+  --nova-teal-bg: rgba(13, 148, 136, 0.12);
+  --nova-indigo-bg: rgba(99, 102, 241, 0.12);
+}
+.dark body, html.dark body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
 /* Focus styles */
 *:focus-visible {
   outline: 2px solid var(--nova-teal);

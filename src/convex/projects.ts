@@ -268,6 +268,18 @@ export const removeMember = mutation({
         type: "member_removed",
         description: `Removed a member from "${project.title}"`,
       });
+
+      // Notify the removed member
+      if (args.userId !== currentUserId) {
+        await createNotification(ctx, {
+          userId: args.userId,
+          type: "member_removed",
+          title: "Removed from project",
+          message: `You have been removed from "${project.title}"`,
+          projectId: args.projectId,
+          fromUserId: currentUserId,
+        });
+      }
     }
   },
 });

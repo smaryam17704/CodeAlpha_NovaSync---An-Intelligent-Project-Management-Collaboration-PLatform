@@ -196,6 +196,12 @@ export const update = mutation({
 
     const member = await getProjectMember(ctx, task.projectId, userId);
     if (!member || member.role === "viewer") throw new Error("Insufficient permissions");
+    // Members can only edit description; owner/admin can edit all fields
+    if (member.role === "member") {
+      if (args.title !== undefined) throw new Error("Members cannot change task title");
+      if (args.priority !== undefined) throw new Error("Members cannot change task priority");
+      if (args.dueDate !== undefined) throw new Error("Members cannot change task due date");
+    }
 
     const project = await ctx.db.get(task.projectId);
     const updates: any = { updatedAt: Date.now() };
@@ -306,6 +312,10 @@ export const assign = mutation({
 
     const member = await getProjectMember(ctx, task.projectId, userId);
     if (!member || member.role === "viewer") throw new Error("Insufficient permissions");
+    // Only owner and admin can assign/reassign tasks
+    if (member.role !== "owner" && member.role !== "admin") {
+      throw new Error("Only the project owner or admin can assign tasks");
+    }
 
     const previousAssigneeId = task.assigneeId;
     await ctx.db.patch(args.taskId, {

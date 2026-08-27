@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
@@ -37,6 +37,10 @@ export default function TaskDetail() {
   const [editingComment, setEditingComment] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [activeTab, setActiveTab] = useState<"details" | "discussion" | "activity">("details");
+  const [mentionQuery, setMentionQuery] = useState<string | null>(null);
+  const [mentionSelectedIdx, setMentionSelectedIdx] = useState(0);
+  const [selectedMentionIds, setSelectedMentionIds] = useState<string[]>([]);
+  const commentInputRef = useRef<HTMLInputElement>(null);
 
   // Local editing state for details
   const [editTitle, setEditTitle] = useState<string | null>(null);
@@ -51,6 +55,8 @@ export default function TaskDetail() {
   const [deleting, setDeleting] = useState(false);
 
   const canDelete = task && (task.userRole === "owner" || task.userRole === "admin");
+  const canEditAll = task && (task.userRole === "owner" || task.userRole === "admin");
+  // Members can edit: status + description only. Owner/admin can edit all.
 
   // Initialize edit state when task loads
   const initEditState = useCallback(() => {
@@ -121,11 +127,41 @@ export default function TaskDetail() {
 
   const handleAddComment = async () => {
     if (!commentText.trim() || !taskId) return;
-    await createComment({
-      taskId: taskId as any,
-      content: commentText,
-    });
+    try {
+      await createComment({
+        taskId: taskId as any,
+        content: commentText,
+        mentions: selectedMentionIds.length > 0 ? selectedMentionIds as any : undefined,
+      });
+    } catch (err: any) {
+      alert(err?.message || "Failed to post comment");
+      return;
+    }
     setCommentText("");
+    setSelectedMentionIds([]);
+    setMentionQuery(null);
+  };
+
+  // Filter project members for @mention dropdown
+  const filteredMentionMembers = mentionQuery !== null && members
+    ? members.filter((m: any) => {
+        const name = (m.user?.name || "").toLowerCase();
+        return name.includes(mentionQuery.toLowerCase());
+      })
+    : [];
+
+  const selectMention = (member: any) => {
+    if (!member) return;
+    const name = member.user?.name || "user";
+    // Replace @query with @name in the comment text
+    const regex = /@([\w\s]*?)$/;
+    const newCommentText = commentText.replace(regex, `@${name} `);
+    setCommentText(newCommentText);
+    setMentionQuery(null);
+    if (!selectedMentionIds.includes(member.userId)) {
+      setSelectedMentionIds([...selectedMentionIds, member.userId]);
+    }
+    commentInputRef.current?.focus();
   };
 
   const handleUpdateComment = async (commentId: string) => {
@@ -195,7 +231,7 @@ export default function TaskDetail() {
               onChange={(e) => { setEditTitle(e.target.value); markChanged(); }}
               className="w-full text-xl font-extrabold bg-transparent border-none focus:outline-none focus:ring-0 p-0"
               style={{ color: '#1a1d2e' }}
-              disabled={task.userRole === "viewer"}
+              disabled={!canEditAll}
             />
           </div>
           <button
@@ -272,7 +308,7 @@ export default function TaskDetail() {
                 onChange={(e) => { setEditPriority(e.target.value); markChanged(); }}
                 className="w-full px-2.5 py-1.5 rounded-lg text-xs focus:outline-none"
                 style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
-                disabled={task.userRole === "viewer"}
+                disabled={!canEditAll}
               >
                 {priorityOptions.map((p) => (
                   <option key={p.value} value={p.value}>{p.label}</option>
@@ -288,7 +324,7 @@ export default function TaskDetail() {
                 onChange={(e) => { setEditAssignee(e.target.value || undefined); markChanged(); }}
                 className="w-full px-2.5 py-1.5 rounded-lg text-xs focus:outline-none"
                 style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
-                disabled={task.userRole === "viewer"}
+                disabled={!canEditAll}
               >
                 <option value="">Unassigned</option>
                 {members?.map((m) => (
@@ -306,7 +342,7 @@ export default function TaskDetail() {
                 onChange={(e) => { setEditDueDate(e.target.value); markChanged(); }}
                 className="w-full px-2.5 py-1.5 rounded-lg text-xs focus:outline-none"
                 style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
-                disabled={task.userRole === "viewer"}
+                disabled={!canEditAll}
               />
             </div>
 
@@ -344,39 +380,100 @@ export default function TaskDetail() {
 
       {activeTab === "discussion" && (
         <div className="space-y-4">
-          {/* Comment Input */}
-          <div className="flex gap-2">
-            <input
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddComment(); } }}
-              className="flex-1 px-3 py-2 rounded-lg text-sm transition-colors"
-              style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
-              placeholder="Add a comment... (use @name to mention)"
-              disabled={task.userRole === "viewer"}
-            />
-            <button
-              onClick={handleAddComment}
-              disabled={!commentText.trim()}
-              className="px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
-              style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}
-            >
-              <Send className="w-4 h-4" />
-            </button>
+          {/* Comment Input with @mention dropdown */}
+          <div className="relative">
+            <div className="flex gap-2">
+              <input
+                ref={commentInputRef}
+                value={commentText}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setCommentText(val);
+                  // Detect @mention trigger
+                  const cursorPos = e.target.selectionStart || val.length;
+                  const textBeforeCursor = val.slice(0, cursorPos);
+                  const atMatch = textBeforeCursor.match(/@([\w\s]*?)$/);
+                  if (atMatch) {
+                    setMentionQuery(atMatch[1]);
+                    setMentionSelectedIdx(0);
+                  } else {
+                    setMentionQuery(null);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (mentionQuery !== null && filteredMentionMembers.length > 0) {
+                    if (e.key === "ArrowDown") { e.preventDefault(); setMentionSelectedIdx((i) => Math.min(i + 1, filteredMentionMembers.length - 1)); return; }
+                    if (e.key === "ArrowUp") { e.preventDefault(); setMentionSelectedIdx((i) => Math.max(i - 1, 0)); return; }
+                    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); selectMention(filteredMentionMembers[mentionSelectedIdx]); return; }
+                    if (e.key === "Escape") { setMentionQuery(null); return; }
+                  }
+                  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddComment(); }
+                }}
+                className="flex-1 px-3 py-2 rounded-lg text-sm transition-colors"
+                style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                placeholder="Add a comment... (use @name to mention)"
+                disabled={task.userRole === "viewer"}
+              />
+              <button
+                onClick={handleAddComment}
+                disabled={!commentText.trim()}
+                className="px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
+                style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
+            {/* @mention dropdown */}
+            {mentionQuery !== null && filteredMentionMembers.length > 0 && (
+              <div className="absolute left-0 right-12 mt-1 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto animate-scale-in" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
+                {filteredMentionMembers.map((m: any, idx: number) => (
+                  <button
+                    key={m._id}
+                    type="button"
+                    onClick={() => selectMention(m)}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left transition-colors"
+                    style={{ background: idx === mentionSelectedIdx ? 'rgba(13,148,136,0.06)' : 'transparent', color: '#1a1d2e' }}
+                    onMouseEnter={() => setMentionSelectedIdx(idx)}
+                  >
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold" style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}>
+                      {m.user?.name?.charAt(0) || "?"}
+                    </div>
+                    <span className="font-medium">{m.user?.name || m.user?.email || "Unknown"}</span>
+                    <span className="ml-auto capitalize" style={{ color: '#9da2b3' }}>{m.role}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {/* Selected mentions display */}
+            {selectedMentionIds.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {selectedMentionIds.map((mid) => {
+                  const m = members?.find((mem: any) => mem.userId === mid);
+                  return (
+                    <span key={mid} className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}>
+                      @{m?.user?.name || "user"}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Comments */}
           <div className="space-y-3">
             {comments && comments.length > 0 ? (
-              comments.map((comment) => (
-                <div key={comment._id} className="p-3 rounded-lg" style={{ background: '#f8f6f3', border: '1px solid #e8eaef' }}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold" style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}>
-                      {comment.author?.name?.charAt(0) || "?"}
-                    </div>
-                    <span className="text-xs font-medium" style={{ color: '#1a1d2e' }}>{comment.author?.name || "Unknown"}</span>
-                    <span className="text-[10px]" style={{ color: '#9da2b3' }}>{formatTime(comment.createdAt)}</span>
-                    {comment.editedAt && <span className="text-[10px]" style={{ color: '#d1d5db' }}>(edited)</span>}
+              comments.map((comment) => {
+                const isOwn = comment.author?._id === task?.creator?._id;
+                return (
+                <div key={comment._id} className="flex gap-2.5 animate-fade-in" style={{ flexDirection: isOwn ? 'row-reverse' : 'row' }}>
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0" style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}>
+                    {comment.author?.name?.charAt(0) || "?"}
+                  </div>
+                  <div className="max-w-[80%]">
+                    <div className="flex items-center gap-2 mb-1" style={{ flexDirection: isOwn ? 'row-reverse' : 'row' }}>
+                      <span className="text-xs font-medium" style={{ color: '#1a1d2e' }}>{comment.author?.name || "Unknown"}</span>
+                      <span className="text-[10px]" style={{ color: '#9da2b3' }}>{formatTime(comment.createdAt)}</span>
+                      {comment.editedAt && <span className="text-[10px]" style={{ color: '#d1d5db' }}>(edited)</span>}
                     {comment.canEdit && (
                       <div className="ml-auto flex items-center gap-1">
                         <button
@@ -409,10 +506,16 @@ export default function TaskDetail() {
                       <button onClick={() => handleUpdateComment(comment._id)} className="text-xs font-medium" style={{ color: '#0d9488' }}>Save</button>
                     </div>
                   ) : (
-                    <p className="text-sm whitespace-pre-wrap" style={{ color: '#5e6278' }}>{comment.content}</p>
+                    <div className="rounded-xl px-3 py-2" style={{ background: isOwn ? 'rgba(13,148,136,0.06)' : '#f8f6f3', color: '#5e6278' }}>
+                      <p className="text-sm whitespace-pre-wrap" style={{ color: '#5e6278' }}>
+                        {renderMentionText(comment.content)}
+                      </p>
+                    </div>
                   )}
                 </div>
-              ))
+                </div>
+                );
+              })
             ) : (
               <div className="py-8 text-center text-sm" style={{ color: '#9da2b3' }}>
                 No comments yet. Start the conversation.
@@ -437,4 +540,19 @@ function formatTime(timestamp: number): string {
   if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
   if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
   return new Date(timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function renderMentionText(text: string) {
+  // Highlight @mentions in text
+  const parts = text.split(/(@[\w\s]+?)(?=[\s,.;!?"]|$)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("@")) {
+      return (
+        <span key={i} className="font-semibold" style={{ color: '#0d9488', background: 'rgba(13,148,136,0.06)', padding: '0 4px', borderRadius: '4px' }}>
+          {part}
+        </span>
+      );
+    }
+    return part;
+  });
 }

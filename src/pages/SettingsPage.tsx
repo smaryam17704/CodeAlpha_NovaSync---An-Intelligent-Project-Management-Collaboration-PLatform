@@ -9,7 +9,7 @@ export default function SettingsPage() {
   const updateUser = useMutation(api.users.updateProfile);
   const updatePrefs = useMutation(api.users.updateNotificationPrefs);
   const { signOut } = useAuthActions();
-  const [activeTab, setActiveTab] = useState<"profile" | "notifications" | "security">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "notifications" | "security" | "appearance">("profile");
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [saved, setSaved] = useState(false);
@@ -73,6 +73,7 @@ export default function SettingsPage() {
   const tabs = [
     { id: "profile" as const, label: "Profile", icon: User },
     { id: "notifications" as const, label: "Notifications", icon: Bell },
+    { id: "appearance" as const, label: "Appearance", icon: Shield },
     { id: "security" as const, label: "Security", icon: Shield },
   ];
 
@@ -182,6 +183,35 @@ export default function SettingsPage() {
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Appearance / Theme */}
+      {activeTab === "appearance" && (
+        <div className="space-y-6">
+          <div className="p-4 rounded-xl" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
+            <h3 className="text-sm font-semibold mb-3" style={{ color: '#1a1d2e' }}>Theme</h3>
+            <div className="flex gap-3">
+              {([
+                { value: "light", label: "Light" },
+                { value: "dark", label: "Dark" },
+              ] as const).map((t) => (
+                <button
+                  key={t.value}
+                  onClick={() => {
+                    const isDark = t.value === "dark";
+                    document.documentElement.classList.toggle("dark", isDark);
+                    try { localStorage.setItem("novasync_theme", t.value); } catch {}
+                  }}
+                  className="flex-1 py-3 rounded-lg text-sm font-medium border transition-colors"
+                  style={{ background: '#f4f6f9', borderColor: '#e8eaef', color: '#5e6278' }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] mt-2" style={{ color: '#9da2b3' }}>Switch between light and dark mode.</p>
+          </div>
         </div>
       )}
 

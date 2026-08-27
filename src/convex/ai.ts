@@ -428,12 +428,40 @@ export const copilotAnalysis = query({
 });
 
 export const taskSuggestions = query({
-  args: { prompt: v.string() },
-  handler: async (_ctx, args) => {
+  args: { prompt: v.string(), projectId: v.optional(v.id("projects")) },
+  handler: async (ctx, args) => {
     const prompt = args.prompt.toLowerCase();
     const generatedTasks: any[] = [];
 
-    if (prompt.includes("checkout") || prompt.includes("payment")) {
+    // Load project context if available
+    let projectName = "the project";
+    let projectDescription = "";
+    let existingTaskTitles: string[] = [];
+    if (args.projectId) {
+      const project = await ctx.db.get(args.projectId);
+      if (project) {
+        projectName = project.title;
+        projectDescription = (project.description || "").toLowerCase();
+        const existingTasks = await ctx.db.query("tasks").withIndex("by_project", (q: any) => q.eq("projectId", args.projectId)).collect();
+        existingTaskTitles = existingTasks.map((t) => t.title.toLowerCase());
+      }
+    }
+
+    const context = `${projectName} ${projectDescription} ${args.prompt}`.toLowerCase();
+
+    // Dynamic task generation based on actual project context + user prompt
+    if (context.includes("test") || context.includes("qa") || context.includes("quality") || context.includes("bug")) {
+      generatedTasks.push(
+        { title: "Create test plan document", priority: "high", description: "Define test strategy, scope, and acceptance criteria" },
+        { title: "Write unit tests", priority: "high", description: "Cover core business logic with unit tests" },
+        { title: "Write integration tests", priority: "high", description: "Test component interactions and API endpoints" },
+        { title: "Test edge cases", priority: "medium", description: "Identify and test boundary conditions" },
+        { title: "Performance testing", priority: "medium", description: "Benchmark response times and resource usage" },
+        { title: "Security review", priority: "high", description: "Review for common vulnerabilities" },
+        { title: "Cross-browser testing", priority: "low", description: "Verify functionality across browsers" },
+        { title: "Document test results", priority: "low", description: "Summarize findings and log defects" }
+      );
+    } else if (context.includes("checkout") || context.includes("payment") || context.includes("ecommerce") || context.includes("e-commerce")) {
       generatedTasks.push(
         { title: "Design checkout UI", priority: "high", description: "Create wireframes and design for the checkout interface" },
         { title: "Implement cart validation", priority: "medium", description: "Add validation rules for cart items" },
@@ -443,7 +471,7 @@ export const taskSuggestions = query({
         { title: "Order confirmation flow", priority: "medium", description: "Build order confirmation page and email notification" },
         { title: "Write integration tests", priority: "medium", description: "Test the complete checkout flow" }
       );
-    } else if (prompt.includes("auth") || prompt.includes("login")) {
+    } else if (context.includes("auth") || context.includes("login") || context.includes("register")) {
       generatedTasks.push(
         { title: "Design auth UI screens", priority: "high", description: "Create login, register, and forgot password screens" },
         { title: "Implement auth API", priority: "high", description: "Build authentication endpoints" },
@@ -452,7 +480,7 @@ export const taskSuggestions = query({
         { title: "OAuth integration", priority: "low", description: "Add social login providers" },
         { title: "Add rate limiting", priority: "medium", description: "Protect auth endpoints" }
       );
-    } else if (prompt.includes("dashboard") || prompt.includes("analytics")) {
+    } else if (context.includes("dashboard") || context.includes("analytics") || context.includes("report")) {
       generatedTasks.push(
         { title: "Design dashboard layout", priority: "high", description: "Create wireframes for the analytics dashboard" },
         { title: "Build data aggregation service", priority: "high", description: "Create backend service to aggregate analytics data" },
@@ -460,7 +488,7 @@ export const taskSuggestions = query({
         { title: "Real-time data updates", priority: "medium", description: "Implement live data updates" },
         { title: "Export functionality", priority: "low", description: "Add CSV/PDF export for reports" }
       );
-    } else if (prompt.includes("api") || prompt.includes("backend")) {
+    } else if (context.includes("api") || context.includes("backend") || context.includes("server")) {
       generatedTasks.push(
         { title: "Define API specification", priority: "high", description: "Document all API endpoints and data models" },
         { title: "Implement core API endpoints", priority: "high", description: "Build the main CRUD operations" },
@@ -470,19 +498,46 @@ export const taskSuggestions = query({
         { title: "API documentation", priority: "low", description: "Generate OpenAPI/Swagger docs" },
         { title: "Write API tests", priority: "medium", description: "Test all endpoints" }
       );
-    } else {
+    } else if (context.includes("design") || context.includes("ui") || context.includes("ux") || context.includes("frontend")) {
       generatedTasks.push(
-        { title: `Plan: ${args.prompt}`, priority: "high", description: "Research and plan the implementation" },
-        { title: "Implement core functionality", priority: "high", description: "Build the main components" },
+        { title: "Create design system", priority: "high", description: "Define typography, colors, spacing, and component tokens" },
+        { title: "Build core UI components", priority: "high", description: "Implement reusable component library" },
+        { title: "Responsive layouts", priority: "medium", description: "Ensure all pages work across devices" },
+        { title: "Animation and transitions", priority: "low", description: "Add micro-interactions for polish" },
+        { title: "Accessibility audit", priority: "medium", description: "Verify WCAG compliance" },
+        { title: "Dark mode support", priority: "low", description: "Implement dark theme variant" }
+      );
+    } else if (context.includes("deploy") || context.includes("devops") || context.includes("ci") || context.includes("infrastructure")) {
+      generatedTasks.push(
+        { title: "Set up CI/CD pipeline", priority: "high", description: "Automate build, test, and deployment" },
+        { title: "Configure staging environment", priority: "high", description: "Mirror production for testing" },
+        { title: "Set up monitoring and alerts", priority: "medium", description: "Track application health and errors" },
+        { title: "Database backup strategy", priority: "medium", description: "Automated backups and recovery plan" },
+        { title: "Performance optimization", priority: "medium", description: "Optimize bundle size and load times" },
+        { title: "Security hardening", priority: "high", description: "Review production security posture" }
+      );
+    } else {
+      // Generic context-aware tasks: derive from project name + user prompt
+      const titleWords = projectName.split(/\s+/).filter((w) => w.length > 3).slice(0, 2).join(" ");
+      generatedTasks.push(
+        { title: `Plan ${titleWords || "project"} milestones`, priority: "high", description: "Define key deliverables and timeline" },
+        { title: "Implement core functionality", priority: "high", description: "Build the main features based on requirements" },
         { title: "Create UI/UX", priority: "medium", description: "Design and implement the user interface" },
         { title: "Write tests", priority: "medium", description: "Add unit and integration tests" },
-        { title: "Documentation", priority: "low", description: "Write documentation" }
+        { title: "Code review", priority: "medium", description: "Review code quality and best practices" },
+        { title: "Documentation", priority: "low", description: "Write API and user documentation" },
+        { title: "Performance optimization", priority: "low", description: "Profile and optimize critical paths" },
+        { title: "Deploy to production", priority: "high", description: "Set up deployment pipeline and release" }
       );
     }
 
+    // Filter out tasks that already exist in the project
+    const filtered = generatedTasks.filter((t) => !existingTaskTitles.includes(t.title.toLowerCase()));
+
     return {
-      tasks: generatedTasks.map((t, i) => ({ ...t, status: "todo" as const, order: i })),
+      tasks: filtered.map((t, i) => ({ ...t, status: "todo" as const, order: i })),
       prompt: args.prompt,
+      projectName,
     };
   },
 });

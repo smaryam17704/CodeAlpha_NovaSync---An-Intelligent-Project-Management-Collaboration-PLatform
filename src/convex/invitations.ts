@@ -68,17 +68,19 @@ export const createInvitation = mutation({
     );
     if (activeInvitation) throw new Error("An invitation has already been sent to this email for this project.");
 
-    // Check if user exists
+    // Check if user exists in NovaSync — only valid users can be invited
     const invitee = await ctx.db
       .query("users")
       .withIndex("email", (q) => q.eq("email", args.email))
       .first();
 
-    // Check if already a member
-    if (invitee) {
-      const existingMember = await getProjectMember(ctx, args.projectId, invitee._id);
-      if (existingMember) throw new Error("This user is already a member of the project.");
+    if (!invitee) {
+      throw new Error("Invalid user or email not found. The user must have a NovaSync account to be invited.");
     }
+
+    // Check if already a member
+    const existingMember = await getProjectMember(ctx, args.projectId, invitee._id);
+    if (existingMember) throw new Error("This user is already a member of the project.");
 
     const project = await ctx.db.get(args.projectId);
     if (!project) throw new Error("Project not found");
@@ -89,7 +91,7 @@ export const createInvitation = mutation({
       workspaceId: project.workspaceId,
       invitedBy: userId,
       inviteeEmail: args.email,
-      inviteeId: invitee?._id,
+      inviteeId: invitee._id,
       role: args.role,
       status: "pending",
       createdAt: now,

@@ -50,7 +50,8 @@ export const create = mutation({
     if (!task) throw new Error("Task not found");
 
     const member = await getProjectMember(ctx, task.projectId, userId);
-    if (!member || member.role === "viewer") throw new Error("Insufficient permissions");
+    if (!member) throw new Error("Not a project member");
+    // All project members including viewers can comment (communication only)
 
     const now = Date.now();
     const commentId = await ctx.db.insert("comments", {
@@ -73,6 +74,11 @@ export const create = mutation({
 
     if (args.mentions && args.mentions.length > 0) {
       for (const mentionedUserId of args.mentions) {
+        // Validate that mentioned user is an active project member
+        const mentionedMember = await getProjectMember(ctx, task.projectId, mentionedUserId);
+        if (!mentionedMember) {
+          throw new Error("You can mention only the team members.");
+        }
         if (mentionedUserId !== userId) {
           const mentionedUser = await ctx.db.get(mentionedUserId);
           await createNotification(ctx, {

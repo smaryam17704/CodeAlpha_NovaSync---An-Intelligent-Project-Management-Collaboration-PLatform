@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { Link, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
-import { Plus, FolderKanban, Users, User, ArrowRight, X } from "lucide-react";
+import { Plus, FolderKanban, Users, User, ArrowRight, X, Pencil, Check } from "lucide-react";
 
 interface Props {
   activeWorkspace: string | null;
@@ -53,7 +53,42 @@ export default function ProjectsPage({ activeWorkspace }: Props) {
     }
   };
 
-  const colors = ["#0d9488", "#6366f1", "#16a34a", "#d97706", "#dc2626", "#c5a55a"];
+  // Project editing state
+  const [editingProject, setEditingProject] = useState<any>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editColor, setEditColor] = useState("#0d9488");
+  const [savingEdit, setSavingEdit] = useState(false);
+  const updateProject = useMutation(api.projects.update);
+
+  const colors = ["#0d9488", "#6366f1", "#16a34a", "#d97706", "#dc2626", "#c5a55a", "#8b5cf6", "#3b82f6", "#f59e0b", "#64748b"];
+
+  const openEditModal = (project: any, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingProject(project);
+    setEditTitle(project.title);
+    setEditDescription(project.description || "");
+    setEditColor(project.color || "#0d9488");
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingProject || !editTitle.trim()) return;
+    setSavingEdit(true);
+    try {
+      await updateProject({
+        projectId: editingProject._id,
+        title: editTitle.trim(),
+        description: editDescription.trim() || undefined,
+        color: editColor,
+      });
+      setEditingProject(null);
+    } catch (err) {
+      console.error("Failed to update project:", err);
+    } finally {
+      setSavingEdit(false);
+    }
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -84,9 +119,20 @@ export default function ProjectsPage({ activeWorkspace }: Props) {
             >
               <Link
                 to={`/app/projects/${project._id}`}
-                className="block p-5 rounded-xl transition-all group hover:shadow-lg hover:shadow-black/[0.03]"
+                className="block p-5 rounded-xl transition-all group hover:shadow-lg hover:shadow-black/[0.03] relative"
                 style={{ background: '#ffffff', border: '1px solid #e8eaef' }}
               >
+                {/* Edit button for owner */}
+                {project.role === "owner" && (
+                  <button
+                    onClick={(e) => openEditModal(project, e)}
+                    className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg"
+                    style={{ background: '#f4f6f9', color: '#9da2b3' }}
+                    title="Edit project"
+                  >
+                    <Pencil className="w-3 h-3" />
+                  </button>
+                )}
                 <div className="flex items-start justify-between mb-3">
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold"
@@ -227,6 +273,65 @@ export default function ProjectsPage({ activeWorkspace }: Props) {
                 {creating ? "Creating..." : "Create Project"}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Project Modal */}
+      {editingProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setEditingProject(null)}>
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.3)' }} />
+          <div className="relative w-full max-w-md rounded-xl shadow-2xl animate-scale-in" style={{ background: '#ffffff', border: '1px solid #e8eaef' }} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-5" style={{ borderBottom: '1px solid #f0f1f5' }}>
+              <h2 className="text-lg font-semibold" style={{ color: '#1a1d2e' }}>Edit Project</h2>
+              <button onClick={() => setEditingProject(null)} style={{ color: '#9da2b3' }}>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Project name</label>
+                <input
+                  autoFocus
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg text-sm"
+                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Description</label>
+                <textarea
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg text-sm resize-none"
+                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Color</label>
+                <div className="flex gap-2 flex-wrap">
+                  {colors.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setEditColor(c)}
+                      className={`w-7 h-7 rounded-lg transition-transform ${editColor === c ? 'scale-110 ring-2 ring-offset-2' : ''}`}
+                      style={{ background: c }}
+                    />
+                  ))}
+                </div>
+              </div>
+              <button
+                onClick={handleSaveEdit}
+                disabled={savingEdit || !editTitle.trim()}
+                className="w-full py-2.5 text-white font-semibold rounded-lg transition-all hover:shadow-md disabled:opacity-50 text-sm flex items-center justify-center gap-2"
+                style={{ background: '#0d9488' }}
+              >
+                {savingEdit ? "Saving..." : <><Check className="w-4 h-4" /> Save Changes</>}
+              </button>
+            </div>
           </div>
         </div>
       )}
