@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useAuthActions } from "@convex-dev/auth/react";
@@ -25,6 +25,9 @@ export default function SettingsPage() {
   });
   const [prefsInitialized, setPrefsInitialized] = useState(false);
   const [prefsSaved, setPrefsSaved] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    try { return localStorage.getItem("novasync_theme") || "light"; } catch { return "light"; }
+  });
 
   useEffect(() => {
     if (currentUser && !initialized) {
@@ -87,10 +90,10 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6 animate-fade-in max-w-2xl">
-      <h1 className="text-2xl font-extrabold" style={{ color: '#1a1d2e' }}>Settings</h1>
+      <h1 className="text-2xl font-extrabold" style={{ color: 'var(--nova-text)' }}>Settings</h1>
 
       {/* Tabs */}
-      <div className="flex gap-1" style={{ borderBottom: '1px solid #e8eaef' }}>
+      <div className="flex gap-1" style={{ borderBottom: '1px solid var(--nova-border)' }}>
         {tabs.map((tab) => {
           const active = activeTab === tab.id;
           return (
@@ -114,32 +117,32 @@ export default function SettingsPage() {
       {activeTab === "profile" && (
         <div className="space-y-4">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold" style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}>
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold" style={{ background: 'var(--nova-teal-bg)', color: 'var(--nova-teal)' }}>
               {currentUser?.name?.charAt(0) || "?"}
             </div>
             <div>
-              <div className="text-sm font-semibold" style={{ color: '#1a1d2e' }}>{currentUser?.name || "User"}</div>
-              <div className="text-xs" style={{ color: '#9da2b3' }}>{currentUser?.email || ""}</div>
+              <div className="text-sm font-semibold" style={{ color: 'var(--nova-text)' }}>{currentUser?.name || "User"}</div>
+              <div className="text-xs" style={{ color: 'var(--nova-text-muted)' }}>{currentUser?.email || ""}</div>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Full Name</label>
+            <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--nova-text-secondary)' }}>Full Name</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-3 py-2 rounded-lg text-sm transition-colors"
-              style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+              style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Bio</label>
+            <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--nova-text-secondary)' }}>Bio</label>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               className="w-full px-3 py-2 rounded-lg text-sm transition-colors resize-none"
-              style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+              style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
               rows={3}
               placeholder="Tell us about yourself..."
             />
@@ -166,7 +169,7 @@ export default function SettingsPage() {
             {prefsSaved && <span className="text-xs font-medium flex items-center gap-1" style={{ color: '#16a34a' }}><Check className="w-3 h-3" /> Saved</span>}
           </div>
           {notificationPrefs.map((pref) => (
-            <div key={pref.key} className="flex items-center justify-between p-4 rounded-lg" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
+            <div key={pref.key} className="flex items-center justify-between p-4 rounded-lg" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}>
               <div>
                 <div className="text-sm font-medium" style={{ color: '#1a1d2e' }}>{pref.label}</div>
                 <div className="text-xs mt-0.5" style={{ color: '#9da2b3' }}>{pref.description}</div>
@@ -188,27 +191,35 @@ export default function SettingsPage() {
 
       {/* Appearance / Theme */}
       {activeTab === "appearance" && (
-        <div className="space-y-6">
-          <div className="p-4 rounded-xl" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
-            <h3 className="text-sm font-semibold mb-3" style={{ color: '#1a1d2e' }}>Theme</h3>
+        <div className="space-y-6">              <div className="p-4 rounded-xl" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}>
+            <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--nova-text)' }}>Theme</h3>
             <div className="flex gap-3">
               {([
                 { value: "light", label: "Light" },
                 { value: "dark", label: "Dark" },
-              ] as const).map((t) => (
-                <button
-                  key={t.value}
-                  onClick={() => {
-                    const isDark = t.value === "dark";
-                    document.documentElement.classList.toggle("dark", isDark);
-                    try { localStorage.setItem("novasync_theme", t.value); } catch {}
-                  }}
-                  className="flex-1 py-3 rounded-lg text-sm font-medium border transition-colors"
-                  style={{ background: '#f4f6f9', borderColor: '#e8eaef', color: '#5e6278' }}
-                >
-                  {t.label}
-                </button>
-              ))}
+              ] as const).map((t) => {
+                const isActive = currentTheme === t.value;
+                return (
+                  <button
+                    key={t.value}
+                    onClick={() => {
+                      const isDark = t.value === "dark";
+                      document.documentElement.classList.toggle("dark", isDark);
+                      try { localStorage.setItem("novasync_theme", t.value); } catch {}
+                      setCurrentTheme(t.value);
+                    }}
+                    className="flex-1 py-3 rounded-lg text-sm font-medium border transition-all"
+                    style={{
+                      background: isActive ? 'var(--nova-teal-bg)' : 'var(--nova-surface-cool)',
+                      borderColor: isActive ? 'var(--nova-teal)' : 'var(--nova-border)',
+                      color: isActive ? 'var(--nova-teal)' : 'var(--nova-text-secondary)',
+                      fontWeight: isActive ? 600 : 400,
+                    }}
+                  >
+                    {t.label}
+                  </button>
+                );
+              })}
             </div>
             <p className="text-[10px] mt-2" style={{ color: '#9da2b3' }}>Switch between light and dark mode.</p>
           </div>
@@ -218,12 +229,12 @@ export default function SettingsPage() {
       {/* Security */}
       {activeTab === "security" && (
         <div className="space-y-6">
-          <div className="p-4 rounded-xl" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
-            <h3 className="text-sm font-semibold mb-2" style={{ color: '#1a1d2e' }}>Account</h3>
-            <div className="text-xs mb-3" style={{ color: '#5e6278' }}>
+          <div className="p-4 rounded-xl" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}>
+            <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--nova-text)' }}>Account</h3>
+            <div className="text-xs mb-3" style={{ color: 'var(--nova-text-secondary)' }}>
               Email: {currentUser?.email || "Not set"}
             </div>
-            <div className="text-xs" style={{ color: '#9da2b3' }}>
+            <div className="text-xs" style={{ color: 'var(--nova-text-muted)' }}>
               Account is secured with Convex Auth. Password is hashed and stored securely.
             </div>
           </div>

@@ -415,7 +415,34 @@ export const copilotAnalysis = query({
       };
     }
 
-    // ── GENERIC / FALLBACK — still context-aware ──
+    // ── OFF-TOPIC DETECTION — redirect gracefully ──
+    const projectKeywords = [
+      "project", "task", "status", "team", "work", "assign", "deadline",
+      "progress", "health", "block", "risk", "priority", "overdue",
+      "review", "sprint", "milestone", "backlog", "feature", "bug",
+      "story", "epic", "release", "deploy", "test", "qa",
+      "design", "develop", "build", "ship", "deliver", "plan",
+      "schedule", "resource", "capacity", "velocity", "burndown",
+      "standup", "retrospective", "sprint", "kanban", "board",
+      "comment", "discussion", "mention", "notification",
+      "member", "admin", "viewer", "role", "permission",
+      "workspace", "settings", "profile", "activity",
+      "create", "update", "delete", "edit", "save",
+      "what", "who", "how", "when", "where", "which", "why",
+      "report", "summary", "overview", "suggest", "recommend",
+      "focus", "next", "should", "improve", "help",
+    ];
+    const words = q.split(/\s+/);
+    const hasProjectKeyword = words.some((w) => projectKeywords.includes(w));
+
+    if (!hasProjectKeyword && words.length > 3) {
+      return {
+        answer: `I'm Nova AI, focused on helping with your NovaSync projects. I can help you analyze "${projectName}" — try asking about:\n\n📊 Project status or health\n⚠️ Overdue tasks\n👥 Team workload\n📅 Deadlines\n🚧 What's blocking the project\n💡 Recommendations\n🔍 A specific task\n\nWhat would you like to know about this project?`,
+        confidence: "medium",
+      };
+    }
+
+    // ── GENERIC / FALLBACK — context-aware ──
     const taskStatusSummary = total === 0
       ? "The project has no tasks yet."
       : `${completedPercent}% complete with ${total} tasks: ${done} done, ${inProgress} in progress, ${review} in review, ${todo} to do.`;

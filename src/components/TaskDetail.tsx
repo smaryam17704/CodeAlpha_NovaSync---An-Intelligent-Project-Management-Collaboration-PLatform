@@ -24,6 +24,7 @@ export default function TaskDetail() {
   const task = useQuery(api.tasks.get, taskId ? { taskId: taskId as any } : "skip");
   const comments = useQuery(api.comments.list, taskId ? { taskId: taskId as any } : "skip");
   const members = useQuery(api.projects.getMembers, projectId ? { projectId: projectId as any } : "skip");
+  const taskActivity = useQuery(api.activity.listByTask, (taskId && projectId) ? { taskId: taskId as any, projectId: projectId as any } : "skip");
 
   const updateTask = useMutation(api.tasks.update);
   const updateStatus = useMutation(api.tasks.updateStatus);
@@ -274,7 +275,7 @@ export default function TaskDetail() {
                 value={editDescription !== null ? editDescription : (task.description || "")}
                 onChange={(e) => { setEditDescription(e.target.value); markChanged(); }}
                 className="w-full px-3 py-2.5 rounded-lg text-sm transition-colors resize-none min-h-[80px] leading-relaxed"
-                style={{ background: '#f8f6f3', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                style={{ background: 'var(--nova-surface-warm)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                 placeholder="Add a description..."
                 rows={Math.max(3, Math.ceil((task.description || "").length / 60))}
                 disabled={task.userRole === "viewer"}
@@ -291,7 +292,7 @@ export default function TaskDetail() {
                 value={editStatus !== null ? editStatus : task.status}
                 onChange={(e) => { setEditStatus(e.target.value); markChanged(); }}
                 className="w-full px-2.5 py-1.5 rounded-lg text-xs focus:outline-none"
-                style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                 disabled={task.userRole === "viewer"}
               >
                 {statusOptions.map((s) => (
@@ -307,7 +308,7 @@ export default function TaskDetail() {
                 value={editPriority !== null ? editPriority : task.priority}
                 onChange={(e) => { setEditPriority(e.target.value); markChanged(); }}
                 className="w-full px-2.5 py-1.5 rounded-lg text-xs focus:outline-none"
-                style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                 disabled={!canEditAll}
               >
                 {priorityOptions.map((p) => (
@@ -323,7 +324,7 @@ export default function TaskDetail() {
                 value={editAssignee !== undefined ? (editAssignee || "") : (task.assigneeId || "")}
                 onChange={(e) => { setEditAssignee(e.target.value || undefined); markChanged(); }}
                 className="w-full px-2.5 py-1.5 rounded-lg text-xs focus:outline-none"
-                style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                 disabled={!canEditAll}
               >
                 <option value="">Unassigned</option>
@@ -341,7 +342,7 @@ export default function TaskDetail() {
                 value={editDueDate !== null ? editDueDate : (task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "")}
                 onChange={(e) => { setEditDueDate(e.target.value); markChanged(); }}
                 className="w-full px-2.5 py-1.5 rounded-lg text-xs focus:outline-none"
-                style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                 disabled={!canEditAll}
               />
             </div>
@@ -410,29 +411,28 @@ export default function TaskDetail() {
                   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddComment(); }
                 }}
                 className="flex-1 px-3 py-2 rounded-lg text-sm transition-colors"
-                style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                 placeholder="Add a comment... (use @name to mention)"
                 disabled={task.userRole === "viewer"}
               />
               <button
                 onClick={handleAddComment}
                 disabled={!commentText.trim()}
-                className="px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
-                style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}
+                className="px-3 py-2 rounded-lg transition-colors disabled:opacity-50"                        style={{ background: 'var(--nova-teal-bg)', color: 'var(--nova-teal)' }}
               >
                 <Send className="w-4 h-4" />
               </button>
             </div>
             {/* @mention dropdown */}
             {mentionQuery !== null && filteredMentionMembers.length > 0 && (
-              <div className="absolute left-0 right-12 mt-1 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto animate-scale-in" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
+              <div className="absolute left-0 right-12 mt-1 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto animate-scale-in" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}>
                 {filteredMentionMembers.map((m: any, idx: number) => (
                   <button
                     key={m._id}
                     type="button"
                     onClick={() => selectMention(m)}
                     className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left transition-colors"
-                    style={{ background: idx === mentionSelectedIdx ? 'rgba(13,148,136,0.06)' : 'transparent', color: '#1a1d2e' }}
+                    style={{ background: idx === mentionSelectedIdx ? 'var(--nova-teal-bg)' : 'transparent', color: 'var(--nova-text)' }}
                     onMouseEnter={() => setMentionSelectedIdx(idx)}
                   >
                     <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold" style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}>
@@ -501,13 +501,13 @@ export default function TaskDetail() {
                         onChange={(e) => setEditText(e.target.value)}
                         onKeyDown={(e) => { if (e.key === "Enter") handleUpdateComment(comment._id); if (e.key === "Escape") setEditingComment(null); }}
                         className="flex-1 px-2 py-1 rounded text-xs focus:outline-none"
-                        style={{ background: '#ffffff', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                        style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                       />
                       <button onClick={() => handleUpdateComment(comment._id)} className="text-xs font-medium" style={{ color: '#0d9488' }}>Save</button>
                     </div>
                   ) : (
-                    <div className="rounded-xl px-3 py-2" style={{ background: isOwn ? 'rgba(13,148,136,0.06)' : '#f8f6f3', color: '#5e6278' }}>
-                      <p className="text-sm whitespace-pre-wrap" style={{ color: '#5e6278' }}>
+                    <div className="rounded-xl px-3 py-2" style={{ background: isOwn ? 'var(--nova-teal-bg)' : 'var(--nova-surface-warm)', color: 'var(--nova-text-secondary)' }}>
+                      <p className="text-sm whitespace-pre-wrap" style={{ color: 'var(--nova-text-secondary)' }}>
                         {renderMentionText(comment.content)}
                       </p>
                     </div>
@@ -526,8 +526,27 @@ export default function TaskDetail() {
       )}
 
       {activeTab === "activity" && (
-        <div className="py-8 text-center text-sm" style={{ color: '#9da2b3' }}>
-          Task activity will appear here.
+        <div className="space-y-2">
+          {taskActivity && taskActivity.length > 0 ? (
+            taskActivity.map((event) => (
+              <div key={event._id} className="flex items-start gap-3 p-3 rounded-lg animate-fade-in" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0" style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}>
+                  {event.user?.name?.charAt(0) || '?'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium" style={{ color: '#1a1d2e' }}>{event.user?.name || 'Someone'}</span>
+                    <span className="text-[10px]" style={{ color: '#9da2b3' }}>{formatTime(event.createdAt)}</span>
+                  </div>
+                  <p className="text-xs mt-0.5" style={{ color: '#5e6278' }}>{event.description}</p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="py-8 text-center text-sm" style={{ color: '#9da2b3' }}>
+              No activity recorded for this task yet.
+            </div>
+          )}
         </div>
       )}
     </div>

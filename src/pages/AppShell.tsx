@@ -143,7 +143,7 @@ export default function AppShell() {
     exact ? location.pathname === path : location.pathname.startsWith(path);
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#f4f6f9' }}>
+    <div className="min-h-screen flex" style={{ background: 'var(--nova-surface-cool)' }}>
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 lg:hidden" style={{ background: 'rgba(0,0,0,0.3)' }} onClick={() => setSidebarOpen(false)} />
@@ -152,10 +152,10 @@ export default function AppShell() {
       {/* Sidebar */}
       <aside
         className={`fixed lg:sticky top-0 left-0 z-50 h-screen w-60 flex flex-col transition-transform duration-200 ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
-        style={{ background: '#ffffff', borderRight: '1px solid #e8eaef' }}
+        style={{ background: 'var(--nova-surface)', borderRight: '1px solid var(--nova-border)' }}
       >
         {/* Logo */}
-        <div className="h-14 flex items-center justify-between px-4" style={{ borderBottom: '1px solid #f0f1f5' }}>
+        <div className="h-14 flex items-center justify-between px-4" style={{ borderBottom: '1px solid var(--nova-border-light)' }}>
           <Link to="/app" className="flex items-center gap-2.5">
             <NovaSyncLogo size={24} />
             <span className="text-sm font-bold" style={{ color: '#1a1d2e' }}>NovaSync</span>
@@ -166,12 +166,12 @@ export default function AppShell() {
         </div>
 
         {/* Workspace selector */}
-        <div className="px-3 py-3" style={{ borderBottom: '1px solid #f0f1f5' }}>
-          <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-colors group" style={{ background: '#f4f6f9' }}>
-            <div className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" style={{ background: 'rgba(13,148,136,0.1)', color: '#0d9488' }}>
+        <div className="px-3 py-3" style={{ borderBottom: '1px solid var(--nova-border-light)' }}>
+          <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-colors group" style={{ background: 'var(--nova-surface-cool)' }}>
+            <div className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" style={{ background: 'var(--nova-teal-bg)', color: 'var(--nova-teal)' }}>
               {wsInitial}
             </div>
-            <span className="text-xs font-medium truncate flex-1" style={{ color: '#1a1d2e' }}>
+            <span className="text-xs font-medium truncate flex-1" style={{ color: 'var(--nova-text)' }}>
               {wsName}
             </span>
             <button
@@ -227,8 +227,8 @@ export default function AppShell() {
                 onClick={() => setSidebarOpen(false)}
                 className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all"
                 style={{
-                  background: active ? 'rgba(13,148,136,0.06)' : 'transparent',
-                  color: active ? '#0d9488' : '#5e6278',
+                  background: active ? 'var(--nova-teal-bg)' : 'transparent',
+                  color: active ? 'var(--nova-teal)' : 'var(--nova-text-secondary)',
                   fontWeight: active ? 600 : 400,
                 }}
               >
@@ -248,7 +248,7 @@ export default function AppShell() {
         </nav>
 
         {/* Back to Home */}
-        <div className="px-3 py-2" style={{ borderTop: '1px solid #f0f1f5' }}>
+        <div className="px-3 py-2" style={{ borderTop: '1px solid var(--nova-border-light)' }}>
           <Link
             to="/"
             className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors"
@@ -262,12 +262,12 @@ export default function AppShell() {
         {/* User */}
         <div className="px-3 py-3">
           <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg">
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: 'rgba(13,148,136,0.1)', color: '#0d9488' }}>
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: 'var(--nova-teal-bg)', color: 'var(--nova-teal)' }}>
               {currentUser?.name?.charAt(0) || <User className="w-3.5 h-3.5" />}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-medium truncate" style={{ color: '#1a1d2e' }}>{currentUser?.name || "User"}</div>
-              <div className="text-[10px] truncate" style={{ color: '#9da2b3' }}>{currentUser?.email || ""}</div>
+              <div className="text-xs font-medium truncate" style={{ color: 'var(--nova-text)' }}>{currentUser?.name || "User"}</div>
+              <div className="text-[10px] truncate" style={{ color: 'var(--nova-text-muted)' }}>{currentUser?.email || ""}</div>
             </div>
             <button
               onClick={() => signOut()}
@@ -286,7 +286,7 @@ export default function AppShell() {
         {/* Top bar */}
         <header
           className="sticky top-0 z-30 h-14 flex items-center gap-3 px-4 sm:px-6"
-          style={{ background: 'rgba(244,246,249,0.85)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e8eaef' }}
+          style={{ background: 'color-mix(in srgb, var(--nova-surface-cool) 85%, transparent)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--nova-border)' }}
         >
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden" style={{ color: '#5e6278' }}>
             <Menu className="w-5 h-5" />
@@ -341,9 +341,9 @@ export default function AppShell() {
       {editingWorkspace && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setEditingWorkspace(false)}>
           <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.3)' }} />
-          <div className="relative w-full max-w-sm rounded-xl shadow-2xl animate-scale-in" style={{ background: '#ffffff', border: '1px solid #e8eaef' }} onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-5" style={{ borderBottom: '1px solid #f0f1f5' }}>
-              <h2 className="text-lg font-semibold" style={{ color: '#1a1d2e' }}>Edit Workspace</h2>
+          <div className="relative w-full max-w-sm rounded-xl shadow-2xl animate-scale-in" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-5" style={{ borderBottom: '1px solid var(--nova-border-light)' }}>
+              <h2 className="text-lg font-semibold" style={{ color: 'var(--nova-text)' }}>Edit Workspace</h2>
               <button onClick={() => setEditingWorkspace(false)} style={{ color: '#9da2b3' }}>
                 <X className="w-5 h-5" />
               </button>
@@ -356,7 +356,7 @@ export default function AppShell() {
                   value={editWsName}
                   onChange={(e) => setEditWsName(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg text-sm transition-colors"
-                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                  style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                   placeholder="Workspace name"
                 />
               </div>
@@ -366,7 +366,7 @@ export default function AppShell() {
                   value={editWsDesc}
                   onChange={(e) => setEditWsDesc(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg text-sm transition-colors resize-none"
-                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                  style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                   placeholder="Workspace description (optional)"
                   rows={2}
                 />
@@ -387,10 +387,9 @@ export default function AppShell() {
       {/* Command Palette */}
       {commandOpen && (
         <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[15vh]" onClick={() => setCommandOpen(false)}>
-          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.25)' }} />
-          <div
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.25)' }} />            <div
             className="relative w-full max-w-md rounded-xl shadow-2xl overflow-hidden animate-scale-in"
-            style={{ background: '#ffffff', border: '1px solid #e8eaef' }}
+            style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}
             onClick={(e) => e.stopPropagation()}
           >
             <input

@@ -159,7 +159,7 @@ export default function NovaAI({ activeWorkspace }: Props) {
             setIsProcessing(false);
           }}
           className="px-3 py-1.5 rounded-lg text-xs focus:outline-none transition-colors"
-          style={{ background: "#ffffff", border: "1px solid #e8eaef", color: "#1a1d2e" }}
+          style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
         >
           <option value="">Select a project</option>
           {projects?.filter(Boolean).map((p: any) => (
@@ -198,7 +198,7 @@ export default function NovaAI({ activeWorkspace }: Props) {
             </div>
           ) : (
             <>
-              <div className="h-[420px] overflow-y-auto space-y-3 p-4 rounded-xl" style={{ background: "#f8f6f3", border: "1px solid #e8eaef" }}>
+              <div className="h-[420px] overflow-y-auto space-y-3 p-4 rounded-xl" style={{ background: 'var(--nova-surface-warm)', border: '1px solid var(--nova-border)' }}>
                 {chatHistory.length === 0 && (
                   <div className="text-center py-10">
                     <Brain className="w-12 h-12 mx-auto mb-3" style={{ color: "rgba(99,102,241,0.2)" }} />
@@ -222,9 +222,9 @@ export default function NovaAI({ activeWorkspace }: Props) {
                 {chatHistory.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                     <div className="max-w-[85%] p-3 rounded-xl text-sm whitespace-pre-wrap" style={{
-                      background: msg.role === "user" ? "rgba(13,148,136,0.06)" : "#ffffff",
-                      color: msg.role === "user" ? "#0d9488" : "#5e6278",
-                      border: msg.role === "user" ? "1px solid rgba(13,148,136,0.12)" : "1px solid #e8eaef",
+                      background: msg.role === "user" ? 'var(--nova-teal-bg)' : 'var(--nova-surface)',
+                      color: msg.role === "user" ? 'var(--nova-teal)' : 'var(--nova-text-secondary)',
+                      border: msg.role === "user" ? '1px solid rgba(13,148,136,0.12)' : '1px solid var(--nova-border)',
                     }}>
                       {msg.content}
                     </div>
@@ -233,7 +233,8 @@ export default function NovaAI({ activeWorkspace }: Props) {
                 {/* Loading indicator while waiting for copilot */}
                 {isProcessing && (
                   <div className="flex justify-start">
-                    <div className="max-w-[85%] p-3 rounded-xl text-sm" style={{ background: "#ffffff", border: "1px solid #e8eaef", color: "#9da2b3" }}>
+                    <div className="max-w-[85%] p-3 rounded-xl text-sm"                  style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)', color: 'var(--nova-text-muted)' }}
+                >
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-[#6366f1] border-t-transparent rounded-full animate-spin" />
                         Analyzing project data...
@@ -250,14 +251,14 @@ export default function NovaAI({ activeWorkspace }: Props) {
                   onKeyDown={(e) => { if (e.key === "Enter") handleAsk(); }}
                   disabled={isProcessing}
                   className="flex-1 px-3 py-2 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#6366f1]/30 disabled:opacity-50"
-                  style={{ background: "#ffffff", border: "1px solid #e8eaef", color: "#1a1d2e" }}
+                  style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                   placeholder={`Ask Nova about "${selectedProject?.title || "your project"}"...`}
                 />
                 <button
                   onClick={handleAsk}
                   disabled={!inputValue.trim() || isProcessing}
                   className="px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
-                  style={{ background: "rgba(99,102,241,0.08)", color: "#6366f1" }}
+                  style={{ background: 'var(--nova-indigo-bg)', color: 'var(--nova-indigo)' }}
                 >
                   <Send className="w-4 h-4" />
                 </button>

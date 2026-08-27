@@ -28,8 +28,8 @@ export default function SearchPage({ activeWorkspace }: Props) {
   return (
     <div className="space-y-6 animate-fade-in max-w-3xl">
       <div>
-        <h1 className="text-2xl font-extrabold" style={{ color: '#1a1d2e' }}>Search</h1>
-        <p className="text-sm mt-1" style={{ color: '#5e6278' }}>Search across projects, tasks, people, and comments</p>
+        <h1 className="text-2xl font-extrabold" style={{ color: 'var(--nova-text)' }}>Search</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--nova-text-secondary)' }}>Search across projects, tasks, people, and comments</p>
       </div>
 
       {/* Search Input */}
@@ -40,7 +40,7 @@ export default function SearchPage({ activeWorkspace }: Props) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-full pl-10 pr-4 py-3 rounded-xl text-sm transition-colors"
-          style={{ background: '#ffffff', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+          style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
           placeholder="Search projects, tasks, people..."
         />
       </div>
@@ -60,11 +60,11 @@ export default function SearchPage({ activeWorkspace }: Props) {
                   <button
                     key={p._id}
                     onClick={() => navigate(`/app/projects/${p._id}`)}
-                    className="w-full text-left flex items-center gap-3 p-3 rounded-lg transition-colors"
-                    style={{ background: '#ffffff' }}
+                    className="w-full text-left flex items-center gap-3 p-3 rounded-lg transition-colors hover:bg-[var(--nova-surface-cool)]"
+                    style={{ background: 'var(--nova-surface)' }}
                   >
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold"
-                      style={{ background: `${p.color || '#0d9488'}10`, color: p.color || '#0d9488' }}>
+                      style={{ background: `${p.color || 'var(--nova-teal)'}10`, color: p.color || 'var(--nova-teal)' }}>
                       {p.icon || p.title.charAt(0)}
                     </div>
                     <div>
@@ -115,7 +115,7 @@ export default function SearchPage({ activeWorkspace }: Props) {
               <div className="space-y-1">
                 {results.users.map((u) => (
                   <div key={u._id} className="flex items-center gap-3 p-3 rounded-lg transition-colors" style={{ background: '#ffffff' }}>
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: 'var(--nova-teal-bg)', color: 'var(--nova-teal)' }}>
                       {u.name?.charAt(0) || "?"}
                     </div>
                     <div>

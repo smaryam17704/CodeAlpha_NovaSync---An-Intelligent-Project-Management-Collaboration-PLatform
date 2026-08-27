@@ -55,9 +55,9 @@ const workflowSteps = [
 
 export default function Landing() {
   return (
-    <div className="min-h-screen overflow-hidden" style={{ background: '#faf9f7' }}>
+    <div className="min-h-screen overflow-hidden" style={{ background: 'var(--nova-surface-warm)' }}>
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50" style={{ background: 'rgba(250, 249, 247, 0.85)', backdropFilter: 'blur(16px)', borderBottom: '1px solid #e8eaef' }}>
+      <nav className="fixed top-0 w-full z-50" style={{ background: 'color-mix(in srgb, var(--nova-surface-warm) 85%, transparent)', backdropFilter: 'blur(16px)', borderBottom: '1px solid var(--nova-border)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <NovaSyncLogo size={28} />
@@ -245,7 +245,7 @@ export default function Landing() {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-24 px-4 sm:px-6" style={{ background: '#ffffff' }}>
+      <section id="features" className="py-24 px-4 sm:px-6" style={{ background: 'var(--nova-surface)' }}>
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -284,7 +284,7 @@ export default function Landing() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="py-24 px-4 sm:px-6" style={{ background: '#f4f6f9' }}>
+      <section id="how-it-works" className="py-24 px-4 sm:px-6" style={{ background: 'var(--nova-surface-cool)' }}>
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -323,7 +323,7 @@ export default function Landing() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-4 sm:px-6" style={{ background: '#faf9f7' }}>
+      <section className="py-24 px-4 sm:px-6" style={{ background: 'var(--nova-surface-warm)' }}>
         <div className="max-w-3xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}
@@ -354,15 +354,48 @@ export default function Landing() {
 
       {/* Footer */}
       <footer style={{ borderTop: '1px solid #e8eaef', background: '#ffffff' }}>
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 py-8 px-4">
-          <div className="flex items-center gap-2.5">
-            <NovaSyncLogo size={22} />
-            <span className="text-sm font-semibold" style={{ color: '#1a1d2e' }}>NovaSync</span>
+        <div className="max-w-6xl mx-auto py-12 px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Brand */}
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-2.5 mb-3">
+                <NovaSyncLogo size={24} />
+                <span className="text-base font-bold" style={{ color: '#1a1d2e' }}>NovaSync</span>
+              </div>
+              <p className="text-sm max-w-xs leading-relaxed" style={{ color: '#5e6278' }}>
+                Plan together. Build smarter. Stay in sync.
+                The collaborative project management platform for modern teams.
+              </p>
+            </div>
+
+            {/* Product */}
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#9da2b3' }}>Product</h4>
+              <div className="space-y-2">
+                <a href="#features" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: '#5e6278' }}>Features</a>
+                <a href="#how-it-works" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: '#5e6278' }}>How It Works</a>
+                <Link to="/auth" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: '#5e6278' }}>Get Started</Link>
+                <Link to="/auth" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: '#5e6278' }}>Sign In</Link>
+              </div>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#9da2b3' }}>Legal</h4>
+              <div className="space-y-2">
+                <Link to="/privacy" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: '#5e6278' }}>Privacy Policy</Link>
+                <Link to="/terms" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: '#5e6278' }}>Terms of Service</Link>
+              </div>
+            </div>
           </div>
-          <p className="text-xs" style={{ color: '#9da2b3' }}>Plan together. Build faster. Stay in sync.</p>
-          <div className="flex items-center gap-4 text-xs" style={{ color: '#9da2b3' }}>
-            <Link to="/privacy" className="hover:text-[#1a1d2e] transition-colors">Privacy</Link>
-            <Link to="/terms" className="hover:text-[#1a1d2e] transition-colors">Terms</Link>
+
+          {/* Bottom bar */}
+          <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-3" style={{ borderTop: '1px solid #e8eaef' }}>
+            <p className="text-xs" style={{ color: '#9da2b3' }}>&copy; {new Date().getFullYear()} NovaSync. All rights reserved.</p>
+            <div className="flex items-center gap-1.5">
+              <NovaSyncLogo size={14} />
+              <span className="text-xs" style={{ color: '#9da2b3' }}>Built with precision for modern teams</span>
+            </div>
           </div>
         </div>
       </footer>

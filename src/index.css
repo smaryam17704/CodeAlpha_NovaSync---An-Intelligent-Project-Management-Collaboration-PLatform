@@ -117,9 +117,7 @@ body {
 
 /* Kanban drag styles */
 .dragging { opacity: 0.5; transform: rotate(1.5deg); }
-.drag-over { border-color: var(--nova-teal) !important; background: var(--nova-teal-bg) !important; }
-
-/* Dark theme */
+.drag-over { border-color: var(--nova-teal) !important; background: var(--nova-teal-bg) !important; }  /* Dark theme */
 .dark, html.dark {
   --background: 226 28% 10%;
   --foreground: 210 20% 92%;
@@ -151,12 +149,48 @@ body {
   --nova-text: #e2e4ed;
   --nova-text-secondary: #a0a4b8;
   --nova-text-muted: #6b6f82;
-  --nova-teal-bg: rgba(13, 148, 136, 0.12);
-  --nova-indigo-bg: rgba(99, 102, 241, 0.12);
+  --nova-teal: #2dd4bf;
+  --nova-teal-light: #5eead4;
+  --nova-teal-bg: rgba(45, 212, 191, 0.15);
+  --nova-indigo: #a5b4fc;
+  --nova-indigo-bg: rgba(165, 180, 252, 0.15);
+  --nova-gold: #d4b96e;
+  --nova-gold-bg: rgba(212, 185, 110, 0.12);
+  --nova-success: #4ade80;
+  --nova-success-bg: rgba(74, 222, 128, 0.12);
+  --nova-warning: #fbbf24;
+  --nova-warning-bg: rgba(251, 191, 36, 0.12);
+  --nova-danger: #f87171;
+  --nova-danger-bg: rgba(248, 113, 113, 0.12);
 }
 .dark body, html.dark body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
+}
+
+/* Dark mode utility classes */
+.dark .bg-white { background-color: var(--nova-surface) !important; }
+.dark .bg-nova-surface-warm { background-color: var(--nova-surface-warm) !important; }
+.dark .bg-nova-surface-cool { background-color: var(--nova-surface-cool) !important; }
+.dark .text-nova-text { color: var(--nova-text) !important; }
+.dark .text-nova-text-secondary { color: var(--nova-text-secondary) !important; }
+.dark .text-nova-text-muted { color: var(--nova-text-muted) !important; }
+.dark .border-nova-border { border-color: var(--nova-border) !important; }
+.dark .border-nova-border-light { border-color: var(--nova-border-light) !important; }
+.dark select option { background: var(--nova-surface) !important; color: var(--nova-text) !important; }
+
+/* Dark mode: update inline-style elements via CSS custom properties */
+.dark { color-scheme: dark; }
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: var(--nova-surface) !important;
+  border-color: var(--nova-border) !important;
+  color: var(--nova-text) !important;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--nova-text-muted) !important;
 }
 
 /* Focus styles */

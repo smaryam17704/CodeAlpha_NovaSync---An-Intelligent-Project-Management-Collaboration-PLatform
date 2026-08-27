@@ -83,7 +83,7 @@ export default function NotificationsPage() {
     <div className="space-y-6 animate-fade-in max-w-2xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold" style={{ color: '#1a1d2e' }}>Notifications</h1>
+          <h1 className="text-2xl font-extrabold" style={{ color: 'var(--nova-text)' }}>Notifications</h1>
           <p className="text-sm mt-1" style={{ color: '#5e6278' }}>
             {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
           </p>
@@ -92,7 +92,7 @@ export default function NotificationsPage() {
           <button
             onClick={() => markAllRead()}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-            style={{ background: '#ffffff', border: '1px solid #e8eaef', color: '#5e6278' }}
+            style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)', color: 'var(--nova-text-secondary)' }}
           >
             <CheckCheck className="w-3.5 h-3.5" />
             Mark all read
@@ -119,11 +119,9 @@ export default function NotificationsPage() {
                   border: notification.read ? '1px solid transparent' : '1px solid #e8eaef',
                 }}
               >
-                <div className="flex items-start gap-3">
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
+                <div className="flex items-start gap-3">                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
                     style={{
-                      background: notification.read ? '#f4f6f9' : 'rgba(13,148,136,0.08)',
+                      background: notification.read ? 'var(--nova-surface-cool)' : 'var(--nova-teal-bg)',
                     }}
                     onClick={() => !isInvitation && handleNotificationClick(notification)}
                   >

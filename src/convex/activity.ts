@@ -32,6 +32,34 @@ export const listByProject = query({
   },
 });
 
+export const listByTask = query({
+  args: {
+    taskId: v.id("tasks"),
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+    const member = await getProjectMember(ctx, args.projectId, userId);
+    if (!member) return [];
+
+    const events = await ctx.db
+      .query("activityEvents")
+      .withIndex("by_task", (q) => q.eq("taskId", args.taskId))
+      .order("desc")
+      .take(50);
+
+    return Promise.all(
+      events.map(async (e) => {
+        const user = await ctx.db.get(e.userId);
+        return {
+          ...e,
+          user: user ? { name: user.name, image: user.image } : null,
+        };
+      })
+    );
+  },
+});
+
 export const listByWorkspace = query({
   args: {
     workspaceId: v.id("workspaces"),

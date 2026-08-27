@@ -5,6 +5,15 @@ import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
 import React, { StrictMode, useEffect, Suspense } from "react";
 import { createRoot } from "react-dom/client";
+
+// Restore theme preference on load
+try {
+  const savedTheme = localStorage.getItem("novasync_theme");
+  if (savedTheme === "dark") {
+    document.documentElement.classList.add("dark");
+  }
+} catch {}
+
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import "./index.css";
 
