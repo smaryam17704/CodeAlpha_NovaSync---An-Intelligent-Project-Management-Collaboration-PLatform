@@ -92,6 +92,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
         await signIn("password", {
           email: email.trim(),
           password,
+          flow: "signIn",
         });
       }
       // Navigation happens after successful auth
