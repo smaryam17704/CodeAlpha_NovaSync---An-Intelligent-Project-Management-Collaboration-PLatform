@@ -390,7 +390,7 @@ export default function TaskDetail() {
 
       {activeTab === "discussion" && (
         <div className="space-y-4">
-          {/* Comment Input with @mention dropdown */}
+          {/* Comment Input with @mention dropdown — all project members including viewers can comment */}
           <div className="relative">
             <div className="flex gap-2">
               <input
