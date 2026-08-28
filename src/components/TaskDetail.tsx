@@ -93,34 +93,43 @@ export default function TaskDetail() {
     if (!task) return;
     setSaving(true);
     try {
-      // Save title and description and priority and due date
-      const dueDateMs = editDueDate ? new Date(editDueDate).getTime() : undefined;
-      await updateTask({
-        taskId: task._id,
-        title: editTitle !== null ? editTitle : task.title,
-        description: editDescription !== null ? editDescription : undefined,
-        priority: editPriority !== null ? editPriority as any : undefined,
-        dueDate: dueDateMs,
-      });
+      // Members can only edit description. Owner/admin can edit all fields.
+      if (canEditAll) {
+        const dueDateMs = editDueDate ? new Date(editDueDate).getTime() : undefined;
+        await updateTask({
+          taskId: task._id,
+          title: editTitle !== null ? editTitle : task.title,
+          description: editDescription !== null ? editDescription : undefined,
+          priority: editPriority !== null ? editPriority as any : undefined,
+          dueDate: dueDateMs,
+        });
 
-      // Save status separately if changed
-      if (editStatus !== null && editStatus !== task.status) {
-        await updateStatus({ taskId: task._id, status: editStatus as any });
+        // Save assignee separately if changed
+        if (editAssignee !== undefined && editAssignee !== (task.assigneeId || "")) {
+          await assignTask({
+            taskId: task._id,
+            assigneeId: editAssignee ? (editAssignee as any) : undefined,
+          });
+        }
+      } else {
+        // Member: only send description
+        await updateTask({
+          taskId: task._id,
+          description: editDescription !== null ? editDescription : undefined,
+        });
       }
 
-      // Save assignee separately if changed
-      if (editAssignee !== undefined && editAssignee !== (task.assigneeId || "")) {
-        await assignTask({
-          taskId: task._id,
-          assigneeId: editAssignee ? (editAssignee as any) : undefined,
-        });
+      // Save status separately if changed (allowed for both member and owner/admin)
+      if (editStatus !== null && editStatus !== task.status) {
+        await updateStatus({ taskId: task._id, status: editStatus as any });
       }
 
       setHasChanges(false);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to save task:", err);
+      alert(err?.message || "Failed to save changes. Please try again.");
     } finally {
       setSaving(false);
     }
