@@ -94,8 +94,8 @@ export default function ProjectsPage({ activeWorkspace }: Props) {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold" style={{ color: '#1a1d2e' }}>Projects</h1>
-          <p className="text-sm mt-1" style={{ color: '#9da2b3' }}>{projects?.length || 0} project(s)</p>
+          <h1 className="text-2xl font-extrabold" style={{ color: 'var(--nova-text)' }}>Projects</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--nova-text-muted)' }}>{projects?.length || 0} project(s)</p>
         </div>
         <button
           onClick={() => setShowCreate(true)}
@@ -120,14 +120,14 @@ export default function ProjectsPage({ activeWorkspace }: Props) {
               <Link
                 to={`/app/projects/${project._id}`}
                 className="block p-5 rounded-xl transition-all group hover:shadow-lg hover:shadow-black/[0.03] relative"
-                style={{ background: '#ffffff', border: '1px solid #e8eaef' }}
+                style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}
               >
                 {/* Edit button for owner */}
                 {project.role === "owner" && (
                   <button
                     onClick={(e) => openEditModal(project, e)}
                     className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg"
-                    style={{ background: '#f4f6f9', color: '#9da2b3' }}
+                    style={{ background: 'var(--nova-surface-cool)', color: 'var(--nova-text-muted)' }}
                     title="Edit project"
                   >
                     <Pencil className="w-3 h-3" />
@@ -142,20 +142,20 @@ export default function ProjectsPage({ activeWorkspace }: Props) {
                   </div>
                   <div className="flex items-center gap-1">
                     {project.type === "team" ? (
-                      <Users className="w-3.5 h-3.5" style={{ color: '#9da2b3' }} />
+                      <Users className="w-3.5 h-3.5" style={{ color: 'var(--nova-text-muted)' }} />
                     ) : (
-                      <User className="w-3.5 h-3.5" style={{ color: '#9da2b3' }} />
+                      <User className="w-3.5 h-3.5" style={{ color: 'var(--nova-text-muted)' }} />
                     )}
-                    <span className="text-[10px] capitalize" style={{ color: '#9da2b3' }}>{project.type}</span>
+                    <span className="text-[10px] capitalize" style={{ color: 'var(--nova-text-muted)' }}>{project.type}</span>
                   </div>
                 </div>
-                <h3 className="text-sm font-semibold mb-1 group-hover:text-[#0d9488] transition-colors" style={{ color: '#1a1d2e' }}>{project.title}</h3>
+                <h3 className="text-sm font-semibold mb-1 group-hover:text-[#0d9488] transition-colors" style={{ color: 'var(--nova-text)' }}>{project.title}</h3>
                 {project.description && (
-                  <p className="text-xs line-clamp-2 mb-3" style={{ color: '#9da2b3' }}>{project.description}</p>
+                  <p className="text-xs line-clamp-2 mb-3" style={{ color: 'var(--nova-text-muted)' }}>{project.description}</p>
                 )}
                 <div className="flex items-center justify-between">
-                  <div className="text-xs" style={{ color: '#9da2b3' }}>{project.taskCount || 0} tasks</div>
-                  <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: '#e8eaef' }}>
+                  <div className="text-xs" style={{ color: 'var(--nova-text-muted)' }}>{project.taskCount || 0} tasks</div>
+                  <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--nova-border)' }}>
                     <div
                       className="h-full rounded-full"
                       style={{ background: 'linear-gradient(90deg, #0d9488, #6366f1)', width: `${project.completionPercent || 0}%` }}
@@ -169,10 +169,10 @@ export default function ProjectsPage({ activeWorkspace }: Props) {
       ) : (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(13,148,136,0.06)' }}>
-            <FolderKanban className="w-8 h-8" style={{ color: '#9da2b3' }} />
+            <FolderKanban className="w-8 h-8" style={{ color: 'var(--nova-text-muted)' }} />
           </div>
-          <h3 className="text-lg font-semibold mb-2" style={{ color: '#1a1d2e' }}>No projects yet</h3>
-          <p className="text-sm max-w-md mb-4" style={{ color: '#5e6278' }}>
+          <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--nova-text)' }}>No projects yet</h3>
+          <p className="text-sm max-w-md mb-4" style={{ color: 'var(--nova-text-secondary)' }}>
             Create your first project and turn ideas into execution.
           </p>
           <button
@@ -192,41 +192,41 @@ export default function ProjectsPage({ activeWorkspace }: Props) {
           <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.3)' }} />
           <div
             className="relative w-full max-w-md rounded-xl shadow-2xl animate-scale-in"
-            style={{ background: '#ffffff', border: '1px solid #e8eaef' }}
+            style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between p-5" style={{ borderBottom: '1px solid #f0f1f5' }}>
-              <h2 className="text-lg font-semibold" style={{ color: '#1a1d2e' }}>Create Project</h2>
-              <button onClick={() => { setShowCreate(false); setSearchParams({}); }} style={{ color: '#9da2b3' }}>
+              <h2 className="text-lg font-semibold" style={{ color: 'var(--nova-text)' }}>Create Project</h2>
+              <button onClick={() => { setShowCreate(false); setSearchParams({}); }} style={{ color: 'var(--nova-text-muted)' }}>
                 <X className="w-5 h-5" />
               </button>
             </div>
             <form onSubmit={handleCreate} className="p-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Project name</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--nova-text-secondary)' }}>Project name</label>
                 <input
                   autoFocus
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg text-sm transition-colors"
-                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                  style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                   placeholder="My new project"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Description</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--nova-text-secondary)' }}>Description</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg text-sm transition-colors resize-none"
-                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                  style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                   placeholder="Brief description..."
                   rows={2}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Type</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--nova-text-secondary)' }}>Type</label>
                 <div className="flex gap-2">
                   {(["personal", "team"] as const).map((t) => (
                     <button
@@ -235,8 +235,8 @@ export default function ProjectsPage({ activeWorkspace }: Props) {
                       onClick={() => setType(t)}
                       className="flex-1 py-2 rounded-lg text-sm font-medium border transition-colors capitalize"
                       style={{
-                        background: type === t ? 'rgba(13,148,136,0.06)' : '#f4f6f9',
-                        borderColor: type === t ? 'rgba(13,148,136,0.2)' : '#e8eaef',
+                        background: type === t ? 'rgba(13,148,136,0.06)' : 'var(--nova-surface-cool)',
+                        borderColor: type === t ? 'rgba(13,148,136,0.2)' : 'var(--nova-border)',
                         color: type === t ? '#0d9488' : '#9da2b3',
                       }}
                     >
@@ -246,7 +246,7 @@ export default function ProjectsPage({ activeWorkspace }: Props) {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Color</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--nova-text-secondary)' }}>Color</label>
                 <div className="flex gap-2">
                   {colors.map((c) => (
                     <button
@@ -281,36 +281,36 @@ export default function ProjectsPage({ activeWorkspace }: Props) {
       {editingProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setEditingProject(null)}>
           <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.3)' }} />
-          <div className="relative w-full max-w-md rounded-xl shadow-2xl animate-scale-in" style={{ background: '#ffffff', border: '1px solid #e8eaef' }} onClick={(e) => e.stopPropagation()}>
+          <div className="relative w-full max-w-md rounded-xl shadow-2xl animate-scale-in" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }} onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-5" style={{ borderBottom: '1px solid #f0f1f5' }}>
-              <h2 className="text-lg font-semibold" style={{ color: '#1a1d2e' }}>Edit Project</h2>
-              <button onClick={() => setEditingProject(null)} style={{ color: '#9da2b3' }}>
+              <h2 className="text-lg font-semibold" style={{ color: 'var(--nova-text)' }}>Edit Project</h2>
+              <button onClick={() => setEditingProject(null)} style={{ color: 'var(--nova-text-muted)' }}>
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Project name</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--nova-text-secondary)' }}>Project name</label>
                 <input
                   autoFocus
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg text-sm"
-                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                  style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Description</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--nova-text-secondary)' }}>Description</label>
                 <textarea
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg text-sm resize-none"
-                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                  style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                   rows={2}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Color</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--nova-text-secondary)' }}>Color</label>
                 <div className="flex gap-2 flex-wrap">
                   {colors.map((c) => (
                     <button

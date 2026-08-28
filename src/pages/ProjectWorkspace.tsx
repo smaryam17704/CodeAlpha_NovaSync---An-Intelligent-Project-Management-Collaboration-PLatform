@@ -61,7 +61,7 @@ export default function ProjectWorkspace({ activeWorkspace }: Props) {
   if (project === null) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-3 animate-fade-in">
-        <div className="text-sm font-medium" style={{ color: '#5e6278' }}>
+        <div className="text-sm font-medium" style={{ color: 'var(--nova-text-secondary)' }}>
           You are no longer part of this project.
         </div>
         <button
@@ -78,10 +78,10 @@ export default function ProjectWorkspace({ activeWorkspace }: Props) {
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs" style={{ color: '#9da2b3' }}>
+      <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--nova-text-muted)' }}>
         <Link to="/app/projects" className="hover:text-[#1a1d2e] transition-colors">Projects</Link>
         <ChevronRight className="w-3 h-3" />
-        <span style={{ color: '#5e6278' }}>{project.title}</span>
+        <span style={{ color: 'var(--nova-text-secondary)' }}>{project.title}</span>
       </div>
 
       {/* Project Header */}
@@ -94,9 +94,9 @@ export default function ProjectWorkspace({ activeWorkspace }: Props) {
             {project.icon || project.title.charAt(0)}
           </div>
           <div>
-            <h1 className="text-xl font-extrabold" style={{ color: '#1a1d2e' }}>{project.title}</h1>
+            <h1 className="text-xl font-extrabold" style={{ color: 'var(--nova-text)' }}>{project.title}</h1>
             {project.description && (
-              <p className="text-sm mt-0.5 line-clamp-1" style={{ color: '#5e6278' }}>{project.description}</p>
+              <p className="text-sm mt-0.5 line-clamp-1" style={{ color: 'var(--nova-text-secondary)' }}>{project.description}</p>
             )}
           </div>
         </div>
@@ -121,7 +121,7 @@ export default function ProjectWorkspace({ activeWorkspace }: Props) {
               className="flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium whitespace-nowrap border-b-2 transition-colors"
               style={{
                 borderColor: active ? '#0d9488' : 'transparent',
-                color: active ? '#0d9488' : '#9da2b3',
+                color: active ? '#0d9488' : 'var(--nova-text-muted)',
               }}
             >
               <tab.icon className="w-3.5 h-3.5" />
@@ -156,12 +156,12 @@ function ProjectOverview({ project, tasks, health }: any) {
   return (
     <div className="space-y-6">
       {/* Progress */}
-      <div className="rounded-xl p-5" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
+      <div className="rounded-xl p-5" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold" style={{ color: '#1a1d2e' }}>Progress</h3>
+          <h3 className="text-sm font-semibold" style={{ color: 'var(--nova-text)' }}>Progress</h3>
           <span className="text-sm font-bold" style={{ color: '#0d9488' }}>{project.completionPercent || 0}%</span>
         </div>
-        <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: '#e8eaef' }}>
+        <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'var(--nova-border)' }}>
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${project.completionPercent || 0}%` }}
@@ -173,8 +173,8 @@ function ProjectOverview({ project, tasks, health }: any) {
         <div className="grid grid-cols-4 gap-4 mt-4">
           {stats.map((s) => (
             <div key={s.label} className="text-center">
-              <div className="text-lg font-bold" style={{ color: '#1a1d2e' }}>{s.value}</div>
-              <div className="text-[10px]" style={{ color: '#9da2b3' }}>{s.label}</div>
+              <div className="text-lg font-bold" style={{ color: 'var(--nova-text)' }}>{s.value}</div>
+              <div className="text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -182,16 +182,16 @@ function ProjectOverview({ project, tasks, health }: any) {
 
       {/* Team */}
       {project.members && project.members.length > 0 && (
-        <div className="rounded-xl p-5" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
-          <h3 className="text-sm font-semibold mb-3" style={{ color: '#1a1d2e' }}>Team ({project.members.length})</h3>
+        <div className="rounded-xl p-5" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}>
+          <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--nova-text)' }}>Team ({project.members.length})</h3>
           <div className="flex flex-wrap gap-2">
             {project.members.map((m: any) => (
-              <div key={m._id} className="flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: '#f4f6f9' }}>
+              <div key={m._id} className="flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: 'var(--nova-surface-cool)' }}>
                 <div className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold" style={{ background: 'rgba(13,148,136,0.1)', color: '#0d9488' }}>
                   {m.user?.name?.charAt(0) || "?"}
                 </div>
-                <span className="text-xs" style={{ color: '#1a1d2e' }}>{m.user?.name || "Unknown"}</span>
-                <span className="text-[9px] capitalize" style={{ color: '#9da2b3' }}>{m.role}</span>
+                <span className="text-xs" style={{ color: 'var(--nova-text)' }}>{m.user?.name || "Unknown"}</span>
+                <span className="text-[9px] capitalize" style={{ color: 'var(--nova-text-muted)' }}>{m.role}</span>
               </div>
             ))}
           </div>
@@ -200,8 +200,8 @@ function ProjectOverview({ project, tasks, health }: any) {
 
       {/* AI Health */}
       {health && health.status !== "NO_DATA" && (
-        <div className="rounded-xl p-5" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
-          <h3 className="text-sm font-semibold mb-3" style={{ color: '#1a1d2e' }}>AI Insights</h3>
+        <div className="rounded-xl p-5" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}>
+          <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--nova-text)' }}>AI Insights</h3>
           <div className="space-y-2">
             {health.factors?.map((f: any, i: number) => (
               <div key={i} className="flex items-center gap-3">
@@ -210,11 +210,11 @@ function ProjectOverview({ project, tasks, health }: any) {
                 }`} style={{
                   background: f.impact === "positive" ? '#16a34a' : f.impact === "negative" ? '#dc2626' : '#d97706'
                 }} />
-                <span className="text-xs" style={{ color: '#5e6278' }}>{f.name}: {f.value}</span>
+                <span className="text-xs" style={{ color: 'var(--nova-text-secondary)' }}>{f.name}: {f.value}</span>
               </div>
             ))}
             {health.recommendation && (
-              <p className="text-xs mt-2 pt-2" style={{ color: '#5e6278', borderTop: '1px solid #f0f1f5' }}>{health.recommendation}</p>
+              <p className="text-xs mt-2 pt-2" style={{ color: 'var(--nova-text-secondary)', borderTop: '1px solid #f0f1f5' }}>{health.recommendation}</p>
             )}
           </div>
         </div>

@@ -103,7 +103,7 @@ export default function SettingsPage() {
               className="flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors"
               style={{
                 borderColor: active ? '#0d9488' : 'transparent',
-                color: active ? '#0d9488' : '#9da2b3',
+                color: active ? '#0d9488' : 'var(--nova-text-muted)',
               }}
             >
               <tab.icon className="w-3.5 h-3.5" />
@@ -165,14 +165,14 @@ export default function SettingsPage() {
       {activeTab === "notifications" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm" style={{ color: '#5e6278' }}>Configure your notification preferences.</p>
+            <p className="text-sm" style={{ color: 'var(--nova-text-secondary)' }}>Configure your notification preferences.</p>
             {prefsSaved && <span className="text-xs font-medium flex items-center gap-1" style={{ color: '#16a34a' }}><Check className="w-3 h-3" /> Saved</span>}
           </div>
           {notificationPrefs.map((pref) => (
             <div key={pref.key} className="flex items-center justify-between p-4 rounded-lg" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}>
               <div>
-                <div className="text-sm font-medium" style={{ color: '#1a1d2e' }}>{pref.label}</div>
-                <div className="text-xs mt-0.5" style={{ color: '#9da2b3' }}>{pref.description}</div>
+                <div className="text-sm font-medium" style={{ color: 'var(--nova-text)' }}>{pref.label}</div>
+                <div className="text-xs mt-0.5" style={{ color: 'var(--nova-text-muted)' }}>{pref.description}</div>
               </div>
               <button
                 onClick={() => handlePrefToggle(pref.key)}
@@ -221,7 +221,7 @@ export default function SettingsPage() {
                 );
               })}
             </div>
-            <p className="text-[10px] mt-2" style={{ color: '#9da2b3' }}>Switch between light and dark mode.</p>
+            <p className="text-[10px] mt-2" style={{ color: 'var(--nova-text-muted)' }}>Switch between light and dark mode.</p>
           </div>
         </div>
       )}

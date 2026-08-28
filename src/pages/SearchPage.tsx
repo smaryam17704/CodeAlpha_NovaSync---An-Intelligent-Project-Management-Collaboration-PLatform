@@ -34,7 +34,7 @@ export default function SearchPage({ activeWorkspace }: Props) {
 
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#9da2b3' }} />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--nova-text-muted)' }} />
         <input
           autoFocus
           value={query}
@@ -51,7 +51,7 @@ export default function SearchPage({ activeWorkspace }: Props) {
           {/* Projects */}
           {results.projects.length > 0 && (
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: '#9da2b3' }}>
+              <h3 className="text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: 'var(--nova-text-muted)' }}>
                 <FolderKanban className="w-3 h-3" />
                 Projects ({results.projects.length})
               </h3>
@@ -68,8 +68,8 @@ export default function SearchPage({ activeWorkspace }: Props) {
                       {p.icon || p.title.charAt(0)}
                     </div>
                     <div>
-                      <div className="text-sm font-medium" style={{ color: '#1a1d2e' }}>{p.title}</div>
-                      {p.description && <div className="text-[10px] line-clamp-1" style={{ color: '#9da2b3' }}>{p.description}</div>}
+                      <div className="text-sm font-medium" style={{ color: 'var(--nova-text)' }}>{p.title}</div>
+                      {p.description && <div className="text-[10px] line-clamp-1" style={{ color: 'var(--nova-text-muted)' }}>{p.description}</div>}
                     </div>
                   </button>
                 ))}
@@ -80,7 +80,7 @@ export default function SearchPage({ activeWorkspace }: Props) {
           {/* Tasks */}
           {results.tasks.length > 0 && (
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: '#9da2b3' }}>
+              <h3 className="text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: 'var(--nova-text-muted)' }}>
                 <LayoutList className="w-3 h-3" />
                 Tasks ({results.tasks.length})
               </h3>
@@ -90,14 +90,14 @@ export default function SearchPage({ activeWorkspace }: Props) {
                     key={t._id}
                     onClick={() => navigate(`/app/projects/${t.projectId}/task/${t._id}`)}
                     className="w-full text-left flex items-center gap-3 p-3 rounded-lg transition-colors"
-                    style={{ background: '#ffffff' }}
+                    style={{ background: 'var(--nova-surface)' }}
                   >
                     <div className="w-2 h-2 rounded-full" style={{
                       background: t.status === "done" ? '#16a34a' : t.status === "in_progress" ? '#0d9488' : t.status === "review" ? '#6366f1' : '#9da2b3'
                     }} />
                     <div>
-                      <div className="text-sm font-medium" style={{ color: '#1a1d2e' }}>{t.title}</div>
-                      <div className="text-[10px]" style={{ color: '#9da2b3' }}>{t.projectTitle} · {t.status.replace("_", " ")}</div>
+                      <div className="text-sm font-medium" style={{ color: 'var(--nova-text)' }}>{t.title}</div>
+                      <div className="text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>{t.projectTitle} · {t.status.replace("_", " ")}</div>
                     </div>
                   </button>
                 ))}
@@ -108,19 +108,19 @@ export default function SearchPage({ activeWorkspace }: Props) {
           {/* People */}
           {results.users.length > 0 && (
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: '#9da2b3' }}>
+              <h3 className="text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: 'var(--nova-text-muted)' }}>
                 <Users className="w-3 h-3" />
                 People ({results.users.length})
               </h3>
               <div className="space-y-1">
                 {results.users.map((u) => (
-                  <div key={u._id} className="flex items-center gap-3 p-3 rounded-lg transition-colors" style={{ background: '#ffffff' }}>
+                  <div key={u._id} className="flex items-center gap-3 p-3 rounded-lg transition-colors" style={{ background: 'var(--nova-surface)' }}>
                     <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: 'var(--nova-teal-bg)', color: 'var(--nova-teal)' }}>
                       {u.name?.charAt(0) || "?"}
                     </div>
                     <div>
-                      <div className="text-sm font-medium" style={{ color: '#1a1d2e' }}>{u.name || "Unknown"}</div>
-                      <div className="text-[10px]" style={{ color: '#9da2b3' }}>{u.email}</div>
+                      <div className="text-sm font-medium" style={{ color: 'var(--nova-text)' }}>{u.name || "Unknown"}</div>
+                      <div className="text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>{u.email}</div>
                     </div>
                   </div>
                 ))}
@@ -131,7 +131,7 @@ export default function SearchPage({ activeWorkspace }: Props) {
           {/* Comments */}
           {results.comments.length > 0 && (
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: '#9da2b3' }}>
+              <h3 className="text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: 'var(--nova-text-muted)' }}>
                 <MessageSquare className="w-3 h-3" />
                 Comments ({results.comments.length})
               </h3>
@@ -141,12 +141,12 @@ export default function SearchPage({ activeWorkspace }: Props) {
                     key={c._id}
                     onClick={() => navigate(`/app/projects/${c.projectId}/task/${c.taskId}`)}
                     className="w-full text-left p-3 rounded-lg transition-colors"
-                    style={{ background: '#ffffff' }}
+                    style={{ background: 'var(--nova-surface)' }}
                   >
-                    <div className="text-xs mb-1" style={{ color: '#9da2b3' }}>
+                    <div className="text-xs mb-1" style={{ color: 'var(--nova-text-muted)' }}>
                       {c.author?.name || "Someone"} · {c.projectTitle} · {c.taskTitle}
                     </div>
-                    <div className="text-sm line-clamp-2" style={{ color: '#5e6278' }}>{c.content}</div>
+                    <div className="text-sm line-clamp-2" style={{ color: 'var(--nova-text-secondary)' }}>{c.content}</div>
                   </button>
                 ))}
               </div>
@@ -155,7 +155,7 @@ export default function SearchPage({ activeWorkspace }: Props) {
 
           {/* No results */}
           {results.projects.length === 0 && results.tasks.length === 0 && results.users.length === 0 && results.comments.length === 0 && (
-            <div className="py-12 text-center text-sm" style={{ color: '#9da2b3' }}>
+            <div className="py-12 text-center text-sm" style={{ color: 'var(--nova-text-muted)' }}>
               No results found for "{debouncedQuery}"
             </div>
           )}
@@ -163,7 +163,7 @@ export default function SearchPage({ activeWorkspace }: Props) {
       )}
 
       {query.length > 0 && query.length < 2 && (
-        <p className="text-xs text-center" style={{ color: '#9da2b3' }}>Type at least 2 characters to search</p>
+        <p className="text-xs text-center" style={{ color: 'var(--nova-text-muted)' }}>Type at least 2 characters to search</p>
       )}
     </div>
   );

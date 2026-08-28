@@ -187,7 +187,7 @@ export default function TaskDetail() {
         <button
           onClick={() => navigate(`/app/projects/${projectId}`)}
           className="text-xs transition-colors hover:opacity-70"
-          style={{ color: '#5e6278' }}
+          style={{ color: 'var(--nova-text-secondary)' }}
         >
           ← Back to project
         </button>
@@ -240,14 +240,14 @@ export default function TaskDetail() {
               value={editTitle !== null ? editTitle : task.title}
               onChange={(e) => { setEditTitle(e.target.value); markChanged(); }}
               className="w-full text-xl font-extrabold bg-transparent border-none focus:outline-none focus:ring-0 p-0"
-              style={{ color: '#1a1d2e' }}
+              style={{ color: 'var(--nova-text)' }}
               disabled={!canEditAll}
             />
           </div>
           <button
             onClick={() => navigate(`/app/projects/${projectId}`)}
             className="transition-colors shrink-0 hover:opacity-70"
-            style={{ color: '#9da2b3' }}
+            style={{ color: 'var(--nova-text-muted)' }}
           >
             <X className="w-5 h-5" />
           </button>
@@ -279,7 +279,7 @@ export default function TaskDetail() {
           {/* Description */}
           <div className="space-y-6">
             <div>
-              <label className="text-xs font-medium block mb-2" style={{ color: '#5e6278' }}>Description</label>
+              <label className="text-xs font-medium block mb-2" style={{ color: 'var(--nova-text-secondary)' }}>Description</label>
               <textarea
                 value={editDescription !== null ? editDescription : (task.description || "")}
                 onChange={(e) => { setEditDescription(e.target.value); markChanged(); }}
@@ -296,7 +296,7 @@ export default function TaskDetail() {
           <div className="space-y-4">
             {/* Status */}
             <div>
-              <label className="text-[10px] font-medium uppercase tracking-wider block mb-1.5" style={{ color: '#9da2b3' }}>Status</label>
+              <label className="text-[10px] font-medium uppercase tracking-wider block mb-1.5" style={{ color: 'var(--nova-text-muted)' }}>Status</label>
               <select
                 value={editStatus !== null ? editStatus : task.status}
                 onChange={(e) => { setEditStatus(e.target.value); markChanged(); }}
@@ -312,7 +312,7 @@ export default function TaskDetail() {
 
             {/* Priority */}
             <div>
-              <label className="text-[10px] font-medium uppercase tracking-wider block mb-1.5" style={{ color: '#9da2b3' }}>Priority</label>
+              <label className="text-[10px] font-medium uppercase tracking-wider block mb-1.5" style={{ color: 'var(--nova-text-muted)' }}>Priority</label>
               <select
                 value={editPriority !== null ? editPriority : task.priority}
                 onChange={(e) => { setEditPriority(e.target.value); markChanged(); }}
@@ -328,7 +328,7 @@ export default function TaskDetail() {
 
             {/* Assignee */}
             <div>
-              <label className="text-[10px] font-medium uppercase tracking-wider block mb-1.5" style={{ color: '#9da2b3' }}>Assignee</label>
+              <label className="text-[10px] font-medium uppercase tracking-wider block mb-1.5" style={{ color: 'var(--nova-text-muted)' }}>Assignee</label>
               <select
                 value={editAssignee !== undefined ? (editAssignee || "") : (task.assigneeId || "")}
                 onChange={(e) => { setEditAssignee(e.target.value || undefined); markChanged(); }}
@@ -345,7 +345,7 @@ export default function TaskDetail() {
 
             {/* Due Date */}
             <div>
-              <label className="text-[10px] font-medium uppercase tracking-wider block mb-1.5" style={{ color: '#9da2b3' }}>Due Date</label>
+              <label className="text-[10px] font-medium uppercase tracking-wider block mb-1.5" style={{ color: 'var(--nova-text-muted)' }}>Due Date</label>
               <input
                 type="date"
                 value={editDueDate !== null ? editDueDate : (task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "")}
@@ -358,7 +358,7 @@ export default function TaskDetail() {
 
             {/* Meta */}
             <div className="pt-3 space-y-2" style={{ borderTop: '1px solid #f0f1f5' }}>
-              <div className="text-[10px]" style={{ color: '#9da2b3' }}>
+              <div className="text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>
                 Created: {new Date(task.createdAt).toLocaleDateString()}
               </div>
               {task.completedAt && (
@@ -367,7 +367,7 @@ export default function TaskDetail() {
                 </div>
               )}
               {task.creator && (
-                <div className="text-[10px]" style={{ color: '#9da2b3' }}>
+                <div className="text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>
                   Created by: {task.creator.name}
                 </div>
               )}
@@ -447,7 +447,7 @@ export default function TaskDetail() {
                       {m.user?.name?.charAt(0) || "?"}
                     </div>
                     <span className="font-medium">{m.user?.name || m.user?.email || "Unknown"}</span>
-                    <span className="ml-auto capitalize" style={{ color: '#9da2b3' }}>{m.role}</span>
+                    <span className="ml-auto capitalize" style={{ color: 'var(--nova-text-muted)' }}>{m.role}</span>
                   </button>
                 ))}
               </div>
@@ -479,15 +479,15 @@ export default function TaskDetail() {
                   </div>
                   <div className="max-w-[80%]">
                     <div className="flex items-center gap-2 mb-1" style={{ flexDirection: isOwn ? 'row-reverse' : 'row' }}>
-                      <span className="text-xs font-medium" style={{ color: '#1a1d2e' }}>{comment.author?.name || "Unknown"}</span>
-                      <span className="text-[10px]" style={{ color: '#9da2b3' }}>{formatTime(comment.createdAt)}</span>
+                      <span className="text-xs font-medium" style={{ color: 'var(--nova-text)' }}>{comment.author?.name || "Unknown"}</span>
+                      <span className="text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>{formatTime(comment.createdAt)}</span>
                       {comment.editedAt && <span className="text-[10px]" style={{ color: '#d1d5db' }}>(edited)</span>}
                     {comment.canEdit && (
                       <div className="ml-auto flex items-center gap-1">
                         <button
                           onClick={() => { setEditingComment(comment._id); setEditText(comment.content); }}
                           className="transition-colors hover:opacity-70"
-                          style={{ color: '#9da2b3' }}
+                          style={{ color: 'var(--nova-text-muted)' }}
                         >
                           <Edit3 className="w-3 h-3" />
                         </button>
@@ -525,7 +525,7 @@ export default function TaskDetail() {
                 );
               })
             ) : (
-              <div className="py-8 text-center text-sm" style={{ color: '#9da2b3' }}>
+              <div className="py-8 text-center text-sm" style={{ color: 'var(--nova-text-muted)' }}>
                 No comments yet. Start the conversation.
               </div>
             )}
@@ -537,21 +537,21 @@ export default function TaskDetail() {
         <div className="space-y-2">
           {taskActivity && taskActivity.length > 0 ? (
             taskActivity.map((event) => (
-              <div key={event._id} className="flex items-start gap-3 p-3 rounded-lg animate-fade-in" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
+              <div key={event._id} className="flex items-start gap-3 p-3 rounded-lg animate-fade-in" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}>
                 <div className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0" style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}>
                   {event.user?.name?.charAt(0) || '?'}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium" style={{ color: '#1a1d2e' }}>{event.user?.name || 'Someone'}</span>
-                    <span className="text-[10px]" style={{ color: '#9da2b3' }}>{formatTime(event.createdAt)}</span>
+                    <span className="text-xs font-medium" style={{ color: 'var(--nova-text)' }}>{event.user?.name || 'Someone'}</span>
+                    <span className="text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>{formatTime(event.createdAt)}</span>
                   </div>
-                  <p className="text-xs mt-0.5" style={{ color: '#5e6278' }}>{event.description}</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--nova-text-secondary)' }}>{event.description}</p>
                 </div>
               </div>
             ))
           ) : (
-            <div className="py-8 text-center text-sm" style={{ color: '#9da2b3' }}>
+            <div className="py-8 text-center text-sm" style={{ color: 'var(--nova-text-muted)' }}>
               No activity recorded for this task yet.
             </div>
           )}

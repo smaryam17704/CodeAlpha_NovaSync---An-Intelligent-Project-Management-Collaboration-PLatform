@@ -40,7 +40,7 @@ export default function MyWork() {
   });
 
   const statusColors: Record<string, { bg: string; color: string }> = {
-    todo: { bg: '#f4f6f9', color: '#5e6278' },
+    todo: { bg: 'var(--nova-surface-cool)', color: 'var(--nova-text-secondary)' },
     in_progress: { bg: 'rgba(13,148,136,0.06)', color: '#0d9488' },
     review: { bg: 'rgba(99,102,241,0.06)', color: '#6366f1' },
     done: { bg: 'rgba(22,163,74,0.06)', color: '#16a34a' },
@@ -49,8 +49,8 @@ export default function MyWork() {
   const priorityColors: Record<string, { bg: string; color: string }> = {
     urgent: { bg: 'rgba(220,38,38,0.06)', color: '#dc2626' },
     high: { bg: 'rgba(217,119,6,0.06)', color: '#d97706' },
-    medium: { bg: '#f4f6f9', color: '#5e6278' },
-    low: { bg: '#f4f6f9', color: '#9da2b3' },
+    medium: { bg: 'var(--nova-surface-cool)', color: 'var(--nova-text-secondary)' },
+    low: { bg: 'var(--nova-surface-cool)', color: 'var(--nova-text-muted)' },
   };
 
   const filters: { key: FilterType; label: string; count: number }[] = [
@@ -64,8 +64,8 @@ export default function MyWork() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-extrabold" style={{ color: '#1a1d2e' }}>My Work</h1>
-        <p className="text-sm mt-1" style={{ color: '#5e6278' }}>Tasks assigned to you</p>
+        <h1 className="text-2xl font-extrabold" style={{ color: 'var(--nova-text)' }}>My Work</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--nova-text-secondary)' }}>Tasks assigned to you</p>
       </div>
 
       {/* Filters */}
@@ -76,9 +76,9 @@ export default function MyWork() {
             onClick={() => setFilter(f.key)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors"
             style={{
-              background: filter === f.key ? 'rgba(13,148,136,0.06)' : '#ffffff',
-              color: filter === f.key ? '#0d9488' : '#5e6278',
-              border: `1px solid ${filter === f.key ? 'rgba(13,148,136,0.15)' : '#e8eaef'}`,
+              background: filter === f.key ? 'rgba(13,148,136,0.06)' : 'var(--nova-surface)',
+              color: filter === f.key ? '#0d9488' : 'var(--nova-text-secondary)',
+              border: `1px solid ${filter === f.key ? 'rgba(13,148,136,0.15)' : 'var(--nova-border)'}`,
             }}
           >
             {f.label}
@@ -101,17 +101,17 @@ export default function MyWork() {
                 transition={{ delay: i * 0.02 }}
                 onClick={() => navigate(`/app/projects/${task.projectId}/task/${task._id}`)}
                 className="flex items-center gap-4 p-4 rounded-xl transition-all cursor-pointer"
-                style={{ background: '#ffffff', border: '1px solid #e8eaef' }}
+                style={{ background: 'var(--nova-surface)', border: '1px solid #e8eaef' }}
               >
                 <div className="w-2 h-2 rounded-full shrink-0" style={{
                   background: task.status === "done" ? '#16a34a' : task.status === "in_progress" ? '#0d9488' : task.status === "review" ? '#6366f1' : '#9da2b3'
                 }} />
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium" style={{ color: task.status === "done" ? '#9da2b3' : '#1a1d2e', textDecoration: task.status === "done" ? 'line-through' : 'none' }}>
+                  <div className="text-sm font-medium" style={{ color: task.status === "done" ? 'var(--nova-text-muted)' : 'var(--nova-text)', textDecoration: task.status === "done" ? 'line-through' : 'none' }}>
                     {task.title}
                   </div>
                   {task.project && (
-                    <div className="text-[10px] mt-0.5" style={{ color: '#9da2b3' }}>{task.project.title}</div>
+                    <div className="text-[10px] mt-0.5" style={{ color: 'var(--nova-text-muted)' }}>{task.project.title}</div>
                   )}
                 </div>
                 <span className="text-[10px] font-medium px-1.5 py-0.5 rounded capitalize" style={{ background: sc.bg, color: sc.color }}>
@@ -121,7 +121,7 @@ export default function MyWork() {
                   {task.priority}
                 </span>
                 {task.dueDate && (
-                  <span className="text-[10px] flex items-center gap-1 hidden sm:flex" style={{ color: '#9da2b3' }}>
+                  <span className="text-[10px] flex items-center gap-1 hidden sm:flex" style={{ color: 'var(--nova-text-muted)' }}>
                     <Calendar className="w-3 h-3" />
                     {new Date(task.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                   </span>
@@ -133,10 +133,10 @@ export default function MyWork() {
       ) : (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(13,148,136,0.06)' }}>
-            <LayoutList className="w-8 h-8" style={{ color: '#9da2b3' }} />
+            <LayoutList className="w-8 h-8" style={{ color: 'var(--nova-text-muted)' }} />
           </div>
-          <h3 className="text-lg font-semibold mb-2" style={{ color: '#1a1d2e' }}>No tasks found</h3>
-          <p className="text-sm max-w-md" style={{ color: '#5e6278' }}>
+          <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--nova-text)' }}>No tasks found</h3>
+          <p className="text-sm max-w-md" style={{ color: 'var(--nova-text-secondary)' }}>
             {filter === "active" ? "You're all caught up! No active tasks assigned to you." :
              filter === "overdue" ? "No overdue tasks. Great job staying on track!" :
              "No tasks match this filter."}

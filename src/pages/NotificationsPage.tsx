@@ -97,7 +97,7 @@ export default function NotificationsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-extrabold" style={{ color: 'var(--nova-text)' }}>Notifications</h1>
-          <p className="text-sm mt-1" style={{ color: '#5e6278' }}>
+          <p className="text-sm mt-1" style={{ color: 'var(--nova-text-secondary)' }}>
             {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
           </p>
         </div>
@@ -159,17 +159,17 @@ export default function NotificationsPage() {
                     </div>
                     <p
                       className="text-sm cursor-pointer"
-                      style={{ color: '#5e6278' }}
+                      style={{ color: 'var(--nova-text-secondary)' }}
                       onClick={() => !isInvitation && handleNotificationClick(notification)}
                     >
                       {notification.message}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px]" style={{ color: '#9da2b3' }}>{formatDate(notification.createdAt)}</span>
+                      <span className="text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>{formatDate(notification.createdAt)}</span>
                       {notification.project && (
                         <span
                           className="text-[10px] cursor-pointer hover:underline"
-                          style={{ color: '#9da2b3' }}
+                          style={{ color: 'var(--nova-text-muted)' }}
                           onClick={() => handleNotificationClick(notification)}
                         >
                           · {notification.project.title}
@@ -192,7 +192,7 @@ export default function NotificationsPage() {
                           onClick={() => handleDeclineInvitation(notification)}
                           disabled={processingInvitation === invitationId}
                           className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
-                          style={{ background: '#f4f6f9', color: '#5e6278', border: '1px solid #e8eaef' }}
+                          style={{ background: 'var(--nova-surface-cool)', color: 'var(--nova-text-secondary)', border: '1px solid var(--nova-border)' }}
                         >
                           Decline
                         </button>
@@ -200,7 +200,7 @@ export default function NotificationsPage() {
                     )}
                     {isInvitation && !hasPendingInvitation && !notification.read && (
                       <div className="mt-2">
-                        <span className="text-[10px] font-medium" style={{ color: '#9da2b3' }}>
+                        <span className="text-[10px] font-medium" style={{ color: 'var(--nova-text-muted)' }}>
                           Invitation already processed
                         </span>
                       </div>
@@ -210,7 +210,7 @@ export default function NotificationsPage() {
                     <button
                       onClick={() => markRead({ notificationId: notification._id })}
                       className="transition-colors shrink-0 hover:opacity-70"
-                      style={{ color: '#9da2b3' }}
+                      style={{ color: 'var(--nova-text-muted)' }}
                       title="Mark as read"
                     >
                       <Check className="w-4 h-4" />
@@ -224,10 +224,10 @@ export default function NotificationsPage() {
       ) : (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(13,148,136,0.06)' }}>
-            <Bell className="w-8 h-8" style={{ color: '#9da2b3' }} />
+            <Bell className="w-8 h-8" style={{ color: 'var(--nova-text-muted)' }} />
           </div>
-          <h3 className="text-lg font-semibold mb-2" style={{ color: '#1a1d2e' }}>No notifications</h3>
-          <p className="text-sm" style={{ color: '#5e6278' }}>You're all caught up! Notifications will appear here.</p>
+          <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--nova-text)' }}>No notifications</h3>
+          <p className="text-sm" style={{ color: 'var(--nova-text-secondary)' }}>You're all caught up! Notifications will appear here.</p>
         </div>
       )}
     </div>

@@ -61,14 +61,14 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <NovaSyncLogo size={28} />
-            <span className="text-lg font-bold tracking-tight" style={{ color: '#1a1d2e' }}>NovaSync</span>
+            <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--nova-text)' }}>NovaSync</span>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-sm" style={{ color: '#5e6278' }}>
+          <div className="hidden md:flex items-center gap-8 text-sm" style={{ color: 'var(--nova-text-secondary)' }}>
             <a href="#features" className="hover:text-[#1a1d2e] transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-[#1a1d2e] transition-colors">How It Works</a>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/auth" className="text-sm px-4 py-2 rounded-lg transition-colors font-medium" style={{ color: '#5e6278' }}>
+            <Link to="/auth" className="text-sm px-4 py-2 rounded-lg transition-colors font-medium" style={{ color: 'var(--nova-text-secondary)' }}>
               Sign In
             </Link>
             <Link
@@ -100,14 +100,14 @@ export default function Landing() {
                 <Sparkles className="w-3.5 h-3.5" />
                 AI-Powered Project Intelligence
               </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight leading-[1.1]" style={{ color: '#1a1d2e' }}>
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight leading-[1.1]" style={{ color: 'var(--nova-text)' }}>
                 Plan together.
                 <br />
                 <span style={{ color: '#0d9488' }}>Build smarter.</span>
                 <br />
                 Stay in sync.
               </h1>
-              <p className="mt-6 text-lg max-w-xl leading-relaxed" style={{ color: '#5e6278' }}>
+              <p className="mt-6 text-lg max-w-xl leading-relaxed" style={{ color: 'var(--nova-text-secondary)' }}>
                 NovaSync is the collaborative project management platform that keeps your team aligned.
                 Real-time updates, AI insights, and beautiful workflows — all in one place.
               </p>
@@ -123,12 +123,12 @@ export default function Landing() {
                 <a
                   href="#features"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 font-medium px-7 py-3.5 rounded-lg text-sm transition-colors"
-                  style={{ color: '#5e6278', border: '1px solid #e8eaef' }}
+                  style={{ color: 'var(--nova-text-secondary)', border: '1px solid var(--nova-border)' }}
                 >
                   See Features
                 </a>
               </div>
-              <div className="mt-8 flex items-center gap-6 text-xs" style={{ color: '#9da2b3' }}>
+              <div className="mt-8 flex items-center gap-6 text-xs" style={{ color: 'var(--nova-text-muted)' }}>
                 <div className="flex items-center gap-1.5">
                   <CheckCircle className="w-3.5 h-3.5" style={{ color: '#0d9488' }} />
                   Free for small teams
@@ -149,9 +149,9 @@ export default function Landing() {
             >
               <div className="relative">
                 {/* Mock product interface */}
-                <div className="rounded-xl overflow-hidden" style={{ background: '#ffffff', border: '1px solid #e8eaef', boxShadow: '0 20px 60px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)' }}>
+                <div className="rounded-xl overflow-hidden" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)', boxShadow: '0 20px 60px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)' }}>
                   {/* Top bar */}
-                  <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: '1px solid #f0f1f5', background: '#faf9f7' }}>
+                  <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: '1px solid #f0f1f5', background: 'var(--nova-surface-warm)' }}>
                     <div className="flex gap-1.5">
                       <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#fca5a5' }} />
                       <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#fcd34d' }} />
@@ -187,7 +187,7 @@ export default function Landing() {
                         { label: "In Progress", color: "#0d9488", count: 3, items: ["API design", "Kanban"] },
                         { label: "Done", color: "#16a34a", count: 7, items: ["Setup", "Schema"] },
                       ].map((col) => (
-                        <div key={col.label} className="rounded-lg p-3" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
+                        <div key={col.label} className="rounded-lg p-3" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}>
                           <div className="flex items-center gap-1.5 mb-2">
                             <div className="w-2 h-2 rounded-full" style={{ background: col.color }} />
                             <div className="h-2 w-12 rounded" style={{ background: '#d1d5db' }} />
@@ -206,7 +206,7 @@ export default function Landing() {
                     </div>
                     {/* Progress bar mock */}
                     <div className="flex items-center gap-3">
-                      <div className="text-[10px] font-medium" style={{ color: '#5e6278' }}>Sprint Progress</div>
+                      <div className="text-[10px] font-medium" style={{ color: 'var(--nova-text-secondary)' }}>Sprint Progress</div>
                       <div className="flex-1 h-1.5 rounded-full" style={{ background: '#e8eaef' }}>
                         <div className="h-full rounded-full" style={{ background: 'linear-gradient(90deg, #0d9488, #6366f1)', width: '68%' }} />
                       </div>
@@ -215,14 +215,14 @@ export default function Landing() {
                   </div>
                 </div>
                 {/* Floating accent card */}
-                <div className="absolute -bottom-4 -left-4 rounded-lg p-3 animate-fade-in" style={{ background: '#ffffff', border: '1px solid #e8eaef', boxShadow: '0 8px 24px rgba(0,0,0,0.06)' }}>
+                <div className="absolute -bottom-4 -left-4 rounded-lg p-3 animate-fade-in" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)', boxShadow: '0 8px 24px rgba(0,0,0,0.06)' }}>
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ background: 'rgba(13,148,136,0.1)' }}>
                       <Brain className="w-3.5 h-3.5" style={{ color: '#0d9488' }} />
                     </div>
                     <div>
-                      <div className="text-[10px] font-semibold" style={{ color: '#1a1d2e' }}>Nova AI</div>
-                      <div className="text-[9px]" style={{ color: '#9da2b3' }}>Health: 82/100</div>
+                      <div className="text-[10px] font-semibold" style={{ color: 'var(--nova-text)' }}>Nova AI</div>
+                      <div className="text-[9px]" style={{ color: 'var(--nova-text-muted)' }}>Health: 82/100</div>
                     </div>
                   </div>
                 </div>
@@ -233,12 +233,12 @@ export default function Landing() {
       </section>
 
       {/* Stats bar */}
-      <section style={{ borderTop: '1px solid #e8eaef', borderBottom: '1px solid #e8eaef', background: '#ffffff' }}>
+      <section style={{ borderTop: '1px solid var(--nova-border)', borderBottom: '1px solid var(--nova-border)', background: 'var(--nova-surface)' }}>
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 py-10 px-4">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="text-2xl font-bold" style={{ color: '#0d9488' }}>{stat.value}</div>
-              <div className="text-sm mt-1" style={{ color: '#9da2b3' }}>{stat.label}</div>
+              <div className="text-sm mt-1" style={{ color: 'var(--nova-text-muted)' }}>{stat.label}</div>
             </div>
           ))}
         </div>
@@ -256,8 +256,8 @@ export default function Landing() {
             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium mb-4" style={{ background: 'rgba(13,148,136,0.06)', color: '#0d9488' }}>
               Features
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold" style={{ color: '#1a1d2e' }}>Everything you need to ship faster</h2>
-            <p className="mt-4 max-w-2xl mx-auto text-base" style={{ color: '#5e6278' }}>
+            <h2 className="text-3xl sm:text-4xl font-extrabold" style={{ color: 'var(--nova-text)' }}>Everything you need to ship faster</h2>
+            <p className="mt-4 max-w-2xl mx-auto text-base" style={{ color: 'var(--nova-text-secondary)' }}>
               From task management to AI-powered insights, NovaSync gives your team the tools to work smarter.
             </p>
           </motion.div>
@@ -270,13 +270,13 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
                 className="p-6 rounded-xl transition-all group hover:shadow-lg hover:shadow-black/[0.03]"
-                style={{ background: '#f8f6f3', border: '1px solid #e8eaef' }}
+                style={{ background: '#f8f6f3', border: '1px solid var(--nova-border)' }}
               >
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4 transition-colors" style={{ background: 'rgba(13,148,136,0.08)' }}>
                   <feature.icon className="w-5 h-5" style={{ color: '#0d9488' }} />
                 </div>
-                <h3 className="text-base font-semibold mb-2" style={{ color: '#1a1d2e' }}>{feature.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#5e6278' }}>{feature.description}</p>
+                <h3 className="text-base font-semibold mb-2" style={{ color: 'var(--nova-text)' }}>{feature.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--nova-text-secondary)' }}>{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -295,8 +295,8 @@ export default function Landing() {
             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium mb-4" style={{ background: 'rgba(99,102,241,0.06)', color: '#6366f1' }}>
               How It Works
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold" style={{ color: '#1a1d2e' }}>Up and running in minutes</h2>
-            <p className="mt-4 text-base" style={{ color: '#5e6278' }}>Three steps to better project management.</p>
+            <h2 className="text-3xl sm:text-4xl font-extrabold" style={{ color: 'var(--nova-text)' }}>Up and running in minutes</h2>
+            <p className="mt-4 text-base" style={{ color: 'var(--nova-text-secondary)' }}>Three steps to better project management.</p>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-8">
             {workflowSteps.map((item, i) => (
@@ -309,8 +309,8 @@ export default function Landing() {
                 className="text-center relative"
               >
                 <div className="text-6xl font-extrabold mb-4" style={{ color: 'rgba(26,29,46,0.18)' }}>{item.step}</div>
-                <h3 className="text-lg font-semibold mb-2" style={{ color: '#1a1d2e' }}>{item.title}</h3>
-                <p className="text-sm" style={{ color: '#5e6278' }}>{item.desc}</p>
+                <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--nova-text)' }}>{item.title}</h3>
+                <p className="text-sm" style={{ color: 'var(--nova-text-secondary)' }}>{item.desc}</p>
                 {i < 2 && (
                   <div className="hidden md:block absolute top-8 right-0 transform translate-x-1/2">
                     <ChevronRight className="w-5 h-5" style={{ color: '#d1d5db' }} />
@@ -330,14 +330,14 @@ export default function Landing() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             className="p-14 rounded-2xl"
-            style={{ background: '#ffffff', border: '1px solid #e8eaef', boxShadow: '0 20px 60px rgba(0,0,0,0.04)' }}
+            style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)', boxShadow: '0 20px 60px rgba(0,0,0,0.04)' }}
           >
             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium mb-6" style={{ background: 'rgba(197,165,90,0.08)', color: '#c5a55a' }}>
               <Star className="w-3 h-3" />
               Trusted by teams worldwide
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold mb-4" style={{ color: '#1a1d2e' }}>Ready to sync your team?</h2>
-            <p className="text-base mb-8" style={{ color: '#5e6278' }}>
+            <h2 className="text-3xl sm:text-4xl font-extrabold mb-4" style={{ color: 'var(--nova-text)' }}>Ready to sync your team?</h2>
+            <p className="text-base mb-8" style={{ color: 'var(--nova-text-secondary)' }}>
               Start managing projects with clarity, collaboration, and AI-powered intelligence.
             </p>
             <Link
@@ -353,16 +353,16 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid #e8eaef', background: '#ffffff' }}>
+      <footer style={{ borderTop: '1px solid var(--nova-border)', background: 'var(--nova-surface)' }}>
         <div className="max-w-6xl mx-auto py-12 px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             {/* Brand */}
             <div className="md:col-span-2">
               <div className="flex items-center gap-2.5 mb-3">
                 <NovaSyncLogo size={24} />
-                <span className="text-base font-bold" style={{ color: '#1a1d2e' }}>NovaSync</span>
+                <span className="text-base font-bold" style={{ color: 'var(--nova-text)' }}>NovaSync</span>
               </div>
-              <p className="text-sm max-w-xs leading-relaxed" style={{ color: '#5e6278' }}>
+              <p className="text-sm max-w-xs leading-relaxed" style={{ color: 'var(--nova-text-secondary)' }}>
                 Plan together. Build smarter. Stay in sync.
                 The collaborative project management platform for modern teams.
               </p>
@@ -370,31 +370,31 @@ export default function Landing() {
 
             {/* Product */}
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#9da2b3' }}>Product</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--nova-text-muted)' }}>Product</h4>
               <div className="space-y-2">
-                <a href="#features" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: '#5e6278' }}>Features</a>
-                <a href="#how-it-works" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: '#5e6278' }}>How It Works</a>
-                <Link to="/auth" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: '#5e6278' }}>Get Started</Link>
-                <Link to="/auth" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: '#5e6278' }}>Sign In</Link>
+                <a href="#features" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: 'var(--nova-text-secondary)' }}>Features</a>
+                <a href="#how-it-works" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: 'var(--nova-text-secondary)' }}>How It Works</a>
+                <Link to="/auth" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: 'var(--nova-text-secondary)' }}>Get Started</Link>
+                <Link to="/auth" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: 'var(--nova-text-secondary)' }}>Sign In</Link>
               </div>
             </div>
 
             {/* Legal */}
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#9da2b3' }}>Legal</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--nova-text-muted)' }}>Legal</h4>
               <div className="space-y-2">
-                <Link to="/privacy" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: '#5e6278' }}>Privacy Policy</Link>
-                <Link to="/terms" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: '#5e6278' }}>Terms of Service</Link>
+                <Link to="/privacy" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: 'var(--nova-text-secondary)' }}>Privacy Policy</Link>
+                <Link to="/terms" className="block text-sm transition-colors hover:text-[#0d9488]" style={{ color: 'var(--nova-text-secondary)' }}>Terms of Service</Link>
               </div>
             </div>
           </div>
 
           {/* Bottom bar */}
-          <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-3" style={{ borderTop: '1px solid #e8eaef' }}>
-            <p className="text-xs" style={{ color: '#9da2b3' }}>&copy; {new Date().getFullYear()} NovaSync. All rights reserved.</p>
+          <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-3" style={{ borderTop: '1px solid var(--nova-border)' }}>
+            <p className="text-xs" style={{ color: 'var(--nova-text-muted)' }}>&copy; {new Date().getFullYear()} NovaSync. All rights reserved.</p>
             <div className="flex items-center gap-1.5">
               <NovaSyncLogo size={14} />
-              <span className="text-xs" style={{ color: '#9da2b3' }}>Built with precision for modern teams</span>
+              <span className="text-xs" style={{ color: 'var(--nova-text-muted)' }}>Built with precision for modern teams</span>
             </div>
           </div>
         </div>

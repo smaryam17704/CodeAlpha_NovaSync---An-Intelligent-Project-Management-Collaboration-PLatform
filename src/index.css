@@ -193,6 +193,58 @@ body {
   color: var(--nova-text-muted) !important;
 }
 
+/* ============================================================
+   Dark mode: Override inline-style hardcoded light-mode colors.
+   Components use inline style="{ color: '#hex' }" which bypass
+   normal CSS cascade. These attribute selectors intercept the
+   exact color values and force dark-mode replacements.
+   ============================================================ */
+
+/* Primary text: #1a1d2e → light text on dark bg */
+.dark [style*="color: #1a1d2e"] { color: var(--nova-text) !important; }
+.dark [style*="color: rgb(26, 29, 46)"] { color: var(--nova-text) !important; }
+.dark [style*="color:#1a1d2e"] { color: var(--nova-text) !important; }
+
+/* Secondary text: #5e6278 → lighter for dark bg */
+.dark [style*="color: #5e6278"] { color: var(--nova-text-secondary) !important; }
+.dark [style*="color: rgb(94, 98, 120)"] { color: var(--nova-text-secondary) !important; }
+.dark [style*="color:#5e6278"] { color: var(--nova-text-secondary) !important; }
+
+/* Muted text: #9da2b3 → slightly brighter for dark bg */
+.dark [style*="color: #9da2b3"] { color: var(--nova-text-muted) !important; }
+.dark [style*="color: rgb(157, 162, 179)"] { color: var(--nova-text-muted) !important; }
+.dark [style*="color:#9da2b3"] { color: var(--nova-text-muted) !important; }
+
+/* White backgrounds → dark surface */
+.dark [style*="background: #ffffff"] { background: var(--nova-surface) !important; }
+.dark [style*="background:#ffffff"] { background: var(--nova-surface) !important; }
+
+/* Light cool backgrounds: #f4f6f9 → dark surface-cool */
+.dark [style*="background: #f4f6f9"] { background: var(--nova-surface-cool) !important; }
+.dark [style*="background:#f4f6f9"] { background: var(--nova-surface-cool) !important; }
+
+/* Warm backgrounds: #faf9f7 → dark surface-warm */
+.dark [style*="background: #faf9f7"] { background: var(--nova-surface-warm) !important; }
+.dark [style*="background:#faf9f7"] { background: var(--nova-surface-warm) !important; }
+
+/* Borders: #e8eaef → dark border */
+.dark [style*="border: 1px solid #e8eaef"] { border-color: var(--nova-border) !important; }
+.dark [style*="border:1px solid #e8eaef"] { border-color: var(--nova-border) !important; }
+.dark [style*="border: 1px solid #e8eaef"] { border-color: var(--nova-border) !important; }
+
+/* Light borders: #f0f1f5 → dark border-light */
+.dark [style*="border: 1px solid #f0f1f5"] { border-color: var(--nova-border-light) !important; }
+.dark [style*="border: 1px solid #f0f1f5"] { border-color: var(--nova-border-light) !important; }
+.dark [style*="borderBottom: 1px solid #f0f1f5"] { border-bottom-color: var(--nova-border-light) !important; }
+
+/* Hardcoded teal: #0d9488 → dark teal */
+.dark [style*="color: #0d9488"] { color: var(--nova-teal) !important; }
+.dark [style*="background: #0d9488"] { background: var(--nova-teal) !important; }
+
+/* Scrollbar in dark mode */
+.dark ::-webkit-scrollbar-thumb { background: #3a3d50; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #5a5d70; }
+
 /* Focus styles */
 *:focus-visible {
   outline: 2px solid var(--nova-teal);
