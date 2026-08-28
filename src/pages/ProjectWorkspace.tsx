@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, Link, useParams, useLocation } from "react-router";
+import { Routes, Route, Link, useParams, useLocation, useNavigate } from "react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { motion } from "framer-motion";
@@ -22,6 +22,7 @@ interface Props {
 export default function ProjectWorkspace({ activeWorkspace }: Props) {
   const { projectId } = useParams<{ projectId: string }>();
   const location = useLocation();
+  const navigate = useNavigate();
   const project = useQuery(
     api.projects.get,
     projectId ? { projectId: projectId as any } : "skip"
@@ -48,10 +49,28 @@ export default function ProjectWorkspace({ activeWorkspace }: Props) {
   const currentTab = location.pathname === basePath ? "" :
     location.pathname.replace(basePath + "/", "").split("/")[0];
 
-  if (!project) {
+  // Distinguish between still loading (undefined) and access denied (null)
+  if (project === undefined) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="w-6 h-6 border-2 border-[#0d9488] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (project === null) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-3 animate-fade-in">
+        <div className="text-sm font-medium" style={{ color: '#5e6278' }}>
+          You are no longer part of this project.
+        </div>
+        <button
+          onClick={() => navigate("/app/projects")}
+          className="px-4 py-2 text-white text-sm font-semibold rounded-lg transition-all hover:shadow-md"
+          style={{ background: '#0d9488' }}
+        >
+          Back to Projects
+        </button>
       </div>
     );
   }

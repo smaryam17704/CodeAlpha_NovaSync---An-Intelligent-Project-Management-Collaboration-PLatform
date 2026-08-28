@@ -82,15 +82,19 @@ export const getByAssignee = query({
       .withIndex("by_assignee", (q) => q.eq("assigneeId", args.userId))
       .collect();
 
-    return Promise.all(
-      tasks.map(async (task) => {
+    // Only return tasks from projects the user is still a member of
+    const accessibleTasks = [];
+    for (const task of tasks) {
+      const member = await getProjectMember(ctx, task.projectId, currentUserId);
+      if (member) {
         const project = await ctx.db.get(task.projectId);
-        return {
+        accessibleTasks.push({
           ...task,
           project: project ? { _id: project._id, title: project.title, color: project.color } : null,
-        };
-      })
-    );
+        });
+      }
+    }
+    return accessibleTasks;
   },
 });
 
@@ -103,15 +107,19 @@ export const getByCreator = query({
     const allTasks = await ctx.db.query("tasks").collect();
     const tasks = allTasks.filter((t) => t.creatorId === args.userId);
 
-    return Promise.all(
-      tasks.map(async (task) => {
+    // Only return tasks from projects the user is still a member of
+    const accessibleTasks = [];
+    for (const task of tasks) {
+      const member = await getProjectMember(ctx, task.projectId, currentUserId);
+      if (member) {
         const project = await ctx.db.get(task.projectId);
-        return {
+        accessibleTasks.push({
           ...task,
           project: project ? { _id: project._id, title: project.title, color: project.color } : null,
-        };
-      })
-    );
+        });
+      }
+    }
+    return accessibleTasks;
   },
 });
 
