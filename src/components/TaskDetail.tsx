@@ -422,7 +422,6 @@ export default function TaskDetail() {
                 className="flex-1 px-3 py-2 rounded-lg text-sm transition-colors"
                 style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                 placeholder="Add a comment... (use @name to mention)"
-                disabled={task.userRole === "viewer"}
               />
               <button
                 onClick={handleAddComment}
