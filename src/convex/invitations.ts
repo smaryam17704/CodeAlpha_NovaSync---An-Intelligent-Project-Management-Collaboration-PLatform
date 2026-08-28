@@ -3,6 +3,7 @@ import { query, mutation } from "./_generated/server";
 import {
   requireAuth,
   getProjectMember,
+  getWorkspaceMember,
   createNotification,
   createActivity,
   requireProjectAdmin,
@@ -145,6 +146,21 @@ export const acceptInvitation = mutation({
         projectId: invitation.projectId,
         userId,
         role: invitation.role,
+        joinedAt: Date.now(),
+        invitedBy: invitation.invitedBy,
+      });
+    }
+
+    // Also ensure workspace membership so the project appears in the user's Projects list.
+    // projects.list checks workspace membership FIRST — without this, the query returns [].
+    const existingWsMember = await getWorkspaceMember(ctx, invitation.workspaceId, userId);
+    if (!existingWsMember) {
+      // Map project role to workspace role: owner is not applicable, admin/member → member, viewer → viewer
+      const wsRole = invitation.role === "viewer" ? "viewer" : "member";
+      await ctx.db.insert("workspaceMembers", {
+        workspaceId: invitation.workspaceId,
+        userId,
+        role: wsRole as any,
         joinedAt: Date.now(),
         invitedBy: invitation.invitedBy,
       });
