@@ -29,11 +29,13 @@ export default function NotificationsPage() {
 
   const [processingInvitation, setProcessingInvitation] = useState<string | null>(null);
 
-  // Build a map of projectId -> invitationId for pending invitations
+  // Build maps of projectId -> invitationId AND projectId -> workspaceId for pending invitations
   const pendingInvMap = new Map<string, string>();
+  const pendingWsMap = new Map<string, string>();
   if (pendingInvitations) {
     for (const inv of pendingInvitations) {
       pendingInvMap.set(inv.projectId, inv._id);
+      pendingWsMap.set(inv.projectId, inv.workspaceId);
     }
   }
 
@@ -53,9 +55,20 @@ export default function NotificationsPage() {
     if (!invitationId) return;
     setProcessingInvitation(invitationId);
     try {
-      await acceptInvitation({ invitationId: invitationId as any });
+      const result = await acceptInvitation({ invitationId: invitationId as any });
       await markRead({ notificationId: notification._id });
-      navigate("/app/projects");
+
+      // Switch the active workspace to the invitation's workspace so the project appears.
+      // The project belongs to the owner's workspace, not necessarily the invited user's current workspace.
+      // We must update localStorage and force a full page reload so AppShell re-mounts with the correct workspace.
+      const invWorkspaceId = result?.workspaceId || pendingWsMap.get(notification.projectId);
+      if (invWorkspaceId) {
+        try {
+          localStorage.setItem("novasync_active_workspace", invWorkspaceId);
+        } catch {}
+      }
+      // Force a full page reload so AppShell re-initializes with the correct activeWorkspace from localStorage.
+      window.location.href = "/app/projects";
     } catch (err) {
       console.error("Failed to accept invitation:", err);
     } finally {

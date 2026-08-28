@@ -195,6 +195,9 @@ export const acceptInvitation = mutation({
         });
       }
     }
+
+    // Return workspaceId so the frontend can switch activeWorkspace to the correct workspace
+    return { projectId: invitation.projectId, workspaceId: invitation.workspaceId };
   },
 });
 
