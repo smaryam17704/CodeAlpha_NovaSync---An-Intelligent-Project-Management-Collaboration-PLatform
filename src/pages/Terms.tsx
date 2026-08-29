@@ -80,26 +80,26 @@ Our total liability for any claims related to NovaSync shall not exceed the amou
 
 export default function Terms() {
   return (
-    <div className="min-h-screen" style={{ background: "#faf9f7" }}>
+    <div className="min-h-screen" style={{ background: 'var(--nova-surface-warm)' }}>
       <nav
         className="sticky top-0 z-50 w-full"
         style={{
-          background: "rgba(250,249,247,0.85)",
+          background: 'rgba(250,249,247,0.85)',
           backdropFilter: "blur(16px)",
-          borderBottom: "1px solid #e8eaef",
+          borderBottom: '1px solid var(--nova-border)',
         }}
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
             <NovaSyncLogo size={26} />
-            <span className="text-base font-bold" style={{ color: "#1a1d2e" }}>
+            <span className="text-base font-bold" style={{ color: 'var(--nova-text)' }}>
               NovaSync
             </span>
           </Link>
           <Link
             to="/"
             className="flex items-center gap-2 text-sm transition-colors"
-            style={{ color: "#9da2b3" }}
+            style={{ color: 'var(--nova-text-muted)' }}
           >
             <ArrowLeft className="w-4 h-4" />
             Back to home
@@ -111,11 +111,11 @@ export default function Terms() {
         <div className="animate-fade-in">
           <h1
             className="text-3xl sm:text-4xl font-extrabold mb-3"
-            style={{ color: "#1a1d2e" }}
+            style={{ color: 'var(--nova-text)' }}
           >
             Terms of Service
           </h1>
-          <p className="text-sm mb-10" style={{ color: "#9da2b3" }}>
+          <p className="text-sm mb-10" style={{ color: 'var(--nova-text-muted)' }}>
             Last updated: August 2026
           </p>
 
@@ -124,13 +124,13 @@ export default function Terms() {
               <section key={section.title}>
                 <h2
                   className="text-lg font-bold mb-3"
-                  style={{ color: "#1a1d2e" }}
+                  style={{ color: 'var(--nova-text)' }}
                 >
                   {section.title}
                 </h2>
                 <div
                   className="text-sm leading-relaxed whitespace-pre-line"
-                  style={{ color: "#5e6278" }}
+                  style={{ color: 'var(--nova-text-secondary)' }}
                 >
                   {section.content}
                 </div>
@@ -142,19 +142,19 @@ export default function Terms() {
 
       <footer
         className="py-8 px-4"
-        style={{ borderTop: "1px solid #e8eaef", background: "#ffffff" }}
+        style={{ borderTop: '1px solid var(--nova-border)', background: 'var(--nova-surface)' }}
       >
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <NovaSyncLogo size={18} />
-            <span className="text-xs font-semibold" style={{ color: "#1a1d2e" }}>
+            <span className="text-xs font-semibold" style={{ color: 'var(--nova-text)' }}>
               NovaSync
             </span>
           </div>
           <Link
             to="/"
             className="text-xs transition-colors"
-            style={{ color: "#9da2b3" }}
+            style={{ color: 'var(--nova-text-muted)' }}
           >
             Return home
           </Link>

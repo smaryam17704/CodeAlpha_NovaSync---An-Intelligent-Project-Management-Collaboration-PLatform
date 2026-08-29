@@ -265,7 +265,7 @@ export default function TaskDetail() {
               className="px-3 py-2.5 text-xs font-medium capitalize border-b-2 transition-colors"
               style={{
                 borderColor: active ? '#0d9488' : 'transparent',
-                color: active ? '#0d9488' : '#9da2b3',
+                color: active ? '#0d9488' : 'var(--nova-text-muted)',
               }}
             >
               {tab}
@@ -481,7 +481,7 @@ export default function TaskDetail() {
                     <div className="flex items-center gap-2 mb-1" style={{ flexDirection: isOwn ? 'row-reverse' : 'row' }}>
                       <span className="text-xs font-medium" style={{ color: 'var(--nova-text)' }}>{comment.author?.name || "Unknown"}</span>
                       <span className="text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>{formatTime(comment.createdAt)}</span>
-                      {comment.editedAt && <span className="text-[10px]" style={{ color: '#d1d5db' }}>(edited)</span>}
+                      {comment.editedAt && <span className="text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>(edited)</span>}
                     {comment.canEdit && (
                       <div className="ml-auto flex items-center gap-1">
                         <button

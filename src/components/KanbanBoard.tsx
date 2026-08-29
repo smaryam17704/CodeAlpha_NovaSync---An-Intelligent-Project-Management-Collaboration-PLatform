@@ -21,8 +21,8 @@ const columns = [
 const priorityColors: Record<string, { bg: string; color: string }> = {
   urgent: { bg: 'rgba(220,38,38,0.06)', color: '#dc2626' },
   high: { bg: 'rgba(217,119,6,0.06)', color: '#d97706' },
-  medium: { bg: '#f4f6f9', color: '#5e6278' },
-  low: { bg: '#f4f6f9', color: '#9da2b3' },
+  medium: { bg: 'var(--nova-surface-cool)', color: 'var(--nova-text-secondary)' },
+  low: { bg: 'var(--nova-surface-cool)', color: 'var(--nova-text-muted)' },
 };
 
 export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
@@ -82,8 +82,8 @@ export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
             key={col.id}
             className="flex-shrink-0 w-72 sm:flex-1 sm:min-w-0 rounded-xl border transition-colors"
             style={{
-              borderColor: isDragOver ? 'rgba(13,148,136,0.2)' : '#e8eaef',
-              background: isDragOver ? 'rgba(13,148,136,0.02)' : '#f8f6f3',
+              borderColor: isDragOver ? 'rgba(13,148,136,0.2)' : 'var(--nova-border)',
+              background: isDragOver ? 'rgba(13,148,136,0.02)' : 'var(--nova-surface-warm)',
             }}
             onDragOver={(e) => handleDragOver(e, col.id)}
             onDragLeave={handleDragLeave}
@@ -93,13 +93,13 @@ export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
             <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid #e8eaef' }}>
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full" style={{ background: col.color }} />
-                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#5e6278' }}>{col.label}</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: '#e8eaef', color: '#9da2b3' }}>{colTasks.length}</span>
+                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--nova-text-secondary)' }}>{col.label}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'var(--nova-border)', color: 'var(--nova-text-muted)' }}>{colTasks.length}</span>
               </div>
               <button
                 onClick={() => setShowCreateInColumn(col.id)}
                 className="transition-colors hover:opacity-70"
-                style={{ color: '#9da2b3' }}
+                style={{ color: 'var(--nova-text-muted)' }}
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
@@ -122,8 +122,8 @@ export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
                       onDragEnd={() => { setDraggedTask(null); setDragOverColumn(null); }}
                       className="p-3 rounded-lg cursor-pointer transition-all group"
                       style={{
-                        background: '#ffffff',
-                        border: '1px solid #e8eaef',
+                        background: 'var(--nova-surface)',
+                        border: '1px solid var(--nova-border)',
                         opacity: draggedTask === task._id ? 0.5 : 1,
                         transform: draggedTask === task._id ? 'rotate(1.5deg)' : undefined,
                       }}
@@ -133,9 +133,9 @@ export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
                         <span className="text-[10px] font-medium px-1.5 py-0.5 rounded capitalize" style={{ background: pc.bg, color: pc.color }}>
                           {task.priority}
                         </span>
-                        <GripVertical className="w-3 h-3 transition-opacity" style={{ color: '#9da2b3' }} />
+                        <GripVertical className="w-3 h-3 transition-opacity" style={{ color: 'var(--nova-text-muted)' }} />
                       </div>
-                      <h4 className="text-sm font-medium mb-2 leading-snug" style={{ color: '#1a1d2e' }}>{task.title}</h4>
+                      <h4 className="text-sm font-medium mb-2 leading-snug" style={{ color: 'var(--nova-text)' }}>{task.title}</h4>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           {task.assignee ? (
@@ -144,7 +144,7 @@ export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
                             </div>
                           ) : null}
                           {task.commentCount > 0 && (
-                            <div className="flex items-center gap-0.5 text-[10px]" style={{ color: '#9da2b3' }}>
+                            <div className="flex items-center gap-0.5 text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>
                               <MessageSquare className="w-3 h-3" />
                               {task.commentCount}
                             </div>
@@ -152,7 +152,7 @@ export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
                         </div>
                         <div className="flex items-center gap-2">
                           {task.dueDate && (
-                            <div className="flex items-center gap-0.5 text-[10px]" style={{ color: '#9da2b3' }}>
+                            <div className="flex items-center gap-0.5 text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>
                               <Calendar className="w-3 h-3" />
                               {new Date(task.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                             </div>
@@ -180,7 +180,7 @@ export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
                           value={task.status}
                           onChange={(e) => { e.stopPropagation(); handleStatusChange(task._id, e.target.value); }}
                           className="w-full text-[10px] rounded px-2 py-1"
-                          style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#5e6278' }}
+                          style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text-secondary)' }}
                           onClick={(e) => e.stopPropagation()}
                         >
                           {columns.map((c) => (
@@ -195,7 +195,7 @@ export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
 
               {/* Quick create */}
               {showCreateInColumn === col.id ? (
-                <div className="p-2 rounded-lg" style={{ background: '#ffffff', border: '1px solid #e8eaef' }}>
+                <div                    className="p-2 rounded-lg" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}>
                   <input
                     autoFocus
                     value={newTaskTitle}
@@ -205,7 +205,7 @@ export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
                       if (e.key === "Escape") { setShowCreateInColumn(null); setNewTaskTitle(""); }
                     }}
                     className="w-full px-2 py-1.5 bg-transparent text-sm focus:outline-none"
-                    style={{ color: '#1a1d2e' }}
+                    style={{ color: 'var(--nova-text)' }}
                     placeholder="Task title..."
                   />
                   <div className="flex gap-1 mt-1">
@@ -219,7 +219,7 @@ export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
                     <button
                       onClick={() => { setShowCreateInColumn(null); setNewTaskTitle(""); }}
                       className="px-2 py-1 text-[10px] transition-colors"
-                      style={{ color: '#9da2b3' }}
+                      style={{ color: 'var(--nova-text-muted)' }}
                     >
                       Cancel
                     </button>
@@ -229,7 +229,7 @@ export default function KanbanBoard({ projectId, tasks, userRole }: Props) {
                 <button
                   onClick={() => setShowCreateInColumn(col.id)}
                   className="w-full py-2 rounded-lg border border-dashed text-xs transition-colors"
-                  style={{ borderColor: '#d1d5db', color: '#9da2b3' }}
+                  style={{ borderColor: 'var(--nova-border)', color: 'var(--nova-text-muted)' }}
                 >
                   + Add task
                 </button>

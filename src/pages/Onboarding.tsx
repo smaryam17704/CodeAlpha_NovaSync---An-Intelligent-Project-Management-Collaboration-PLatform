@@ -28,39 +28,39 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: '#faf9f7' }}>
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--nova-surface-warm)' }}>
       <div className="w-full max-w-md">
         <div className="flex items-center gap-2.5 mb-8 justify-center">
           <NovaSyncLogo size={36} />
-          <span className="text-xl font-bold" style={{ color: '#1a1d2e' }}>NovaSync</span>
+          <span className="text-xl font-bold" style={{ color: 'var(--nova-text)' }}>NovaSync</span>
         </div>
 
         {step === "workspace" ? (
-          <div className="animate-fade-in rounded-xl p-8" style={{ background: '#ffffff', border: '1px solid #e8eaef', boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}>
-            <h1 className="text-2xl font-extrabold text-center mb-2" style={{ color: '#1a1d2e' }}>Welcome to NovaSync!</h1>
-            <p className="text-sm text-center mb-8" style={{ color: '#5e6278' }}>
+          <div className="animate-fade-in rounded-xl p-8" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)', boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}>
+            <h1 className="text-2xl font-extrabold text-center mb-2" style={{ color: 'var(--nova-text)' }}>Welcome to NovaSync!</h1>
+            <p className="text-sm text-center mb-8" style={{ color: 'var(--nova-text-secondary)' }}>
               Create your workspace to get started.
             </p>
             <form onSubmit={handleCreateWorkspace} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Workspace name</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--nova-text-secondary)' }}>Workspace name</label>
                 <input
                   autoFocus
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors"
-                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                  style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                   placeholder="My Team"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: '#5e6278' }}>Description (optional)</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--nova-text-secondary)' }}>Description (optional)</label>
                 <input
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors"
-                  style={{ background: '#f4f6f9', border: '1px solid #e8eaef', color: '#1a1d2e' }}
+                  style={{ background: 'var(--nova-surface-cool)', border: '1px solid var(--nova-border)', color: 'var(--nova-text)' }}
                   placeholder="What's your team working on?"
                 />
               </div>
@@ -80,8 +80,8 @@ export default function Onboarding() {
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(22,163,74,0.06)' }}>
               <NovaSyncLogo size={48} />
             </div>
-            <h2 className="text-xl font-bold mb-2" style={{ color: '#1a1d2e' }}>Workspace created!</h2>
-            <p className="text-sm" style={{ color: '#5e6278' }}>Redirecting to your dashboard...</p>
+            <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--nova-text)' }}>Workspace created!</h2>
+            <p className="text-sm" style={{ color: 'var(--nova-text-secondary)' }}>Redirecting to your dashboard...</p>
           </div>
         )}
       </div>

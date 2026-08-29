@@ -16,7 +16,7 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusColors: Record<string, { bg: string; color: string }> = {
-  todo: { bg: '#f4f6f9', color: '#5e6278' },
+  todo: { bg: 'var(--nova-surface-cool)', color: 'var(--nova-text-secondary)' },
   in_progress: { bg: 'rgba(13,148,136,0.06)', color: '#0d9488' },
   review: { bg: 'rgba(99,102,241,0.06)', color: '#6366f1' },
   done: { bg: 'rgba(22,163,74,0.06)', color: '#16a34a' },
@@ -32,8 +32,8 @@ const priorityLabels: Record<string, string> = {
 const priorityColors: Record<string, { bg: string; color: string }> = {
   urgent: { bg: 'rgba(220,38,38,0.06)', color: '#dc2626' },
   high: { bg: 'rgba(217,119,6,0.06)', color: '#d97706' },
-  medium: { bg: '#f4f6f9', color: '#5e6278' },
-  low: { bg: '#f4f6f9', color: '#9da2b3' },
+  medium: { bg: 'var(--nova-surface-cool)', color: 'var(--nova-text-secondary)' },
+  low: { bg: 'var(--nova-surface-cool)', color: 'var(--nova-text-muted)' },
 };
 
 export default function ListView({ projectId, tasks }: Props) {
@@ -46,15 +46,14 @@ export default function ListView({ projectId, tasks }: Props) {
   });
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #e8eaef', background: '#ffffff' }}>
+    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--nova-border)', background: 'var(--nova-surface)' }}>
       <table className="w-full">
-        <thead>
-          <tr style={{ borderBottom: '1px solid #e8eaef' }}>
+        <thead>            <tr style={{ borderBottom: '1px solid var(--nova-border)' }}>
             {["Task", "Status", "Assignee", "Priority", "Due Date"].map((label, i) => (
               <th
                 key={label}
                 className={`text-left px-4 py-3 text-xs font-medium uppercase tracking-wider ${i >= 2 ? 'hidden ' + (i === 2 ? 'md' : i === 3 ? 'md' : 'lg') + ':table-cell' : i === 1 ? 'hidden sm:table-cell' : ''}`}
-                style={{ color: '#9da2b3' }}
+                style={{ color: 'var(--nova-text-muted)' }}
               >
                 {label}
               </th>
@@ -70,11 +69,11 @@ export default function ListView({ projectId, tasks }: Props) {
                 key={task._id}
                 onClick={() => navigate(`/app/projects/${projectId}/task/${task._id}`)}
                 className="cursor-pointer transition-colors"
-                style={{ borderBottom: '1px solid #f0f1f5' }}
+                style={{ borderBottom: '1px solid var(--nova-border-light)' }}
               >
                 <td className="px-4 py-3">
-                  <div className="text-sm font-medium" style={{ color: '#1a1d2e' }}>{task.title}</div>
-                  <div className="text-[10px] sm:hidden mt-0.5" style={{ color: '#9da2b3' }}>{statusLabels[task.status]}</div>
+                  <div className="text-sm font-medium" style={{ color: 'var(--nova-text)' }}>{task.title}</div>
+                  <div className="text-[10px] sm:hidden mt-0.5" style={{ color: 'var(--nova-text-muted)' }}>{statusLabels[task.status]}</div>
                 </td>
                 <td className="px-4 py-3 hidden sm:table-cell">
                   <select
@@ -96,10 +95,10 @@ export default function ListView({ projectId, tasks }: Props) {
                       <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold" style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}>
                         {task.assignee.name?.charAt(0)}
                       </div>
-                      <span className="text-xs" style={{ color: '#5e6278' }}>{task.assignee.name}</span>
+                      <span className="text-xs" style={{ color: 'var(--nova-text-secondary)' }}>{task.assignee.name}</span>
                     </div>
                   ) : (
-                    <span className="text-xs" style={{ color: '#9da2b3' }}>Unassigned</span>
+                    <span className="text-xs" style={{ color: 'var(--nova-text-muted)' }}>Unassigned</span>
                   )}
                 </td>
                 <td className="px-4 py-3 hidden md:table-cell">
@@ -109,12 +108,12 @@ export default function ListView({ projectId, tasks }: Props) {
                 </td>
                 <td className="px-4 py-3 hidden lg:table-cell">
                   {task.dueDate ? (
-                    <span className="text-xs flex items-center gap-1" style={{ color: '#5e6278' }}>
+                    <span className="text-xs flex items-center gap-1" style={{ color: 'var(--nova-text-secondary)' }}>
                       <Calendar className="w-3 h-3" />
                       {new Date(task.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </span>
                   ) : (
-                    <span className="text-xs" style={{ color: '#d1d5db' }}>—</span>
+                    <span className="text-xs" style={{ color: 'var(--nova-text-muted)' }}>—</span>
                   )}
                 </td>
               </tr>
@@ -122,7 +121,7 @@ export default function ListView({ projectId, tasks }: Props) {
           })}
           {sortedTasks.length === 0 && (
             <tr>
-              <td colSpan={5} className="px-4 py-12 text-center text-sm" style={{ color: '#9da2b3' }}>
+              <td colSpan={5} className="px-4 py-12 text-center text-sm" style={{ color: 'var(--nova-text-muted)' }}>
                 No tasks yet. Create your first task to get started.
               </td>
             </tr>

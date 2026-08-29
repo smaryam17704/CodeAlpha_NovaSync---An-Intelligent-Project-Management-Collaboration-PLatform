@@ -101,7 +101,7 @@ export default function MyWork() {
                 transition={{ delay: i * 0.02 }}
                 onClick={() => navigate(`/app/projects/${task.projectId}/task/${task._id}`)}
                 className="flex items-center gap-4 p-4 rounded-xl transition-all cursor-pointer"
-                style={{ background: 'var(--nova-surface)', border: '1px solid #e8eaef' }}
+                style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}
               >
                 <div className="w-2 h-2 rounded-full shrink-0" style={{
                   background: task.status === "done" ? '#16a34a' : task.status === "in_progress" ? '#0d9488' : task.status === "review" ? '#6366f1' : '#9da2b3'

@@ -31,7 +31,7 @@ export default function ProjectActivity({ projectId }: Props) {
 
   if (events.length === 0) {
     return (
-      <div className="py-12 text-center text-sm" style={{ color: '#9da2b3' }}>
+      <div className="py-12 text-center text-sm" style={{ color: 'var(--nova-text-muted)' }}>
         No activity yet. Start working on tasks to see activity here.
       </div>
     );
@@ -40,14 +40,14 @@ export default function ProjectActivity({ projectId }: Props) {
   return (
     <div className="space-y-3">
       {events.map((event) => (
-        <div key={event._id} className="flex items-start gap-3 p-3 rounded-lg transition-colors" style={{ background: '#ffffff', border: '1px solid #f0f1f5' }}>
+        <div key={event._id} className="flex items-start gap-3 p-3 rounded-lg transition-colors" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border-light)' }}>
           <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: typeColors[event.type] || '#9da2b3' }} />
           <div className="flex-1 min-w-0">
-            <p className="text-sm" style={{ color: '#5e6278' }}>
-              <span className="font-medium" style={{ color: '#1a1d2e' }}>{event.user?.name || "Someone"}</span>{" "}
+            <p className="text-sm" style={{ color: 'var(--nova-text-secondary)' }}>
+              <span className="font-medium" style={{ color: 'var(--nova-text)' }}>{event.user?.name || "Someone"}</span>{" "}
               {event.description}
             </p>
-            <p className="text-[10px] mt-0.5" style={{ color: '#9da2b3' }}>{formatDate(event.createdAt)}</p>
+            <p className="text-[10px] mt-0.5" style={{ color: 'var(--nova-text-muted)' }}>{formatDate(event.createdAt)}</p>
           </div>
         </div>
       ))}

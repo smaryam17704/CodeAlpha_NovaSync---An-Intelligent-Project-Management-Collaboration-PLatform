@@ -32,7 +32,7 @@ export default function ProjectTimeline({ projectId }: Props) {
 
   if (events.length === 0) {
     return (
-      <div className="py-12 text-center text-sm" style={{ color: '#9da2b3' }}>
+      <div className="py-12 text-center text-sm" style={{ color: 'var(--nova-text-muted)' }}>
         No timeline events yet. Activity will appear here as your project progresses.
       </div>
     );
@@ -40,11 +40,11 @@ export default function ProjectTimeline({ projectId }: Props) {
 
   return (
     <div className="relative pl-8">
-      <div className="absolute left-3 top-0 bottom-0 w-px" style={{ background: '#e8eaef' }} />
+      <div className="absolute left-3 top-0 bottom-0 w-px" style={{ background: 'var(--nova-border)' }} />
       <div className="space-y-6">
         {events.map((event, i) => (
           <div key={event._id} className="relative animate-fade-in" style={{ animationDelay: `${i * 30}ms` }}>
-            <div className="absolute -left-5 top-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px]" style={{ background: '#ffffff', border: '2px solid #e8eaef' }}>
+            <div className="absolute -left-5 top-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px]" style={{ background: 'var(--nova-surface)', border: '2px solid var(--nova-border)' }}>
               {typeIcons[event.type] || "📌"}
             </div>
             <div className="pl-4">
@@ -52,13 +52,13 @@ export default function ProjectTimeline({ projectId }: Props) {
                 <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold" style={{ background: 'rgba(13,148,136,0.08)', color: '#0d9488' }}>
                   {event.user?.name?.charAt(0) || "?"}
                 </div>
-                <span className="text-xs font-medium" style={{ color: '#1a1d2e' }}>{event.user?.name || "Someone"}</span>
-                <span className="text-[10px]" style={{ color: '#d1d5db' }}>·</span>
-                <span className="text-[10px]" style={{ color: '#9da2b3' }}>{formatDate(event.createdAt)}</span>
+                <span className="text-xs font-medium" style={{ color: 'var(--nova-text)' }}>{event.user?.name || "Someone"}</span>
+                <span className="text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>·</span>
+                <span className="text-[10px]" style={{ color: 'var(--nova-text-muted)' }}>{formatDate(event.createdAt)}</span>
               </div>
-              <p className="text-sm" style={{ color: '#5e6278' }}>{event.description}</p>
+              <p className="text-sm" style={{ color: 'var(--nova-text-secondary)' }}>{event.description}</p>
               {event.task && (
-                <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded" style={{ background: '#f4f6f9', color: '#9da2b3' }}>
+                <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'var(--nova-surface-cool)', color: 'var(--nova-text-muted)' }}>
                   Task: {event.task.title}
                 </span>
               )}

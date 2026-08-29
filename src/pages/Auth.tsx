@@ -128,11 +128,11 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
   };
 
   return (
-    <div className="min-h-screen flex" style={{ background: "#faf9f7" }}>
+    <div className="min-h-screen flex" style={{ background: 'var(--nova-surface-warm)' }}>
       {/* Left panel — branding */}
       <div
         className="hidden lg:flex lg:w-[55%] relative overflow-hidden"
-        style={{ background: "#1a1d2e" }}
+        style={{ background: '#1a1d2e' }}
       >
         <div
           className="absolute inset-0"
@@ -160,7 +160,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
             <br />
             Stay in sync.
           </h1>
-          <p className="text-base leading-relaxed" style={{ color: "#9da2b3" }}>
+          <p className="text-base leading-relaxed" style={{ color: '#9da2b3' }}>
             Collaborative project management with real-time updates and
             AI-powered intelligence for modern teams.
           </p>
@@ -172,7 +172,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
               <div
                 key={item.label}
                 className="flex items-center gap-2 text-sm"
-                style={{ color: "#9da2b3" }}
+                style={{ color: '#9da2b3' }}
               >
                 <span>{item.icon}</span>
                 {item.label}
@@ -185,13 +185,13 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
       {/* Right panel — form */}
       <div
         className="flex-1 flex items-center justify-center px-6 py-12"
-        style={{ background: "#ffffff" }}
+        style={{ background: 'var(--nova-surface)' }}
       >
         <div className="w-full max-w-sm">
           <Link
             to="/"
             className="inline-flex items-center gap-2 text-sm mb-8 transition-colors hover:opacity-80"
-            style={{ color: "#9da2b3" }}
+            style={{ color: 'var(--nova-text-muted)' }}
           >
             <ArrowLeft className="w-4 h-4" />
             Back to home
@@ -199,18 +199,18 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
 
           <div className="lg:hidden flex items-center gap-2.5 mb-8">
             <NovaSyncLogo size={28} />
-            <span className="text-lg font-bold" style={{ color: "#1a1d2e" }}>
+            <span className="text-lg font-bold" style={{ color: 'var(--nova-text)' }}>
               NovaSync
             </span>
           </div>
 
           <h2
             className="text-2xl font-extrabold mb-2"
-            style={{ color: "#1a1d2e" }}
+            style={{ color: 'var(--nova-text)' }}
           >
             {isSignUp ? "Create your account" : "Welcome back"}
           </h2>
-          <p className="text-sm mb-8" style={{ color: "#5e6278" }}>
+          <p className="text-sm mb-8" style={{ color: 'var(--nova-text-secondary)' }}>
             {isSignUp
               ? "Start managing projects with your team."
               : "Sign in to continue to NovaSync."}
@@ -221,7 +221,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
               <div>
                 <label
                   className="block text-sm font-medium mb-1.5"
-                  style={{ color: "#5e6278" }}
+                  style={{ color: 'var(--nova-text-secondary)' }}
                 >
                   Full name
                 </label>
@@ -233,9 +233,9 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#0d9488]/30"
                   style={{
-                    background: "#f4f6f9",
-                    border: "1px solid #e8eaef",
-                    color: "#1a1d2e",
+                    background: 'var(--nova-surface-cool)',
+                    border: '1px solid var(--nova-border)',
+                    color: 'var(--nova-text)',
                   }}
                   placeholder="Your name"
                   required
@@ -246,7 +246,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
             <div>
               <label
                 className="block text-sm font-medium mb-1.5"
-                style={{ color: "#5e6278" }}
+                style={{ color: 'var(--nova-text-secondary)' }}
               >
                 Email
               </label>
@@ -256,12 +256,11 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
                 name="signup-email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#0d9488]/30"
-                style={{
-                  background: "#f4f6f9",
-                  border: "1px solid #e8eaef",
-                  color: "#1a1d2e",
-                }}
+                className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#0d9488]/30"                style={{
+                    background: 'var(--nova-surface-cool)',
+                    border: '1px solid var(--nova-border)',
+                    color: 'var(--nova-text)',
+                  }}
                 placeholder="you@example.com"
                 required
               />
@@ -283,7 +282,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
             <div>
               <label
                 className="block text-sm font-medium mb-1.5"
-                style={{ color: "#5e6278" }}
+                style={{ color: 'var(--nova-text-secondary)' }}
               >
                 Password
               </label>
@@ -296,9 +295,9 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-lg text-sm transition-colors pr-10 focus:outline-none focus:ring-2 focus:ring-[#0d9488]/30"
                   style={{
-                    background: "#f4f6f9",
-                    border: "1px solid #e8eaef",
-                    color: "#1a1d2e",
+                    background: 'var(--nova-surface-cool)',
+                    border: '1px solid var(--nova-border)',
+                    color: 'var(--nova-text)',
                   }}
                   placeholder="••••••••"
                   required
@@ -308,7 +307,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
-                  style={{ color: "#9da2b3" }}
+                  style={{ color: 'var(--nova-text-muted)' }}
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />
@@ -348,7 +347,7 @@ export default function AuthPage({ redirectAfterAuth = "/app" }: AuthPageProps) 
 
           <div
             className="mt-6 text-center text-sm"
-            style={{ color: "#5e6278" }}
+            style={{ color: 'var(--nova-text-secondary)' }}
           >
             {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
             <button

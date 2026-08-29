@@ -177,7 +177,7 @@ export default function SettingsPage() {
               <button
                 onClick={() => handlePrefToggle(pref.key)}
                 className="relative w-10 h-5 rounded-full flex items-center p-0.5 transition-colors cursor-pointer"
-                style={{ background: prefs[pref.key] ? '#0d9488' : '#d1d5db' }}
+                style={{ background: prefs[pref.key] ? '#0d9488' : 'var(--nova-border)' }}
               >
                 <div
                   className="w-4 h-4 rounded-full bg-white shadow-sm transition-transform"

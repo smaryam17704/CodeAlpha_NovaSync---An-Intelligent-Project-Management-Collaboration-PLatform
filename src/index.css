@@ -241,6 +241,25 @@ body {
 .dark [style*="color: #0d9488"] { color: var(--nova-teal) !important; }
 .dark [style*="background: #0d9488"] { background: var(--nova-teal) !important; }
 
+/* Ivory/warm backgrounds: #f8f6f3 → dark surface-warm */
+.dark [style*="background: #f8f6f3"] { background: var(--nova-surface-warm) !important; }
+.dark [style*="background:#f8f6f3"] { background: var(--nova-surface-warm) !important; }
+
+/* Gray borders/elements: #d1d5db → dark muted */
+.dark [style*="borderColor: #d1d5db"] { border-color: var(--nova-border) !important; }
+.dark [style*="color: #d1d5db"] { color: var(--nova-text-muted) !important; }
+.dark [style*="background: #d1d5db"] { background: var(--nova-border) !important; }
+
+/* borderBottom inline styles */
+.dark [style*="borderBottom: 1px solid #e8eaef"] { border-bottom-color: var(--nova-border) !important; }
+.dark [style*="borderBottom: 1px solid #f0f1f5"] { border-bottom-color: var(--nova-border-light) !important; }
+
+/* background-color variant (React may use this) */
+.dark [style*="background-color: #ffffff"] { background-color: var(--nova-surface) !important; }
+.dark [style*="background-color: #f4f6f9"] { background-color: var(--nova-surface-cool) !important; }
+.dark [style*="background-color: #faf9f7"] { background-color: var(--nova-surface-warm) !important; }
+.dark [style*="background-color: #f8f6f3"] { background-color: var(--nova-surface-warm) !important; }
+
 /* Scrollbar in dark mode */
 .dark ::-webkit-scrollbar-thumb { background: #3a3d50; }
 .dark ::-webkit-scrollbar-thumb:hover { background: #5a5d70; }
@@ -269,4 +288,8 @@ select {
 select option {
   background: #ffffff;
   color: #1a1d2e;
+}
+.dark select option {
+  background: var(--nova-surface) !important;
+  color: var(--nova-text) !important;
 }

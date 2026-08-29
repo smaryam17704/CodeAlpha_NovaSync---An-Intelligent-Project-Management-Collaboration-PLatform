@@ -151,18 +151,18 @@ export default function Landing() {
                 {/* Mock product interface */}
                 <div className="rounded-xl overflow-hidden" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)', boxShadow: '0 20px 60px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)' }}>
                   {/* Top bar */}
-                  <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: '1px solid #f0f1f5', background: 'var(--nova-surface-warm)' }}>
+                  <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: '1px solid var(--nova-border-light)', background: 'var(--nova-surface-warm)' }}>
                     <div className="flex gap-1.5">
                       <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#fca5a5' }} />
                       <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#fcd34d' }} />
                       <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#86efac' }} />
                     </div>
                     <div className="flex-1 mx-8">
-                      <div className="h-5 rounded-md mx-auto max-w-[200px]" style={{ background: '#f0f1f5' }} />
+                      <div className="h-5 rounded-md mx-auto max-w-[200px]" style={{ background: 'var(--nova-border)' }} />
                     </div>
                   </div>
                   {/* Content */}
-                  <div className="p-5 space-y-4" style={{ background: '#f8f6f3' }}>
+                  <div className="p-5 space-y-4" style={{ background: 'var(--nova-surface-warm)' }}>
                     {/* Project header mock */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -170,8 +170,8 @@ export default function Landing() {
                           <div className="w-full h-full flex items-center justify-center text-xs font-bold" style={{ color: '#0d9488' }}>N</div>
                         </div>
                         <div>
-                          <div className="h-3 w-24 rounded" style={{ background: '#d1d5db' }} />
-                          <div className="h-2 w-16 rounded mt-1" style={{ background: '#e8eaef' }} />
+                          <div className="h-3 w-24 rounded" style={{ background: 'var(--nova-text-muted)' }} />
+                          <div className="h-2 w-16 rounded mt-1" style={{ background: 'var(--nova-border)' }} />
                         </div>
                       </div>
                       <div className="flex -space-x-1.5">
@@ -190,14 +190,14 @@ export default function Landing() {
                         <div key={col.label} className="rounded-lg p-3" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }}>
                           <div className="flex items-center gap-1.5 mb-2">
                             <div className="w-2 h-2 rounded-full" style={{ background: col.color }} />
-                            <div className="h-2 w-12 rounded" style={{ background: '#d1d5db' }} />
+                            <div className="h-2 w-12 rounded" style={{ background: 'var(--nova-text-muted)' }} />
                           </div>
                           {col.items.map((item, i) => (
-                            <div key={i} className="rounded-md p-2 mb-1.5" style={{ background: '#f8f6f3', border: '1px solid #f0f1f5' }}>
-                              <div className="h-2 rounded" style={{ background: '#d1d5db', width: `${60 + i * 15}%` }} />
+                            <div key={i} className="rounded-md p-2 mb-1.5" style={{ background: 'var(--nova-surface-warm)', border: '1px solid var(--nova-border-light)' }}>
+                              <div className="h-2 rounded" style={{ background: 'var(--nova-text-muted)', width: `${60 + i * 15}%` }} />
                               <div className="flex items-center gap-1 mt-1.5">
-                                <div className="w-4 h-4 rounded-full" style={{ background: '#e8eaef' }} />
-                                <div className="h-1.5 w-8 rounded" style={{ background: '#e8eaef' }} />
+                                <div className="w-4 h-4 rounded-full" style={{ background: 'var(--nova-border)' }} />
+                                <div className="h-1.5 w-8 rounded" style={{ background: 'var(--nova-border)' }} />
                               </div>
                             </div>
                           ))}
@@ -207,7 +207,7 @@ export default function Landing() {
                     {/* Progress bar mock */}
                     <div className="flex items-center gap-3">
                       <div className="text-[10px] font-medium" style={{ color: 'var(--nova-text-secondary)' }}>Sprint Progress</div>
-                      <div className="flex-1 h-1.5 rounded-full" style={{ background: '#e8eaef' }}>
+                      <div className="flex-1 h-1.5 rounded-full" style={{ background: 'var(--nova-border)' }}>
                         <div className="h-full rounded-full" style={{ background: 'linear-gradient(90deg, #0d9488, #6366f1)', width: '68%' }} />
                       </div>
                       <div className="text-[10px] font-semibold" style={{ color: '#0d9488' }}>68%</div>
@@ -270,7 +270,7 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
                 className="p-6 rounded-xl transition-all group hover:shadow-lg hover:shadow-black/[0.03]"
-                style={{ background: '#f8f6f3', border: '1px solid var(--nova-border)' }}
+                style={{ background: 'var(--nova-surface-warm)', border: '1px solid var(--nova-border)' }}
               >
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4 transition-colors" style={{ background: 'rgba(13,148,136,0.08)' }}>
                   <feature.icon className="w-5 h-5" style={{ color: '#0d9488' }} />
@@ -308,12 +308,12 @@ export default function Landing() {
                 transition={{ delay: i * 0.12 }}
                 className="text-center relative"
               >
-                <div className="text-6xl font-extrabold mb-4" style={{ color: 'rgba(26,29,46,0.18)' }}>{item.step}</div>
+                <div className="text-6xl font-extrabold mb-4" style={{ color: 'var(--nova-text-muted)', opacity: 0.3 }}>{item.step}</div>
                 <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--nova-text)' }}>{item.title}</h3>
                 <p className="text-sm" style={{ color: 'var(--nova-text-secondary)' }}>{item.desc}</p>
                 {i < 2 && (
                   <div className="hidden md:block absolute top-8 right-0 transform translate-x-1/2">
-                    <ChevronRight className="w-5 h-5" style={{ color: '#d1d5db' }} />
+                    <ChevronRight className="w-5 h-5" style={{ color: 'var(--nova-text-muted)' }} />
                   </div>
                 )}
               </motion.div>
