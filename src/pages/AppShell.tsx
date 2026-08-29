@@ -6,7 +6,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import NovaSyncLogo from "../components/NovaSyncLogo";
 import {
   Home, FolderKanban, Bell, Search, Brain, Settings,
-  ChevronDown, Plus, LogOut, User, Menu, X, Command, LayoutList, ExternalLink, Pencil, Check
+  ChevronDown, Plus, LogOut, User, Menu, X, Command, LayoutList, ExternalLink, Pencil, Check, Trash2
 } from "lucide-react";
 
 import Dashboard from "./Dashboard";
@@ -31,14 +31,16 @@ export default function AppShell() {
 
   const currentUser = useQuery(api.users.current);
   const authLoading = currentUser === undefined;
-  const workspaces = useQuery(api.workspaces.list);
+  // Use listWithProjectCounts to know which workspaces are empty (deletable)
+  const workspacesWithCounts = useQuery(api.workspaces.listWithProjectCounts);
+  const workspaces = workspacesWithCounts; // same shape, just with extra accessibleProjectCount
   const [activeWorkspace, setActiveWorkspace] = useState<string | null>(() => {
-    // Restore from localStorage on mount
     try { return localStorage.getItem(WORKSPACE_STORAGE_KEY); } catch { return null; }
   });
   const unreadCount = useQuery(api.notifications.getUnreadCount);
 
   const updateWorkspace = useMutation(api.workspaces.update);
+  const removeMyMembership = useMutation(api.workspaces.removeMyWorkspaceMembership);
 
   // Workspace editing state
   const [editingWorkspace, setEditingWorkspace] = useState(false);
@@ -46,10 +48,13 @@ export default function AppShell() {
   const [editWsDesc, setEditWsDesc] = useState("");
   const [savingWs, setSavingWs] = useState(false);
 
+  // Workspace delete state
+  const [deletingWorkspace, setDeletingWorkspace] = useState<{ id: string; name: string } | null>(null);
+  const [deletingWs, setDeletingWs] = useState(false);
+
   // Sync activeWorkspace with loaded workspaces
   useEffect(() => {
     if (workspaces && workspaces.length > 0) {
-      // If no active workspace or active workspace no longer exists, set to first
       const validWs = workspaces.find((w: any) => w?._id === activeWorkspace);
       if (!validWs) {
         const firstId = workspaces[0]?._id ?? null;
@@ -92,7 +97,7 @@ export default function AppShell() {
 
   if (authLoading || workspaces === undefined) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#f4f6f9' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--nova-surface-cool)' }}>
         <div className="w-8 h-8 border-2 border-[#0d9488] border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -126,6 +131,29 @@ export default function AppShell() {
       console.error("Failed to update workspace:", err);
     } finally {
       setSavingWs(false);
+    }
+  };
+
+  const handleDeleteWorkspace = async () => {
+    if (!deletingWorkspace) return;
+    setDeletingWs(true);
+    try {
+      await removeMyMembership({ workspaceId: deletingWorkspace.id as any });
+      // If the deleted workspace was active, switch to another
+      if (activeWorkspace === deletingWorkspace.id) {
+        const remaining = workspaces?.filter((w: any) => w?._id !== deletingWorkspace.id);
+        const nextId = remaining?.[0]?._id ?? null;
+        setActiveWorkspace(nextId);
+        if (nextId) {
+          try { localStorage.setItem(WORKSPACE_STORAGE_KEY, nextId); } catch {}
+        }
+      }
+      setDeletingWorkspace(null);
+    } catch (err: any) {
+      console.error("Failed to delete workspace:", err);
+      alert(err?.message || "Failed to remove workspace.");
+    } finally {
+      setDeletingWs(false);
     }
   };
 
@@ -198,20 +226,38 @@ export default function AppShell() {
           )}
           {workspaces && workspaces.length > 1 && (
             <div className="mt-1 space-y-0.5">
-              {workspaces.map((ws: any) => (
-                <button
-                  key={ws._id}
-                  onClick={() => handleWorkspaceChange(ws._id)}
-                  className="w-full text-left px-2 py-1.5 rounded-lg text-xs transition-colors"
-                  style={{
-                    background: ws?._id === activeWorkspace ? 'rgba(13,148,136,0.06)' : 'transparent',
-                    color: ws?._id === activeWorkspace ? '#0d9488' : 'var(--nova-text-secondary)',
-                    fontWeight: ws?._id === activeWorkspace ? 600 : 400,
-                  }}
-                >
-                  {ws?.name}
-                </button>
-              ))}
+              {workspaces.map((ws: any) => {
+                const isEmpty = (ws?.accessibleProjectCount ?? 0) === 0;
+                const isOwner = ws?.role === "owner";
+                return (
+                  <div key={ws?._id} className="flex items-center gap-1 group/ws">
+                    <button
+                      onClick={() => handleWorkspaceChange(ws?._id)}
+                      className="flex-1 text-left px-2 py-1.5 rounded-lg text-xs transition-colors truncate"
+                      style={{
+                        background: ws?._id === activeWorkspace ? 'rgba(13,148,136,0.06)' : 'transparent',
+                        color: ws?._id === activeWorkspace ? '#0d9488' : 'var(--nova-text-secondary)',
+                        fontWeight: ws?._id === activeWorkspace ? 600 : 400,
+                      }}
+                    >
+                      {ws?.name}
+                      {isEmpty && !isOwner && (
+                        <span className="ml-1 text-[9px] opacity-60">(empty)</span>
+                      )}
+                    </button>
+                    {isEmpty && !isOwner && (
+                      <button
+                        onClick={() => setDeletingWorkspace({ id: ws._id, name: ws.name })}
+                        className="opacity-0 group-hover/ws:opacity-100 transition-opacity p-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30"
+                        style={{ color: 'var(--nova-danger)' }}
+                        title="Remove empty workspace"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -379,6 +425,49 @@ export default function AppShell() {
               >
                 {savingWs ? "Saving..." : <><Check className="w-4 h-4" /> Save Changes</>}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Workspace Confirmation Modal */}
+      {deletingWorkspace && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => !deletingWs && setDeletingWorkspace(null)}>
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.3)' }} />
+          <div className="relative w-full max-w-sm rounded-xl shadow-2xl animate-scale-in" style={{ background: 'var(--nova-surface)', border: '1px solid var(--nova-border)' }} onClick={(e) => e.stopPropagation()}>
+            <div className="p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'var(--nova-danger-bg)' }}>
+                  <Trash2 className="w-5 h-5" style={{ color: 'var(--nova-danger)' }} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold" style={{ color: 'var(--nova-text)' }}>Remove Workspace</h2>
+                </div>
+              </div>
+              <p className="text-sm mb-1" style={{ color: 'var(--nova-text-secondary)' }}>
+                Remove <strong style={{ color: 'var(--nova-text)' }}>"{deletingWorkspace.name}"</strong> from your workspace list?
+              </p>
+              <p className="text-xs mb-5" style={{ color: 'var(--nova-text-muted)' }}>
+                This workspace has no accessible projects for your account. This will only remove it from your list — the owner's workspace and projects are not affected.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setDeletingWorkspace(null)}
+                  disabled={deletingWs}
+                  className="flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                  style={{ background: 'var(--nova-surface-cool)', color: 'var(--nova-text-secondary)', border: '1px solid var(--nova-border)' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteWorkspace}
+                  disabled={deletingWs}
+                  className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-all disabled:opacity-50"
+                  style={{ background: '#dc2626' }}
+                >
+                  {deletingWs ? "Removing..." : "Remove"}
+                </button>
+              </div>
             </div>
           </div>
         </div>

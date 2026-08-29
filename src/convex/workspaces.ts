@@ -3,6 +3,7 @@ import { query, mutation } from "./_generated/server";
 import {
   requireAuth,
   getWorkspaceMember,
+  getProjectMember,
   createNotification,
   createActivity,
 } from "./helpers";
@@ -22,6 +23,44 @@ export const list = query({
       })
     );
     return workspaces.filter(Boolean);
+  },
+});
+
+/**
+ * Return each workspace with the count of accessible projects for the current user.
+ * Used by the frontend to determine which workspaces are empty (deletable).
+ */
+export const listWithProjectCounts = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await requireAuth(ctx);
+    const memberships = await ctx.db
+      .query("workspaceMembers")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+    const results = await Promise.all(
+      memberships.map(async (m) => {
+        const ws = await ctx.db.get(m.workspaceId);
+        if (!ws) return null;
+        // Count projects the user has access to in this workspace
+        const projects = await ctx.db
+          .query("projects")
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", m.workspaceId))
+          .collect();
+        let accessibleCount = 0;
+        for (const project of projects) {
+          const member = await getProjectMember(ctx, project._id, userId);
+          if (member) accessibleCount++;
+        }
+        return {
+          ...ws,
+          role: m.role,
+          membershipId: m._id,
+          accessibleProjectCount: accessibleCount,
+        };
+      })
+    );
+    return results.filter(Boolean);
   },
 });
 
@@ -153,5 +192,44 @@ export const removeMember = mutation({
     if (!targetMembership) throw new Error("User is not a member");
     if (targetMembership.role === "owner") throw new Error("Cannot remove the workspace owner");
     await ctx.db.delete(targetMembership._id);
+  },
+});
+
+/**
+ * Remove the current user's own membership from a workspace.
+ * Only allowed when the workspace has ZERO accessible projects for this user.
+ * Cannot be used by workspace owners.
+ */
+export const removeMyWorkspaceMembership = mutation({
+  args: {
+    workspaceId: v.id("workspaces"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
+    // Get the current user's workspace membership
+    const membership = await getWorkspaceMember(ctx, args.workspaceId, userId);
+    if (!membership) throw new Error("You are not a member of this workspace.");
+
+    // Owners cannot remove themselves
+    if (membership.role === "owner") throw new Error("Workspace owners cannot remove their own membership.");
+
+    // Check: must have ZERO accessible projects in this workspace
+    const projects = await ctx.db
+      .query("projects")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .collect();
+
+    for (const project of projects) {
+      const member = await getProjectMember(ctx, project._id, userId);
+      if (member) {
+        throw new Error(
+          `Cannot remove workspace: you still have access to ${projects.length} project(s) in this workspace. Leave all projects first.`
+        );
+      }
+    }
+
+    // Safe to remove: 0 accessible projects
+    await ctx.db.delete(membership._id);
   },
 });
